@@ -1,0 +1,56 @@
+---
+title: "about"
+---
+
+- __employment__: Senior Product Engineer @ Esri
+- **education**:
+  - MS Urban Informatic, Northeastern University (2020)
+  - BA Sociology, Plymouth State University
+     - Minor, General Mathematics
+     - Professional Certificate GIS
+
+I am a Senior Product Engineer on the Spatial Analysis team at Esri. Previously, I was at The NPD Group as a Research Analyst where I worked to modernize our data science infrastructure to use Databricks, Docker, and Spark. Before that, I was at RStudio, PBC on the customer success team enabling public sector adoption of data science tools. In 2020 I received my master’s degree in Urban Informatics from Northeastern University following my bachelor’s degree in sociology with focuses in geographic information systems and general mathematics from Plymouth State University in 2018.
+
+
+## Contact me
+
+If you want to get in contact with me please send me an email at `josiah.parry at gmail dot com`.
+
+
+------------
+
+### talks i've given
+
+
+* [Exploring R and Rust in Bioinformatics](https://blog.bioconductor.org/posts/2025-07-09-developers-forum-july28/)
+  * Bioconductor Developer Forum
+  * July 28th, 2025
+* [Intro to Rust for R Developers](https://cascadiarconf.org/2025/workshop/rust1/)
+  - Cascadia R Conference, 2025
+  - June 20th, 2025
+  - [Materials](https://josiahparry.github.io/2025-cascadia-rust-for-r-devs/)
+* [Building Rust based R Packages](https://cascadiarconf.org/2025/workshop/rust2/)  
+  - Cascadia R Conference, 2025
+  - June 20th, 2025
+  - [Materials](https://josiahparry.github.io/2025-cascadia-rust-for-r-devs/) 
+* [Arrow, Rust, and cross-language data science tooling](https://scientificcomputing.rs/2025/talks/parry.html)
+  * [Scientific Computing in Rust, 2025](https://scientificcomputing.rs/2025/talks/parry.html)
+  * [Repository](https://github.com/JosiahParry/2025-scientific-computing-in-rust)
+  * June 4th, 2025 
+* [Exploratory Spatal Data Analysis in the tidyverse](https://www.rstudio.com/conference/2022/talks/exploratory-spatial-data-analysis/)
+  * July 28th, 2022 rstudio::conf(2022L)
+* [Exploratory Spatial Data Analysis in R](https://github.com/josiahparry/exploratory-spatial-data-analysis/)
+  * [Recording](https://www.youtube.com/watch?v=i_MA1U6SJ1Y&ab_channel=LanderAnalytics)
+  * April 28th, 2022
+* [APIs: you’re probably not using them and why you probably should](https://github.com/JosiahParry/you-should-use-APIs)
+  * [Government Advances in Statistical Programming](https://sites.google.com/view/gasp2020/agenda?authuser=0)
+  * November 6th, 2020
+* ["Old Town Road" Rap or Country?: Putting R in Production with Tidymodels, Plumber, and Shiny](https://github.com/JosiahParry/R-in-prod)
+  * Boston useR group
+  * December 10th, 2019
+* [Tidy Lyrical Analysis](https://github.com/JosiahParry/useR-2018-07-17)
+  * Boston useR group
+  * July 17th, 2018
+* [Newfound Lake Landscape Value Analysis: Exploring the efficacy of PPGIS, NESTVAL 2016](https://prezi.com/uchr4_g_qzns/newfound-lake-watershed/)
+  * New England St. Lawrence River Valley regional American Associations of Geographers Conference
+  * 2016

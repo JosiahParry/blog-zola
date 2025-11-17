@@ -1,0 +1,135 @@
+<button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="{{ get_url(path='/') }}"
+                class="font-mono font-bold italic text-lg"
+            >
+                {{ config.title | default(value="Blog") }}
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-xs font-mono"
+            />
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="flex-1 overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="{{ get_url(path='/') }}"
+                        class="block py-1 text-sm font-mono pl-3 {% if current_path == '/' %}font-semibold border-l-2 border-primary -ml-px{% else %}text-muted-foreground hover:text-foreground hover:underline decoration-primary{% endif %}"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="{{ get_url(path='@/about.md') }}"
+                        class="block py-1 text-sm font-mono pl-3 {% if page is defined and page.slug == 'about' %}font-semibold border-l-2 border-primary -ml-px{% else %}text-muted-foreground hover:text-foreground hover:underline decoration-primary{% endif %}"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="{{ get_url(path='@/posts/_index.md') }}"
+                        class="block py-1 text-sm font-mono pl-3 {% if current_path is starting_with('/posts/') %}font-semibold border-l-2 border-primary -ml-px{% else %}text-muted-foreground hover:text-foreground hover:underline decoration-primary{% endif %}"
+                    >
+                        Posts
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="{{ get_url(path='@/contact.md') }}"
+                        class="block py-1 text-sm font-mono pl-3 {% if page is defined and page.slug == 'contact' %}font-semibold border-l-2 border-primary -ml-px{% else %}text-muted-foreground hover:text-foreground hover:underline decoration-primary{% endif %}"
+                    >
+                        Contact
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</aside>

@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}{{ term.name }} | {{ config.title | default(value="Blog") }}{% endblock %}
+
+{% block content %}
+{% include "sidebar.html" %}
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-3xl mx-auto">
+        <h1 class="text-4xl font-bold italic mb-6">{{ term.name }}</h1>
+
+        <div class="space-y-4">
+            {% for page in term.pages %}
+            <article>
+                <a href="{{ page.permalink }}" class="block group">
+                    <h2 class="text-xl font-medium group-hover:underline">{{ page.title }}</h2>
+                    <time datetime="{{ page.date }}" class="text-sm text-muted-foreground font-mono">
+                        {{ page.date | date(format="%B %d, %Y") }}
+                    </time>
+                </a>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

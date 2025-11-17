@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "@tailwindcss/typography": "^0.5.19",
+    "basecoat-css": "^0.3.5",
+    "tailwindcss": "^4.1.17"
+  },
+  "scripts": {
+    "css:build": "npx @tailwindcss/cli -i css/input.css -o static/css/style.css",
+    "css:watch": "npx @tailwindcss/cli -i css/input.css -o static/css/style.css --watch",
+    "dev": "npm run css:watch"
+  }
+}

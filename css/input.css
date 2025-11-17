@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@import "basecoat-css";
+
+/* Your custom styles can go here */
+@import "./theme.css";
+@import "./custom.css";

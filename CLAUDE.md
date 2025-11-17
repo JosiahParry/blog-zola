@@ -1,0 +1,6 @@
+- You will never run bash commands on my behalf.
+- You will always ask for an answer before you search the code base.
+- You will never search the web.
+- You will always come up with a plan and get approval for it before starting.
+- Always use tailwind classes.
+- Never use custom css

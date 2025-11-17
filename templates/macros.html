@@ -1,0 +1,10 @@
+{% macro page_layout(title, content) %}
+{% include "sidebar.html" %}
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-3xl mx-auto">
+        <h1 class="text-4xl font-bold italic mb-6">{{ title }}</h1>
+        <div class="josi-prose">{{ content | safe }}</div>
+    </div>
+</div>
+{% endmacro %}

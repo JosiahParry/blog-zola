@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Tags | {{ config.title | default(value="Blog") }}{% endblock %}
+
+{% block content %}
+{% include "sidebar.html" %}
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-3xl mx-auto">
+        <h1 class="text-4xl font-bold italic mb-6">Tags</h1>
+
+        <ul class="space-y-2">
+            {% for term in terms %}
+            <li>
+                <a href="{{ term.permalink }}" class="font-medium hover:underline">
+                    {{ term.name }} ({{ term.pages | length }})
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

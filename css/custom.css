@@ -1,0 +1,17 @@
+/* Custom prose styles using Tailwind classes */
+.josi-prose a {
+    @apply font-medium underline decoration-primary text-accent-foreground hover:decoration-2 hover:bg-accent;
+}
+
+.josi-prose {
+    @apply space-y-4;
+}
+.josi-prose ul {
+    @apply list-disc pl-6 space-y-2;
+}
+
+.badge,
+.badge-outline,
+.badge-secondary {
+    @apply rounded-none;
+}
