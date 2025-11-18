@@ -4,14 +4,51 @@
 }
 
 .josi-prose {
-    @apply space-y-4;
+    @apply space-y-4 relative;
 }
 .josi-prose ul {
     @apply list-disc pl-6 space-y-2;
+}
+
+.josi-prose blockquote {
+    @apply italic border-l-4 border-primary pl-4 text-accent-foreground bg-accent/80 py-4;
+}
+
+.josi-prose h2 {
+    @apply text-2xl font-semibold italic border-b-2 pb-2 border-primary;
 }
 
 .badge,
 .badge-outline,
 .badge-secondary {
     @apply rounded-none;
+}
+
+.josi-prose .aside {
+    @apply text-xs text-muted-foreground p-3 bg-muted/30;
+}
+
+@media (min-width: 1024px) {
+    .josi-prose .aside {
+        @apply absolute right-0 translate-x-full w-52 pl-6 p-0 bg-transparent;
+    }
+}
+
+.josi-prose .callout-note {
+    @apply p-4 text-xs dark:text-white border-l-4 border-[#4f6196] bg-[#637bbf]/30;
+}
+
+.josi-prose .callout-important {
+    @apply p-4 text-xs dark:text-white border-l-4 border-[#4f6196] bg-[#637bbf]/30;
+}
+
+.callout-note h2 {
+    @apply border-b-none text-sm font-medium not-italic;
+}
+.callout-danger h2 {
+    @apply border-b-none text-sm font-medium not-italic;
+}
+
+.callout-important h2 {
+    @apply border-b-none text-sm font-medium not-italic;
 }

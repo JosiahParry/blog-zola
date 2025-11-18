@@ -1,8 +1,40 @@
-{% extends "base.html" %}
-{% import "macros.html" as macros %}
+{% extends "base.html" %} {% block title %}{{ page.title }} | {{ config.title |
+default(value="Blog") }}{% endblock %} {% block content %} {% include
+"sidebar.html" %}
 
-{% block title %}{{ page.title }} | {{ config.title | default(value="Blog") }}{% endblock %}
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">{{ page.title }}</h1>
 
-{% block content %}
-{{ macros::page_layout(title=page.title, content=page.content) }}
+        {% if page.description %}
+        <p class="text-xl font-light text-accent-foreground mb-4">
+            {{ page.description }}
+        </p>
+        {% endif %} {% if page.taxonomies.categories %}
+        <div class="flex flex-wrap gap-2 mb-4">
+            {% for category in page.taxonomies.categories %}
+            <a
+                href="/categories/{{ category }}"
+                class="badge-secondary cursor pointer"
+                >{{ category }}</a
+            >
+            {% endfor %}
+        </div>
+        {% endif %} {% if page.extra.description %}
+        <p class="text-muted-foreground mb-4">{{ page.extra.description }}</p>
+        {% endif %}
+
+        <div class="flex gap-8 mb-6 text-sm">
+            {% if page.date %}
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >{{ page.date | date(format="%B %d, %Y") }}</span
+                >
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="josi-prose">{{ page.content | safe }}</div>
+    </div>
+</div>
 {% endblock %}

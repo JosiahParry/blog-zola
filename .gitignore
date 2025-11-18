@@ -6,3 +6,6 @@ node_modules/
 *~
 .zed
 public/
+
+/.quarto/
+**/*.quarto_ipynb
