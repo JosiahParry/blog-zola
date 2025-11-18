@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            Color Palette Cinema | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- KaTeX for math rendering -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-bold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-xs font-mono"
+            />
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="flex-1 overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-1 text-sm font-mono pl-3 font-semibold border-l-2 border-primary -ml-px"
+                    >
+                        Posts
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/contact/"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        Contact
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">Color Palette Cinema</h1>
+
+         
+        <div class="flex flex-wrap gap-2 mb-4">
+            
+            <a
+                href="/categories/R"
+                class="badge-secondary cursor pointer"
+                >R</a
+            >
+            
+        </div>
+         
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >March 14, 2021</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><blockquote>
+<p>Note (2022-11-14): This package no longer is functional because of changes to underlying API cpcinema calls. Thus output is no longer rendered for this blog post.</p>
+</blockquote>
+<p>Friday night I found myself trying to make a plot look pretty. When I'm looking for color palette inspiration I often turn to the Instagram page <a href="https://www.instagram.com/colorpalette.cinema/">@colorpalette.cinema</a> for inspiration. Color Palette Cinema is an awesome page that takes stills from films and creates a nice palette of 10 colors from the image. These can range from bright hues, to monochromatic masterpieces. I settled on the <a href="https://en.wikipedia.org/wiki/Hayao_Miyazaki">Miyasaki</a> masterpiece <a href="https://en.wikipedia.org/wiki/Spirited_Away">Spirited Away</a> (streaming on HBO Max, by the way). I extracted the colors with the 3/4 baked package <a href="https://github.com/JosiahParry/cpcinema/"><code>{cpcinema}</code></a> that I created right as the pandemic began at the end of March. (Thinking back, it's slightly wild that I wrote this package sitting inside of the Cambridge library without a mask.)</p>
+<img src="https://i.pinimg.com/originals/90/ec/34/90ec34736dd66d3d38f401aac60893da.png" width="700px" style="display: block; margin: auto;" />
+<p>Around midnight, I tossed a silly #rstats tweet into the void thinking nothing of it---as I usually do.</p>
+<blockquote class="twitter-tweet">
+<p lang="en" dir="ltr">
+The most wonderful <a href="https://twitter.com/hashtag/rstats?src=hash&amp;ref_src=twsrc%5Etfw">#rstats</a> package I\'ve ever made for myself. <a href="https://t.co/o4C3g0Mtpj">pic.twitter.com/o4C3g0Mtpj</a>
+</p>
+--- jo-sigh-ughhh (@JosiahParry) <a href="https://twitter.com/JosiahParry/status/1370595896405209091?ref_src=twsrc%5Etfw">March 13, 2021</a>
+</blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<p>I awoke to what felt celebrity levels of likes and interactions on the tweet. As of right now, there are 343 likes on the tweet. That's 340 more likes than I'm used to. Apparently people thought this package idea was fun. I was surprised. One of the first replies stuck out to me the most:</p>
+<blockquote class="twitter-tweet">
+<p lang="en" dir="ltr">
+Beautiful and private :(
+</p>
+--- Emil Hvitfeldt (@Emil_Hvitfeldt) <a href="https://twitter.com/Emil_Hvitfeldt/status/1370597608536743940?ref_src=twsrc%5Etfw">March 13, 2021</a>
+</blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<p>It hadn't crossed my mind that others would want to utilize this package---hence why I didn't share the package URL. The package is public in fact. But I've not once publicized it until this post.</p>
+<h2 id="why-didn-t-i-release-cpcinema">Why didn't I "release" cpcinema?</h2>
+<p>There are two distinct reasons why I didn't tweet the package into the void.</p>
+<p>The first reason is that I struggled for hours on end trying to figure out an easy way to get the color palettes directly from an Instagram post. I am only familiar with one endpoint of an undocumented Instagram API and that only returns the URL for the first image in a post. I want <em>all</em> of them. I then attempted to do this via the official Facebook Instagram API---a truly insurmountable task for those seeking simple <code>GET</code> requests for data. The Instagram Basic API is intended for those who are seeking to build true applications---not for data scientists. The good news is that I've figured this out. h/t to <a href="https://github.com/colearendt">Cole Arendt</a> for teaching me how to use the networking tab of Chrome. We wouldn't be here without him.</p>
+<p>The second reason is less technical. The functionality I was (and am) most excited about creating was 1) an S3 vectors class using <code>{vctrs}</code>; 2) a printing method that displayed the colors; and 3) color interpolation for continuous color scales. As I was nearing completion of this package I learned about <a href="https://www.hvitfeldt.me/about/">Emil Hvitfeldt's</a> awesome package <a href="https://github.com/EmilHvitfeldt/paletteer"><code>{paletteer}</code></a>. paletteer accomplishes 1) and 2) through the dependency <a href="https://emilhvitfeldt.github.io/prismatic/"><code>{prismatic}</code></a> which Emil, also created---a prolofic software engineer if there ever was one. (Though I will stand on my petty hill that I prefer my printing method 😉, it's something about the squares and the vertical orientation---except it gets out of hand with like 20+ colors.) And 3) is accomplished by paletteer itself.</p>
+<h2 id="using-cpcinema">Using cpcinema</h2>
+<p>cpcinema is a rather somewhat simple package to use!</p>
+<p>First things first: install the package.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'># install.packages("remotes")</span>
+<span class='nf'>remotes</span><span class='nf'>::</span><span class='nf'><a href='https://remotes.r-lib.org/reference/install_github.html'>install_github</a></span><span class='o'>(</span><span class='s'>"JosiahParry/cpcinema"</span><span class='o'>)</span></code></pre>
+</div>
+<p>Next, find a post from Color Palette Cinema that you really like and grab the URL.</p>
+<p><a href="https://www.instagram.com/p/CEuS3Y_oEbw/">This post</a> with an image of Blade Runner is awesome.</p>
+<div class="highlight">
+</div>
+<p>So I'll grab the URL and pass it to <a href="https://rdrr.io/pkg/cpcinema/man/pal_from_post.html"><code>pal_from_post()</code></a></p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='kr'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='o'>(</span><span class='nv'>cpcinema</span><span class='o'>)</span>
+<span class='kr'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='o'>(</span><span class='nv'><a href='https://tidyverse.tidyverse.org'>tidyverse</a></span><span class='o'>)</span>
+
+<span class='nv'>blade</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/pkg/cpcinema/man/pal_from_post.html'>pal_from_post</a></span><span class='o'>(</span><span class='s'>"https://www.instagram.com/p/CEuS3Y_oEbw/"</span><span class='o'>)</span></code></pre>
+</div>
+<p>Unfortunately R Markdown doesn't render the beautiful printing. But try it out for yourself!</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'># this is stored in a list because sometimes a post </span>
+<span class='c'># has more than one color palette</span>
+<span class='o'>(</span><span class='nv'>pal</span> <span class='o'>&lt;-</span> <span class='nv'>blade</span><span class='o'>[[</span><span class='m'>1</span><span class='o'>]</span><span class='o'>]</span><span class='o'>)</span></code></pre>
+</div>
+<p>Now we can use the palette for plotting! The below example takes the built in object <code>USArrests</code> and samples 10 random states and creates a ranked bar chart colored by state.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'><a href='https://tibble.tidyverse.org/reference/as_tibble.html'>as_tibble</a></span><span class='o'>(</span><span class='nv'>USArrests</span>, rownames <span class='o'>=</span> <span class='s'>"state"</span><span class='o'>)</span> <span class='o'><a href='https://rdrr.io/pkg/cpcinema/man/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/sample_n.html'>sample_n</a></span><span class='o'>(</span><span class='m'>10</span><span class='o'>)</span> <span class='o'><a href='https://rdrr.io/pkg/cpcinema/man/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='o'>(</span>state <span class='o'>=</span> <span class='nf'><a href='https://forcats.tidyverse.org/reference/fct_reorder.html'>fct_reorder</a></span><span class='o'>(</span><span class='nv'>state</span>, <span class='nv'>UrbanPop</span><span class='o'>)</span><span class='o'>)</span> <span class='o'><a href='https://rdrr.io/pkg/cpcinema/man/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='o'>(</span><span class='nf'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='o'>(</span><span class='nv'>UrbanPop</span>, <span class='nv'>state</span>, fill <span class='o'>=</span> <span class='nv'>state</span><span class='o'>)</span><span class='o'>)</span> <span class='o'>+</span>
+  <span class='nf'><a href='https://ggplot2.tidyverse.org/reference/geom_bar.html'>geom_col</a></span><span class='o'>(</span><span class='o'>)</span> <span class='o'>+</span>
+  <span class='nf'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_light</a></span><span class='o'>(</span><span class='o'>)</span> <span class='o'>+</span>
+  <span class='nf'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='o'>(</span>title <span class='o'>=</span> <span class='s'>"States ranked by urban population"</span><span class='o'>)</span> <span class='o'>+</span>
+  <span class='c'># This is where we add the palette</span>
+  <span class='nf'><a href='https://ggplot2.tidyverse.org/reference/scale_manual.html'>scale_fill_manual</a></span><span class='o'>(</span>values <span class='o'>=</span> <span class='nv'>pal</span><span class='o'>)</span></code></pre>
+</div>
+<p>You can even use the color palettes for continuous data. The function <a href="https://rdrr.io/pkg/cpcinema/man/color_palette.html"><code>color_palette()</code></a> will create a color palette from a vector of color codes. If <code>n</code> is greater than the number of colors provided, color interpolation will be done to create a smooth palette!</p>
+<p>Below we create a heat map with the built it object <code>volcano_df</code>. First we create the new color palette with 100 values, then create the heatmap. The important line is <a href="https://ggplot2.tidyverse.org/reference/scale_gradient.html"><code>scale_fill_gradientn()</code></a>!</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>continuous_pal</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/pkg/cpcinema/man/color_palette.html'>color_palette</a></span><span class='o'>(</span><span class='nv'>pal</span>, n <span class='o'>=</span> <span class='m'>100</span>, <span class='s'>"continuous"</span><span class='o'>)</span>
+
+<span class='nf'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='o'>(</span><span class='nv'>volcano_df</span>, <span class='nf'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='o'>(</span>x <span class='o'>=</span> <span class='nv'>id</span>, y <span class='o'>=</span> <span class='nv'>y</span>, fill <span class='o'>=</span> <span class='nv'>z</span><span class='o'>)</span><span class='o'>)</span> <span class='o'>+</span>
+  <span class='nf'><a href='https://ggplot2.tidyverse.org/reference/geom_tile.html'>geom_tile</a></span><span class='o'>(</span><span class='o'>)</span> <span class='o'>+</span> 
+  <span class='nf'><a href='https://ggplot2.tidyverse.org/reference/scale_gradient.html'>scale_fill_gradientn</a></span><span class='o'>(</span>colours <span class='o'>=</span> <span class='nv'>continuous_pal</span><span class='o'>)</span> <span class='o'>+</span> 
+  <span class='nf'><a href='https://ggplot2.tidyverse.org/reference/scale_discrete.html'>scale_x_discrete</a></span><span class='o'>(</span>expand <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='o'>(</span><span class='m'>0</span>, <span class='m'>0</span><span class='o'>)</span><span class='o'>)</span> <span class='o'>+</span>
+  <span class='nf'><a href='https://ggplot2.tidyverse.org/reference/scale_discrete.html'>scale_y_discrete</a></span><span class='o'>(</span>expand <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='o'>(</span><span class='m'>0</span>, <span class='m'>0</span><span class='o'>)</span><span class='o'>)</span> <span class='o'>+</span> 
+  <span class='nf'><a href='https://ggplot2.tidyverse.org/reference/coord_fixed.html'>coord_equal</a></span><span class='o'>(</span><span class='o'>)</span> <span class='o'>+</span>
+  <span class='nf'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_void</a></span><span class='o'>(</span><span class='o'>)</span>
+</code></pre>
+</div>
+<h2 id="what-next">What next?</h2>
+<p>Next, I'll work to make this package work nicely with <code>prismatic</code> and <code>paletteer</code>. The challenge with the latter is that you can't provide character strings directly to the <code>scale_color/fill_paletteer_d/c()</code> functions directly. They have to be provided as <code>pkgname::palette</code>. I am not too sure how to incorporate cpcinema in there. But I think my preference would be to provide a character vector as that is more flexible.</p>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <script>
+            (() => {
+                try {
+                    const stored = localStorage.getItem("themeMode");
+                    if (
+                        stored
+                            ? stored === "dark"
+                            : matchMedia("(prefers-color-scheme: dark)").matches
+                    ) {
+                        document.documentElement.classList.add("dark");
+                    }
+                } catch (_) {}
+
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"></script>
+        
+    </body>
+</html>

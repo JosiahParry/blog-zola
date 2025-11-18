@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+             {cpcinema} &amp; associated journey | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- KaTeX for math rendering -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-bold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-xs font-mono"
+            />
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="flex-1 overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-1 text-sm font-mono pl-3 font-semibold border-l-2 border-primary -ml-px"
+                    >
+                        Posts
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/contact/"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        Contact
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2"> {cpcinema} &amp; associated journey</h1>
+
+          
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >April 28, 2021</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><p>Yesterday I had the chance to discuss my R package, {cpcinema} with the Boston useR group. If you're not familiar with {cpcinema}, please read my <a href="http://josiahparry.com/post/2021-03-14-cpcinema/">previous post</a>. I intended for my talk to be focused on the package's functionality, how / why I made it, and then briefly on why I didn't share it widely, my feelings after my seeing the response to my tweet, and why contributing to the open source community in any manner is always appreciated. But as I was preparing my slides on Monday night I encountered some challenges. That became the subject of much of my talk.</p>
+<p>The talk can be found <a href="https://zoom.us/rec/share/hBx2iXVFb3cUGIepi87KC5Arnkt1uMWpg-xLwyF1mr_7wz6c5j7GB_K6TlGjh1KB.v50ZyzvWXgRzd1lo">here</a> and the passcode is <code>D=L?nHQ0</code>.</p>
+<div class="highlight">
+<embed src="./cpcinema.pdf" width="80%" height="420px" style="display: block; margin: auto;" type="application/pdf" />
+</div>
+<br>
+<p>After providing a brief overview of the functionality of {cpcinema} I touched upon how this idea formed in my head. My head is like an unorganized floating abyss with numerous ideas, concepts, and facts just floating. Occasionally I'll make a connection between two or more ideas. This will happen over a long period of time. In the case of this package I had a number of thoughts regarding data visualization---probably because I had seen Alberto Cairo present at Northeastern towards the end of 2019.</p>
+<ul>
+<li>Graphs are informative</li>
+<li>Graphs can be boring</li>
+<li>People like pretty things</li>
+<li>Pretty graphs are just as informative as normal graphs</li>
+<li>Make graphs pretty and people will enjoy them</li>
+</ul>
+<p>Additionally, I had come to the realization that most data scientists want to make informative charts, but also aren't going to be exceptionally adept at the design portion of this---nor should they be! Moving beyond the default colors is an important first step in making evocative visualizations.</p>
+<p>Sometime in between, I discovered or was shown the instagram page @colorpalette.cinema which provides beautiful color palettes from stills of films. How sweet would it be to use those colors for your plots? Rather sweet.</p>
+<p>In January at rstudio::conf(2020L) I saw <a href="https://josiah.rs/posts/2021-04-27-boston-user/jessesadler.com">Jesse Sadler</a> <a href="https://www.rstudio.com/resources/rstudioconf-2020/vctrs-creating-custom-vector-classes-with-the-vctrs-package/">present</a> on making custom S3 vector classes with the {vctrs} package (<a href="https://www.jessesadler.com/slides/RStudio2020.pdf">slides</a>). After seeing this I was toying with the idea of making my own custom S3 vector class.</p>
+<p>Then in February it all clicked. How cool would it be to get a colorpalette.cinema picture, extract the colors, and then store them in a custom S3 class which printed the color?! So I did that with hours of struggling and a lot of following along with Jesse's resources.</p>
+<p>To start any project of any sort, always **start small*. My workflow consisted of:</p>
+<ol>
+<li>Downloading a sample image to work with.</li>
+<li>Scour StackOverflow, Google, and Rbloggers for resources on extracting colors.</li>
+<li>Extract the colors from an image manually.</li>
+<li>Extract colors from an image path.</li>
+<li>Make it into a function to replicate.</li>
+<li>Try and get an image from Instagram URL.</li>
+</ol>
+<p>Well, apparently you can't! I tried and I tried to find different ways to extracting these images. But it wasn't possible. The Instagram API is meant for web developers and businesses, not data scientists trying to get small pieces of data. I left it alone and left it to myself.</p>
+<p>After my tweet, I was inspired to find a solution to the Instagram image URL problem. And with a lot of coffee, wifi hotpsotting, the Chrome devtools, I found a workable solution.</p>
+<p>Then Monday night I was making slides and...</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'><a href='https://rdrr.io/pkg/cpcinema/man/pal_from_post.html'>pal_from_post</a></span><span class='o'>(</span><span class='s'>"https://www.instagram.com/p/CMC26FaHbqP/"</span><span class='o'>)</span></code></pre>
+</div>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>Error in download.file(fp, tmp, mode = &quot;wb&quot;, quiet = TRUE) : 
+</span><span>  cannot open URL &#39;NA&#39;
+</span></code></pre>
+<p>The function <a href="https://rdrr.io/pkg/cpcinema/man/pal_from_post.html"><code>pal_from_post()</code></a> didn't work. I did what I always do when a function doesn't work. I printed out the function body to figure out what the function does.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'>cpcinema</span><span class='nf'>::</span><span class='nv'><a href='https://rdrr.io/pkg/cpcinema/man/pal_from_post.html'>pal_from_post</a></span>
+<span class='c'>#&gt; function (post_url) </span>
+<span class='c'>#&gt; &#123;</span>
+<span class='c'>#&gt;     res &lt;- httr::POST("https://igram.io/api/", body = list(url = post_url, </span>
+<span class='c'>#&gt;         lang_code = "en", vers = "2"), encode = "form") %&gt;% httr::content()</span>
+<span class='c'>#&gt;     imgs &lt;- res %&gt;% rvest::html_nodes(".py-2 img") %&gt;% rvest::html_attr("src") %&gt;% </span>
+<span class='c'>#&gt;         unique()</span>
+<span class='c'>#&gt;     img_paths &lt;- imgs[2:length(imgs)]</span>
+<span class='c'>#&gt;     purrr::map(img_paths, extract_cpc_pal)</span>
+<span class='c'>#&gt; &#125;</span>
+<span class='c'>#&gt; &lt;bytecode: 0x294dac290&gt;</span>
+<span class='c'>#&gt; &lt;environment: namespace:cpcinema&gt;</span></code></pre>
+</div>
+<p>Always start the beginning. I ran the original API query and I received the following</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>nonation</span> <span class='o'>&lt;-</span> <span class='s'>"https://www.instagram.com/p/CNdEkV4HAXF"</span>
+
+<span class='nv'>res</span> <span class='o'>&lt;-</span> <span class='nf'>httr</span><span class='nf'>::</span><span class='nf'><a href='https://httr.r-lib.org/reference/POST.html'>POST</a></span><span class='o'>(</span><span class='s'>"https://igram.io/api/"</span>,
+                  body <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='o'>(</span>url <span class='o'>=</span> <span class='nv'>nonation</span>,
+                              lang_code <span class='o'>=</span> <span class='s'>"en"</span>,
+                              vers <span class='o'>=</span> <span class='s'>"2"</span><span class='o'>)</span>,
+                  encode  <span class='o'>=</span> <span class='s'>"form"</span><span class='o'>)</span> </code></pre>
+</div>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>Response [https://igram.io/api/]
+</span><span>  Date: 2021-04-26 22:46
+</span><span>  Status: 403
+</span><span>  Content-Type: text/html; charset=UTF-8
+</span><span>  Size: 3.26 kB
+</span><span>&lt;!DOCTYPE html&gt;
+</span><span>&lt;!--[if lt IE 7]&gt; &lt;html class=&quot;no-js ie6 oldie&quot; lang=&quot;en-US&quot;&gt; &lt;![endif]--&gt;
+</span><span>&lt;!--[if IE 7]&gt;    &lt;html class=&quot;no-js ie7 oldie&quot; lang=&quot;en-US&quot;&gt; &lt;![endif]--&gt;
+</span><span>&lt;!--[if IE 8]&gt;    &lt;html class=&quot;no-js ie8 oldie&quot; lang=&quot;en-US&quot;&gt; &lt;![endif]--&gt;
+</span><span>&lt;!--[if gt IE 8]&gt;&lt;!--&gt; &lt;html class=&quot;no-js&quot; lang=&quot;en-US&quot;&gt; &lt;!--&lt;![endif]--&gt;
+</span><span>&lt;head&gt;
+</span><span>&lt;title&gt;Access denied | igram.io used Cloudflare to restrict access&lt;/title&gt;
+</span><span>&lt;meta charset=&quot;UTF-8&quot; /&gt;
+</span><span>&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+</span><span>&lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=Edge,chrome=1&quot; /&gt;
+</span><span>...
+</span></code></pre>
+<p>My next step here was to see if it was <em>just</em> me. Next I went to use RStudio Server Pro which has a different IP address. The same query had the different response</p>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>Response [https://igram.io/api/]
+</span><span>  Date: 2021-04-26 22:43
+</span><span>  Status: 503
+</span><span>  Content-Type: text/html; charset=UTF-8
+</span><span>  Size: 9.48 kB
+</span><span>&lt;!DOCTYPE HTML&gt;
+</span><span>&lt;html lang=&quot;en-US&quot;&gt;
+</span><span>&lt;head&gt;
+</span><span>  &lt;meta charset=&quot;UTF-8&quot; /&gt;
+</span><span>  &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot; /&gt;
+</span><span>  &lt;meta http-equiv=&quot;X-UA-Compatible&quot; content=&quot;IE=Edge,chrome=1&quot; /&gt;
+</span><span>  &lt;meta name=&quot;robots&quot; content=&quot;noindex, nofollow&quot; /&gt;
+</span><span>  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width,initial-scale=1&quot; /&gt;
+</span><span>  &lt;title&gt;Just a moment...&lt;/title&gt;
+</span><span>  &lt;style type=&quot;text/css&quot;&gt;
+</span></code></pre>
+<p>A different error code. I saw this coming.</p>
+<p>I was web scraping a website that was unquestionably also web scraping. This is a very grey zone of the internet and is questionable at best. These sources are ephemeral at best.</p>
+<blockquote>
+<p>"If it doesn't work, try the same thing again until it does work" - Me</p>
+</blockquote>
+<p>I went to the same website I was using. I opened opened up the developer tools and watched the requests come in! The request that the browser uses had a change in their url! From <code>https://igram.io/api/</code> to <code>https://igram.io/i/</code>. Frankly, a super easy fix!</p>
+<p>It's now Wednesday and I still haven't made that change. So, what's next? (<strong>HELP WANTED</strong>)</p>
+<ul>
+<li>Change the API url in <a href="https://rdrr.io/pkg/cpcinema/man/pal_from_post.html"><code>pal_from_post()</code></a></li>
+<li>Integrate with <code>ggplot2</code> better. Inspo can be taken from {paletteer}</li>
+<li>Color sorting!</li>
+<li>Better type casting!</li>
+</ul>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <script>
+            (() => {
+                try {
+                    const stored = localStorage.getItem("themeMode");
+                    if (
+                        stored
+                            ? stored === "dark"
+                            : matchMedia("(prefers-color-scheme: dark)").matches
+                    ) {
+                        document.documentElement.classList.add("dark");
+                    }
+                } catch (_) {}
+
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"></script>
+        
+    </body>
+</html>

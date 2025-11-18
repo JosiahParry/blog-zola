@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            The Cost of Gridlock | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- KaTeX for math rendering -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-bold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-xs font-mono"
+            />
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="flex-1 overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-1 text-sm font-mono pl-3 font-semibold border-l-2 border-primary -ml-px"
+                    >
+                        Posts
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/contact/"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        Contact
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">The Cost of Gridlock</h1>
+
+         
+        <div class="flex flex-wrap gap-2 mb-4">
+            
+            <a
+                href="/categories/politics"
+                class="badge-secondary cursor pointer"
+                >politics</a
+            >
+            
+        </div>
+         
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >February 06, 2019</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><p><em>Originally <a href="https://www.northeastern.edu/csshresearch/bostonarearesearchinitiative/2019/02/06/the-cost-of-gridlock-shutdown-politics-and-their-impact-on-greater-boston/">posted</a> via Boston Area Research Initiative</em></p>
+<hr />
+<p>The nation heaved a sigh of relief as President Trump signed a bill on Friday, January 25th, that ended the longest government shutdown in US history. This bill, the <em>Continuing Appropriation Act</em>, provides enough funding to keep the government open until February 15th. After thirty-four days of turmoil for federal workers, it is hard to believe that in another three short weeks, the government can shutdown once again. During this last shutdown over 800,000 federal workers and numerous contractors across the country went without paychecks.</p>
+<p>The Boston area is home to major government contractors such as Raytheon and American Science and Engineering Inc. and as such, has undoubtedly been affected by the shutdown. At BARI, we are taking steps to understand just how much another shutdown could affect the region. The recent release of new demographic estimates from the American Community Survey are being used to aid us in this endeavor.</p>
+<p>During a government shutdown, federal employees are hit the hardest, and in the Boston-Cambridge-Newton area, there are 68 thousand of them (margin of error: 2,400). When the government shuts down, non-essential employees are furloughed. While furloughed, they are not allowed to work, and thereby unable to collect paychecks. The remaining federal workers who are deemed essential are then required to work without pay or the promise of repayment---workers are only repaid if new spending bills allocate funding for it. Due to these circumstances any government shutdown puts federal employees at risk. And based on the distribution of federal employees in the Greater Boston area, another shutdown might disproportionately affect suburban areas.</p>
+<p><img src="/img/shutdown/fed_emp.png" alt="Federal Employees" /></p>
+<p>Without funding, government aid sources are also in danger of running out of money. One such aid program is the Supplemental Nutrition Assistance Program (SNAP), which 1 in 10 (11%, margin of error: 1.5%) families in the region utilizes. Throughout the region, reliance on SNAP assistance varies greatly. In some census tracts nearly 7 out of 10 families receive assistance from SNAP. Areas that would be hardest hit by another shutdown are Lawrence and Brockton, where SNAP utilization is highest.</p>
+<p><img src="/img/shutdown/snap_region.png" alt="SNAP Recipients Boston-Cambridge-Newton" /></p>
+<p>In anticipation of funds running out, SNAP payments for the month of February were disbursed on January 20th, leaving recipients to budget their February payments for a period of nearly 40 days. This may cause financial discomfort for some families later in the month. As some research has suggested, families who receive food assistance tend to increase their spending right when payments have been disbursed (Hastings and Washington, 2010), and another shutdown could exacerbate already tight budgets.</p>
+<hr />
+<p>Hastings, Justine, and Ebonya Washington. "The first of the month effect: consumer behavior and store responses." <em>American economic Journal: economic policy</em> 2, no. 2 (2010): 142-62.</p>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <script>
+            (() => {
+                try {
+                    const stored = localStorage.getItem("themeMode");
+                    if (
+                        stored
+                            ? stored === "dark"
+                            : matchMedia("(prefers-color-scheme: dark)").matches
+                    ) {
+                        document.documentElement.classList.add("dark");
+                    }
+                } catch (_) {}
+
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"></script>
+        
+    </body>
+</html>

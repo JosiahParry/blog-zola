@@ -1,0 +1,619 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            Graph Neural Nets for Spatial Data Science | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- KaTeX for math rendering -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-bold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-xs font-mono"
+            />
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="flex-1 overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-1 text-sm font-mono pl-3 font-semibold border-l-2 border-primary -ml-px"
+                    >
+                        Posts
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/contact/"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        Contact
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">Graph Neural Nets for Spatial Data Science</h1>
+
+        
+        <p class="text-xl font-light text-accent-foreground mb-4">
+            Graph Neural Nets for the spatial nerds in the house.
+        </p>
+         
+        <div class="flex flex-wrap gap-2 mb-4">
+            
+            <a
+                href="/categories/spatial"
+                class="badge-secondary cursor pointer"
+                >spatial</a
+            >
+            
+            <a
+                href="/categories/r"
+                class="badge-secondary cursor pointer"
+                >r</a
+            >
+            
+            <a
+                href="/categories/deep-learning"
+                class="badge-secondary cursor pointer"
+                >deep-learning</a
+            >
+            
+            <a
+                href="/categories/gnn"
+                class="badge-secondary cursor pointer"
+                >gnn</a
+            >
+            
+        </div>
+         
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >November 16, 2025</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><p>I’ve been saying this for years and I’ll say it again:</p>
+<blockquote>
+<p><em>Spatial data is just a graph</em></p>
+</blockquote>
+<p>I’ve been diving <em>deep</em> into <strong>Graph Neural Networks</strong> (GNN) to
+understand how we can use them for “GeoAI” and spatial machine learning.</p>
+<p>This post is going to build the intuition for why Graph Neural Networks
+are perfect for spatial data (non-raster).</p>
+<h2 id="spatial-weights-matrices-are-graphs">Spatial Weights Matrices are graphs</h2>
+<p>A graph is defined as a set <strong>nodes</strong> connected by <strong>edges</strong>. Nodes can
+be thought of as “things” or “entities” and then the connections between
+them are the edges. The nodes can be thought of as <strong>rows</strong> in a
+dataset. Then the edges are an additional “edge list” that informs us of
+connectivity between them.</p>
+<pre data-lang="r" style="background-color:#2b303b;color:#c0c5ce;" class="language-r "><code class="language-r" data-lang="r"><span style="color:#96b5b4;">library</span><span>(igraph)
+</span><span>
+</span><span style="color:#96b5b4;">set.seed</span><span>(</span><span style="color:#d08770;">0</span><span>)
+</span><span>g &lt;- </span><span style="color:#bf616a;">sample_gnm</span><span>(</span><span style="color:#d08770;">6</span><span>, </span><span style="color:#d08770;">11</span><span>)
+</span><span style="color:#96b5b4;">plot</span><span>(g)
+</span></code></pre>
+<p><img src="https://josiah.rs/posts/gnn-for-sds/index_files/figure-commonmark/unnamed-chunk-1-1.png" alt="" /><!-- --></p>
+<p>When we do spatial statistics we need to create the concept of a
+<strong>neighborhood</strong>. For example with polygons, we typically use
+<strong>contiguity</strong> to define our neighborhood.</p>
+<pre data-lang="r" style="background-color:#2b303b;color:#c0c5ce;" class="language-r "><code class="language-r" data-lang="r"><span style="color:#96b5b4;">library</span><span>(sf)
+</span><span style="color:#96b5b4;">data</span><span>(guerry, </span><span style="color:#bf616a;">package </span><span>= &quot;</span><span style="color:#a3be8c;">sfdep</span><span>&quot;)
+</span><span style="color:#96b5b4;">plot</span><span>(guerry</span><span style="color:#b48ead;">$</span><span>geometry)
+</span></code></pre>
+<p><img src="https://josiah.rs/posts/gnn-for-sds/index_files/figure-commonmark/unnamed-chunk-2-1.png" alt="" /><!-- --></p>
+<p>If we identify <em>neighborhoods</em> based on contiguity we then identify our
+neighbors based on that which we use to create a <strong>spatial weights
+matrix</strong>.</p>
+<pre data-lang="r" style="background-color:#2b303b;color:#c0c5ce;" class="language-r "><code class="language-r" data-lang="r"><span style="color:#96b5b4;">library</span><span>(spdep)
+</span><span>nb &lt;- </span><span style="color:#bf616a;">poly2nb</span><span>(guerry)
+</span><span>lw &lt;- </span><span style="color:#bf616a;">nb2listw</span><span>(nb)
+</span><span>lw
+</span></code></pre>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>Characteristics of weights list object:
+</span><span>Neighbour list object:
+</span><span>Number of regions: 85 
+</span><span>Number of nonzero links: 420 
+</span><span>Percentage nonzero weights: 5.813149 
+</span><span>Average number of links: 4.941176 
+</span><span>
+</span><span>Weights style: W 
+</span><span>Weights constants summary:
+</span><span>   n   nn S0      S1       S2
+</span><span>W 85 7225 85 37.2761 347.6683
+</span></code></pre>
+<div class="aside">
+<p>The <code>listw</code> object from spdep is the representation of the spatial
+weights matrix.</p>
+</div>
+<p>The spatial weights matrix is a <strong>sparse matrix</strong>. For every location in
+our data set there is a row and a column—<code>n x n</code> matrix. A non-zero
+value in a row indicates a neighbor. The connections between locations
+(or the <strong>spatial weights matrix</strong> (SWM)) can be viewed as a network.</p>
+<pre data-lang="r" style="background-color:#2b303b;color:#c0c5ce;" class="language-r "><code class="language-r" data-lang="r"><span style="color:#96b5b4;">plot</span><span>(nb, guerry</span><span style="color:#b48ead;">$</span><span>geometry)
+</span></code></pre>
+<p><img src="https://josiah.rs/posts/gnn-for-sds/index_files/figure-commonmark/unnamed-chunk-4-1.png" alt="" /><!-- --></p>
+<p>As you can see a spatial weight matrix <strong>is a graph</strong>!</p>
+<div class="aside">
+<p>To be exceptionally pedantic (as this whole post is) a SWM is a graph
+<em>G</em> = (<em>V</em>, <em>E</em>) where each node, <em>v</em><sub><em>i</em></sub>, is a location in a
+set of nodes (<em>i</em> = 1, ..., <em>n</em>). The edges in the graph
+<em>e</em><sub><em>i**j</em></sub> = (<em>v</em><sub><em>i</em></sub>, <em>v</em><sub><em>j</em></sub>, <em>w</em><sub><em>i**j</em></sub>)
+are the spatial weights between neighbors.</p>
+</div>
+<p>Okay, moving on.</p>
+<h2 id="spatial-lags-and-message-passing">Spatial Lags and Message Passing</h2>
+<p>The crux of spatial econometrics is the spatial lag. For all intents and
+purposes, the spatial lag is “just” an average of a variable <em>X</em> over a
+neighborhood.</p>
+<div class="callout-note">
+<p>See my <a href="https://www.youtube.com/watch?v=abrQBSdTk7E">YouTube video</a> on
+this in more depth.</p>
+</div>
+<pre data-lang="r" style="background-color:#2b303b;color:#c0c5ce;" class="language-r "><code class="language-r" data-lang="r"><span style="color:#96b5b4;">library</span><span>(dplyr)
+</span><span style="color:#96b5b4;">library</span><span>(sfdep)
+</span><span style="color:#96b5b4;">library</span><span>(ggplot2)
+</span><span style="color:#96b5b4;">library</span><span>(patchwork)
+</span><span>
+</span><span>df &lt;- guerry_nb |&gt; 
+</span><span>  </span><span style="color:#bf616a;">mutate</span><span>(</span><span style="color:#bf616a;">crime_lag </span><span>= </span><span style="color:#bf616a;">st_lag</span><span>(crime_pers, nb, wt))
+</span><span>
+</span><span>obs &lt;- </span><span style="color:#bf616a;">ggplot</span><span>(df) +
+</span><span>  </span><span style="color:#bf616a;">geom_sf</span><span>(</span><span style="color:#bf616a;">aes</span><span>(</span><span style="color:#bf616a;">fill </span><span>= crime_pers)) +
+</span><span>  </span><span style="color:#bf616a;">scale_fill_viridis_c</span><span>() +
+</span><span>  </span><span style="color:#bf616a;">theme_void</span><span>() +
+</span><span>  </span><span style="color:#bf616a;">theme</span><span>(</span><span style="color:#bf616a;">legend.position </span><span>= &quot;</span><span style="color:#a3be8c;">none</span><span>&quot;) +
+</span><span>  </span><span style="color:#bf616a;">labs</span><span>(</span><span style="color:#bf616a;">title </span><span>= &quot;</span><span style="color:#a3be8c;">Observed</span><span>&quot;)
+</span><span>
+</span><span>lagged &lt;- </span><span style="color:#bf616a;">ggplot</span><span>(df) +
+</span><span>  </span><span style="color:#bf616a;">geom_sf</span><span>(</span><span style="color:#bf616a;">aes</span><span>(</span><span style="color:#bf616a;">fill </span><span>= crime_lag)) +
+</span><span>  </span><span style="color:#bf616a;">scale_fill_viridis_c</span><span>() +
+</span><span>  </span><span style="color:#bf616a;">theme_void</span><span>() +
+</span><span>  </span><span style="color:#bf616a;">theme</span><span>(</span><span style="color:#bf616a;">legend.position </span><span>= &quot;</span><span style="color:#a3be8c;">none</span><span>&quot;) +
+</span><span>  </span><span style="color:#bf616a;">labs</span><span>(</span><span style="color:#bf616a;">title </span><span>= &quot;</span><span style="color:#a3be8c;">Spatial Lag</span><span>&quot;)
+</span><span>
+</span><span>obs | lagged
+</span></code></pre>
+<p><img src="https://josiah.rs/posts/gnn-for-sds/index_files/figure-commonmark/unnamed-chunk-5-1.png" alt="" /><!-- --></p>
+<div class="callout-important">
+<h2 id="point-down-don-t-miss-this">👇🏽 Don’t miss this</h2>
+<p>👉🏼 The spatial lag is a way to <strong>aggregate information</strong> about a
+location’s neighborhood. 👈🏼</p>
+</div>
+<p>GNNs are based on the concept of <strong>message passing</strong>. Message passing is
+how we propagate information from a node’s neighbors (edge connections)
+to the node itself.</p>
+<pre data-lang="r" style="background-color:#2b303b;color:#c0c5ce;" class="language-r "><code class="language-r" data-lang="r"><span style="color:#65737e;"># Create a simple 4-node network: central node with 3 neighbors
+</span><span>edges &lt;- </span><span style="color:#96b5b4;">matrix</span><span>(</span><span style="color:#96b5b4;">c</span><span>(
+</span><span>  </span><span style="color:#d08770;">2</span><span>, </span><span style="color:#d08770;">1</span><span>,  </span><span style="color:#65737e;"># node 2 -&gt; central node
+</span><span>  </span><span style="color:#d08770;">3</span><span>, </span><span style="color:#d08770;">1</span><span>,  </span><span style="color:#65737e;"># node 3 -&gt; central node
+</span><span>  </span><span style="color:#d08770;">4</span><span>, </span><span style="color:#d08770;">1   </span><span style="color:#65737e;"># node 4 -&gt; central node
+</span><span>), </span><span style="color:#bf616a;">ncol </span><span>= </span><span style="color:#d08770;">2</span><span>, </span><span style="color:#bf616a;">byrow </span><span>= </span><span style="color:#d08770;">TRUE</span><span>)
+</span><span>
+</span><span>g &lt;- </span><span style="color:#bf616a;">graph_from_edgelist</span><span>(edges, </span><span style="color:#bf616a;">directed </span><span>= </span><span style="color:#d08770;">TRUE</span><span>)
+</span><span>
+</span><span style="color:#65737e;"># Assign values to each node
+</span><span>node_values &lt;- </span><span style="color:#96b5b4;">c</span><span>(</span><span style="color:#d08770;">0.2</span><span>, </span><span style="color:#d08770;">0.8</span><span>, </span><span style="color:#d08770;">0.5</span><span>, </span><span style="color:#d08770;">0.9</span><span>)
+</span><span>
+</span><span style="color:#65737e;"># Create layout: central node in middle, others in circle
+</span><span>layout &lt;- </span><span style="color:#96b5b4;">matrix</span><span>(</span><span style="color:#96b5b4;">c</span><span>(
+</span><span>  </span><span style="color:#d08770;">0</span><span>, </span><span style="color:#d08770;">0</span><span>,           </span><span style="color:#65737e;"># central node
+</span><span>  -</span><span style="color:#d08770;">1</span><span>, </span><span style="color:#d08770;">1</span><span>,          </span><span style="color:#65737e;"># node 2
+</span><span>  -</span><span style="color:#d08770;">1</span><span>, -</span><span style="color:#d08770;">1</span><span>,         </span><span style="color:#65737e;"># node 3
+</span><span>  </span><span style="color:#d08770;">1</span><span>, </span><span style="color:#d08770;">0            </span><span style="color:#65737e;"># node 4
+</span><span>), </span><span style="color:#bf616a;">ncol </span><span>= </span><span style="color:#d08770;">2</span><span>, </span><span style="color:#bf616a;">byrow </span><span>= </span><span style="color:#d08770;">TRUE</span><span>)
+</span><span>
+</span><span style="color:#65737e;"># Plot
+</span><span style="color:#96b5b4;">plot</span><span>(g,
+</span><span>  </span><span style="color:#bf616a;">vertex.size </span><span>= </span><span style="color:#d08770;">30</span><span>,
+</span><span>  </span><span style="color:#bf616a;">vertex.color </span><span>= </span><span style="color:#96b5b4;">rgb</span><span>(node_values, </span><span style="color:#d08770;">0</span><span>, </span><span style="color:#d08770;">1 </span><span>- node_values),
+</span><span>  </span><span style="color:#bf616a;">vertex.label </span><span>= </span><span style="color:#96b5b4;">paste0</span><span>(&quot;</span><span style="color:#a3be8c;">x</span><span>&quot;, </span><span style="color:#d08770;">1</span><span style="color:#b48ead;">:</span><span style="color:#d08770;">4</span><span>),
+</span><span>  </span><span style="color:#bf616a;">vertex.label.cex </span><span>= </span><span style="color:#d08770;">1.2</span><span>,
+</span><span>  </span><span style="color:#bf616a;">vertex.label.font </span><span>= </span><span style="color:#d08770;">2</span><span>,
+</span><span>  </span><span style="color:#bf616a;">vertex.label.color </span><span>= &quot;</span><span style="color:#a3be8c;">white</span><span>&quot;,
+</span><span>  </span><span style="color:#bf616a;">edge.width </span><span>= </span><span style="color:#d08770;">2</span><span>,
+</span><span>  </span><span style="color:#bf616a;">edge.arrow.size </span><span>= </span><span style="color:#d08770;">1</span><span>,
+</span><span>  </span><span style="color:#bf616a;">edge.color </span><span>= &quot;</span><span style="color:#a3be8c;">gray50</span><span>&quot;,
+</span><span>  </span><span style="color:#bf616a;">layout </span><span>= layout,
+</span><span>)
+</span></code></pre>
+<p><img src="https://josiah.rs/posts/gnn-for-sds/index_files/figure-commonmark/unnamed-chunk-6-1.png" alt="" /><!-- --></p>
+<p>In this graph, we have nodes x1 through x4. The nodes x2, x3, and x4 are
+“passing” their message to the focal node. These node values have to be
+summarized in some way. This is typically called an <strong>aggregation
+function</strong>. The most common one? The average!</p>
+<h3 id="the-takeaway">The takeaway</h3>
+<p>The spatial lag operator <strong>is message passing</strong>! This means that most of
+our spatial econometric models—spatial lag and spatial error models and
+many others are actually utilizing graph message passing in some way.</p>
+<h2 id="graph-convolution-networks">Graph Convolution Networks</h2>
+<p>The most common type of GNN is the <strong>Graph Convolution Network</strong> (GCN).</p>
+<div class="aside">
+<p>The term “Convolution” is often used for deep learning models that
+perform image detection—typically a <strong>Convolution Neural Network</strong>.
+These apply a “filter” over each pixel in an image and typically take
+the weighted sum (or average) of the neighboring pixels to summarize
+nearby pixels.</p>
+<p>This is literally the same thing! Except pixels have a fixed grid
+whereas we’re generalizing message passing and spatial lags to <em>any</em>
+network with a node and neighbors.</p>
+</div>
+<p>The GCN is defined from a famous paper <a href="https://arxiv.org/abs/1609.02907">Semi-Supervised Classification
+with Graph Convolutional Networks</a> as:</p>
+<p>$$
+\mathbf{H}^{(k)} = \sigma\left(\tilde{\mathbf{A}}\mathbf{H}^{(k-1)}\mathbf{W}^{(k)}\right)
+$$</p>
+<p>The single layer version of this can be written as:</p>
+<p>$$
+\mathbf{H} = \sigma\left(\tilde{\mathbf{A}} \mathbf{X} \mathbf{W}\right)
+$$</p>
+<p>This is actually a lot less scary once you think of everything as a
+spatial lag and locations on a map. Let’s start with <em>Ã</em>.</p>
+<h3 id="the-adjacency-matrix">The adjacency matrix</h3>
+<p>$$
+\tilde{\mathbf{A}} = (\mathbf{D} + \mathbf{I})^{-\frac{1}{2}}(\mathbf{I} + \mathbf{A})(\mathbf{D} + \mathbf{I})^{-\frac{1}{2}}
+$$</p>
+<p>This equation is saying that we have an adjacency matrix <em>A</em> which is
+“normalized” (scaled by) the <strong>degree matrix</strong> <em>D</em>. The degree matrix
+counts the number of neighbors per location.</p>
+<p>The matrix D is equivalent to <code>spdep::card(nb)</code>.</p>
+<p>The biggest difference here between spatial econometrics and the GCN is
+that the adjacency matrix <em>A</em> must have “self-loops.” The <em>I</em> + <em>A</em> is
+equivalent to <code>spdep::include.self()</code>. This ensures that the
+neighborhood includes the observed location.</p>
+<div class="aside">
+<p><em>I</em> is called the “identity matrix.” It’s literally just the diagonal of
+a matrix set to 1.</p>
+</div>
+<p>The point of this matrix is to ensure that when we multiply values
+together the scale is roughly maintained and that the contribution from
+neighbors <strong>and</strong> the focal node (location) are roughly balanced.</p>
+<h3 id="the-weights-matrix-w">The weights matrix <em>W</em></h3>
+<p>The strength of neural networks is their ability to learn
+representations of our variables—typically using a higher dimension
+representation. For example, taking 3 variables and mapping them onto,
+say, 3 “hidden” dimension would create a total of 9 values of <em>W</em> that
+would be learned on. These embeddings can capture more patterns than
+might be possible from the values themselves.</p>
+<p><img src="https://josiah.rs/posts/gnn-for-sds/images/paste-3.png" alt="" /></p>
+<div class="callout-note">
+<p>The rows of <em>W</em> correspond to the input variables. The columns indicate
+the “hidden dimensions.” Multiplying by the <em>W</em> creates “node
+embeddings.” The more hidden dimensions the more embedding variables
+there are.</p>
+</div>
+<p>The matrix <em>W</em> is <strong>learnable</strong> which means that the network adjusts the
+values to best predict the target variable <em>Y</em>. The <em>W</em> is akin to the
+<em>β</em> coefficients of a regression model.</p>
+<h2 id="single-layer-gcn-is-just-regression">Single layer GCN is just regression</h2>
+<p>In a regression we have a <em>β</em> for each variable in our model. If we have
+3 variables in our <em>X</em> matrix (the predictor variables) and we specify
+that our single layer model only have 1 hidden dimension then the <em>W</em>
+only has 3 values—one per variable. This is essentially a learned
+version of the <em>β</em>!</p>
+<p><img src="https://josiah.rs/posts/gnn-for-sds/images/paste-4.png" alt="" /></p>
+<p>In this example we only have 1 hidden dimension which means we only have
+1 weight per variable—akin to the actual <em>β</em> of a linear regression.
+Now, this is actually ignoring the message passing aspect of this. To be
+a GCN we need to calculate the spatial lag of each X before we multiply
+by the learned weights. The actual GCN looks like</p>
+<p><img src="https://josiah.rs/posts/gnn-for-sds/images/paste-5.png" alt="" /></p>
+<p>For the spatial econometricians in the house—this might look like a
+spatially lagged X model without the original X matrix.</p>
+<div class="aside">
+<p>See <a href="https://r-spatial.org/book/17-Econometrics.html">Spatial Data Science ch 17 on econometric
+models</a> for a fairly
+terse discussion on these models by Bivand and Pebesma.</p>
+</div>
+<p>Let’s first create a spatially lagged X model by hand:</p>
+<pre data-lang="r" style="background-color:#2b303b;color:#c0c5ce;" class="language-r "><code class="language-r" data-lang="r"><span style="color:#65737e;"># Create neighborhood structure with self-loops
+</span><span>nb &lt;- </span><span style="color:#bf616a;">include.self</span><span>(guerry_nb</span><span style="color:#b48ead;">$</span><span>nb)
+</span><span>lw &lt;- spdep::</span><span style="color:#bf616a;">nb2listw</span><span>(nb, </span><span style="color:#bf616a;">style </span><span>= &quot;</span><span style="color:#a3be8c;">W</span><span>&quot;)
+</span><span>
+</span><span style="color:#65737e;"># Prepare feature matrix
+</span><span>x &lt;- guerry |&gt;
+</span><span>  sf::</span><span style="color:#bf616a;">st_drop_geometry</span><span>() |&gt;
+</span><span>  </span><span style="color:#bf616a;">select</span><span>(commerce, crime_pers, donations) |&gt;
+</span><span>  </span><span style="color:#96b5b4;">scale</span><span>()
+</span><span>
+</span><span style="color:#65737e;"># calculate spatial lags for each variable
+</span><span>sp_lags &lt;- </span><span style="color:#bf616a;">lag.listw</span><span>(lw, x)
+</span><span>
+</span><span style="color:#65737e;"># define y variable
+</span><span>y &lt;- guerry</span><span style="color:#b48ead;">$</span><span>instruction
+</span><span>
+</span><span style="color:#65737e;"># fit slx model
+</span><span>slx_mod &lt;- </span><span style="color:#96b5b4;">lm</span><span>(y </span><span style="color:#b48ead;">~</span><span> sp_lags)
+</span><span style="color:#96b5b4;">summary</span><span>(slx_mod)
+</span></code></pre>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>Call:
+</span><span>lm(formula = y ~ sp_lags)
+</span><span>
+</span><span>Residuals:
+</span><span>   Min     1Q Median     3Q    Max 
+</span><span>-45.22 -11.60   0.38  11.55  35.09 
+</span><span>
+</span><span>Coefficients:
+</span><span>            Estimate Std. Error t value Pr(&gt;|t|)    
+</span><span>(Intercept) 43.64726    1.93599  22.545  &lt; 2e-16 ***
+</span><span>sp_lags1    24.27125    2.92102   8.309 1.84e-12 ***
+</span><span>sp_lags2    -1.06314    3.23981  -0.328    0.744    
+</span><span>sp_lags3     0.09644    3.84151   0.025    0.980    
+</span><span>---
+</span><span>Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+</span><span>
+</span><span>Residual standard error: 17.75 on 81 degrees of freedom
+</span><span>Multiple R-squared:  0.5086,    Adjusted R-squared:  0.4904 
+</span><span>F-statistic: 27.95 on 3 and 81 DF,  p-value: 1.663e-12
+</span></code></pre>
+<p>If we treat the regression coefficients as our <em>W</em> matrix in a GCN layer
+we can get the <em>exact</em> same values from a GCN layer!</p>
+<p>Here we’re using my
+<a href="https://github.com/josiahparry/torchgnn"><code>{torchgnn}</code></a> package to
+create a <code>layer_gcn()</code>.</p>
+<div class="aside">
+<p><code>{torchgnn}</code> is not yet on CRAN. You can install it with
+<code>pak::pak("josiahparry/torchgnn")</code>.</p>
+</div>
+<pre data-lang="r" style="background-color:#2b303b;color:#c0c5ce;" class="language-r "><code class="language-r" data-lang="r"><span style="color:#96b5b4;">library</span><span>(torch)
+</span><span style="color:#96b5b4;">library</span><span>(torchgnn)
+</span><span>
+</span><span style="color:#65737e;"># Create sparse adjacency matrix for GCN
+</span><span>adj &lt;- </span><span style="color:#bf616a;">adj_from_edgelist</span><span>(
+</span><span>  </span><span style="color:#96b5b4;">rep.int</span><span>(</span><span style="color:#96b5b4;">seq_along</span><span>(nb), </span><span style="color:#96b5b4;">lengths</span><span>(nb)),
+</span><span>  </span><span style="color:#96b5b4;">unlist</span><span>(nb),
+</span><span>  </span><span style="color:#96b5b4;">unlist</span><span>(lw</span><span style="color:#b48ead;">$</span><span>weights), 
+</span><span>  </span><span style="color:#65737e;"># already handled by spdep
+</span><span>  </span><span style="color:#bf616a;">symmetric </span><span>= </span><span style="color:#d08770;">FALSE
+</span><span>)</span><span style="color:#b48ead;">$</span><span style="color:#bf616a;">coalesce</span><span>()
+</span><span>
+</span><span style="color:#65737e;"># convert X to a tensor for torch
+</span><span>X &lt;- </span><span style="color:#bf616a;">torch_tensor</span><span>(x)
+</span><span>
+</span><span style="color:#65737e;"># don&#39;t modify the adjacency matrix
+</span><span>layer &lt;- </span><span style="color:#bf616a;">layer_gcn</span><span>(</span><span style="color:#d08770;">3</span><span>, </span><span style="color:#d08770;">1</span><span>, </span><span style="color:#bf616a;">normalize </span><span>= </span><span style="color:#d08770;">FALSE</span><span>)
+</span><span>
+</span><span style="color:#65737e;"># set the weights to the same as a the regression
+</span><span style="color:#bf616a;">with_no_grad</span><span>({
+</span><span>  layer</span><span style="color:#b48ead;">$</span><span>weight</span><span style="color:#b48ead;">$</span><span style="color:#bf616a;">copy_</span><span>(</span><span style="color:#bf616a;">torch_tensor</span><span>(</span><span style="color:#96b5b4;">matrix</span><span>(</span><span style="color:#96b5b4;">coef</span><span>(slx_mod)[-</span><span style="color:#d08770;">1</span><span>], </span><span style="color:#bf616a;">nrow </span><span>= </span><span style="color:#d08770;">3</span><span>)))
+</span><span>})
+</span></code></pre>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>torch_tensor
+</span><span> 24.2712
+</span><span> -1.0631
+</span><span>  0.0964
+</span><span>[ CPUFloatType{3,1} ][ requires_grad = TRUE ]
+</span></code></pre>
+<pre data-lang="r" style="background-color:#2b303b;color:#c0c5ce;" class="language-r "><code class="language-r" data-lang="r"><span style="color:#65737e;"># set the bias to the intercept
+</span><span style="color:#bf616a;">with_no_grad</span><span>({
+</span><span>  layer</span><span style="color:#b48ead;">$</span><span>bias</span><span style="color:#b48ead;">$</span><span style="color:#bf616a;">copy_</span><span>(</span><span style="color:#bf616a;">torch_tensor</span><span>(</span><span style="color:#96b5b4;">coef</span><span>(slx_mod)[</span><span style="color:#d08770;">1</span><span>]))
+</span><span>})
+</span></code></pre>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span>torch_tensor
+</span><span> 43.6473
+</span><span>[ CPUFloatType{1,1} ][ requires_grad = TRUE ]
+</span></code></pre>
+<p>In the above code check we created a single GCN layer and manually set
+the bias (equivalent to an intercept term) and the weights. Typically
+these would be learned by a training loop. But for the sake of
+education, we’re setting them to be the equivalent to our linear
+regression.</p>
+<p>Next we apply the layer to the <em>X</em> and <em>A</em> matrices to get our <em>Ŷ</em>
+predictions.</p>
+<pre data-lang="r" style="background-color:#2b303b;color:#c0c5ce;" class="language-r "><code class="language-r" data-lang="r"><span>tibble::</span><span style="color:#bf616a;">tibble</span><span>(
+</span><span>  </span><span style="color:#bf616a;">gcn_preds </span><span>= </span><span style="color:#96b5b4;">as.numeric</span><span>(</span><span style="color:#bf616a;">layer</span><span>(X, adj)),
+</span><span>  </span><span style="color:#bf616a;">slx_preds </span><span>= </span><span style="color:#96b5b4;">unname</span><span>(slx_mod</span><span style="color:#b48ead;">$</span><span>fitted.values)
+</span><span>)
+</span></code></pre>
+<pre style="background-color:#2b303b;color:#c0c5ce;"><code><span># A tibble: 85 × 2
+</span><span>   gcn_preds slx_preds
+</span><span>       &lt;dbl&gt;     &lt;dbl&gt;
+</span><span> 1     47.9      47.9 
+</span><span> 2     18.1      18.1 
+</span><span> 3     64.9      64.9 
+</span><span> 4     46.5      46.5 
+</span><span> 5     52.0      52.0 
+</span><span> 6     49.4      49.4 
+</span><span> 7      6.78      6.78
+</span><span> 8     45.5      45.5 
+</span><span> 9     10.9      10.9 
+</span><span>10     44.1      44.1 
+</span><span># ℹ 75 more rows
+</span></code></pre>
+<h2 id="fuller-gcn-models">Fuller GCN models</h2>
+<p>In the above we showed that the GCN layer is literally just a fancy
+regression model using the spatial lags of our input variables. However,
+we assumed that there was not any <a href="https://en.wikipedia.org/wiki/Activation_function">activation
+function</a>.</p>
+<p>For fuller examples we can fit a GCN with multiple hidden layers as well
+as an additional activation or loss functions. These GCN models can
+generalize well to classification or regression.</p>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <script>
+            (() => {
+                try {
+                    const stored = localStorage.getItem("themeMode");
+                    if (
+                        stored
+                            ? stored === "dark"
+                            : matchMedia("(prefers-color-scheme: dark)").matches
+                    ) {
+                        document.documentElement.classList.add("dark");
+                    }
+                } catch (_) {}
+
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"></script>
+        
+    </body>
+</html>

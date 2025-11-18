@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            Introducing geniusR | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- KaTeX for math rendering -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-bold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-xs font-mono"
+            />
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="flex-1 overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-1 text-sm font-mono pl-3 font-semibold border-l-2 border-primary -ml-px"
+                    >
+                        Posts
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/contact/"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        Contact
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">Introducing geniusR</h1>
+
+         
+        <div class="flex flex-wrap gap-2 mb-4">
+            
+            <a
+                href="/categories/R"
+                class="badge-secondary cursor pointer"
+                >R</a
+            >
+            
+            <a
+                href="/categories/geniusR"
+                class="badge-secondary cursor pointer"
+                >geniusR</a
+            >
+            
+        </div>
+         
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >January 27, 2018</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'>knitr</span><span class='nf'>::</span><span class='nv'><a href='https://rdrr.io/pkg/knitr/man/opts_chunk.html'>opts_chunk</a></span><span class='o'>$</span><span class='nf'>set</span><span class='o'>(</span>eval<span class='o'>=</span><span class='kc'>FALSE</span><span class='o'>)</span></code></pre>
+</div>
+<h1 id="introducing-geniusr">Introducing geniusR</h1>
+<p><code>geniusR</code> enables quick and easy download of song lyrics. The intent behind the package is to be able to perform text based analyses on songs in a tidy[text] format.</p>
+<p>This package was inspired by the release of Kendrick Lamar's most recent album, <strong>DAMN.</strong>. As most programmers do, I spent way too long to simplify a task, that being accessing song lyrics. Genius (formerly Rap Genius) is the most widly accessible platform for lyrics.</p>
+<p>The functions in this package enable easy access of individual song lyrics, album tracklists, and lyrics to whole albums.</p>
+<h2 id="install-and-load-the-package">Install and load the package</h2>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'>devtools</span><span class='nf'>::</span><span class='nf'><a href='https://devtools.r-lib.org/reference/remote-reexports.html'>install_github</a></span><span class='o'>(</span><span class='s'>"josiahparry/geniusR"</span><span class='o'>)</span></code></pre>
+</div>
+<p>Load the package:</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='kr'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='o'>(</span><span class='nv'>geniusR</span><span class='o'>)</span>
+<span class='kr'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='o'>(</span><span class='nv'><a href='https://tidyverse.tidyverse.org'>tidyverse</a></span><span class='o'>)</span> <span class='c'># For manipulation</span></code></pre>
+</div>
+<h1 id="getting-lyrics">Getting Lyrics</h1>
+<h2 id="whole-albums">Whole Albums</h2>
+<p><code>genius_album()</code> allows you to download the lyrics for an entire album in a <code>tidy</code> format. There are two arguments <code>artists</code> and <code>album</code>. Supply the quoted name of artist and the album (if it gives you issues check that you have the album name and artists as specified on <a href="https://genius.com">Genius</a>).</p>
+<p>This returns a tidy data frame with three columns:</p>
+<ul>
+<li><code>title</code>: track name</li>
+<li><code>track_n</code>: track number</li>
+<li><code>text</code>: lyrics</li>
+</ul>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>emotions_math</span> <span class='o'>&lt;-</span> <span class='nf'>genius_album</span><span class='o'>(</span>artist <span class='o'>=</span> <span class='s'>"Margaret Glaspy"</span>, album <span class='o'>=</span> <span class='s'>"Emotions and Math"</span><span class='o'>)</span>
+<span class='nv'>emotions_math</span></code></pre>
+</div>
+<h2 id="multiple-albums">Multiple Albums</h2>
+<p>If you wish to download multiple albums from multiple artists, try and keep it tidy and avoid binding rows if you can. We can achieve this in a tidy workflow by creating a tibble with two columns: <code>artist</code> and <code>album</code> where each row is an artist and their album. We can then iterate over those columns with <code>purrr:map2()</code>.</p>
+<p>In this example I will extract 3 albums from Kendrick Lamar and Sara Bareilles (two of my favotire musicians). The first step is to create the tibble with artists and album titles.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>albums</span> <span class='o'>&lt;-</span>  <span class='nf'><a href='https://tibble.tidyverse.org/reference/tibble.html'>tibble</a></span><span class='o'>(</span>
+  artist <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='o'>(</span>
+    <span class='nf'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='o'>(</span><span class='s'>"Kendrick Lamar"</span>, <span class='m'>3</span><span class='o'>)</span>, 
+    <span class='nf'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='o'>(</span><span class='s'>"Sara Bareilles"</span>, <span class='m'>3</span><span class='o'>)</span>
+    <span class='o'>)</span>,
+  album <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='o'>(</span>
+    <span class='s'>"Section 80"</span>, <span class='s'>"Good Kid, M.A.A.D City"</span>, <span class='s'>"DAMN."</span>,
+    <span class='s'>"The Blessed Unrest"</span>, <span class='s'>"Kaleidoscope Heart"</span>, <span class='s'>"Little Voice"</span>
+    <span class='o'>)</span>
+<span class='o'>)</span>
+
+<span class='nv'>albums</span></code></pre>
+</div>
+<p>No we can iterate over each row using the <code>map2</code> function. This allows us to feed each value from the <code>artist</code> and <code>album</code> columns to the <code>genius_album()</code> function. Utilizing a <code>map</code> call within a <a href="https://dplyr.tidyverse.org/reference/mutate.html"><code>dplyr::mutate()</code></a> function creates a list column where each value is a <code>tibble</code> with the data frame from <code>genius_album()</code>. We will later unnest this.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'>## We will have an additional artist column that will have to be dropped</span>
+<span class='nv'>album_lyrics</span> <span class='o'>&lt;-</span> <span class='nv'>albums</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='o'>(</span>tracks <span class='o'>=</span> <span class='nf'><a href='https://purrr.tidyverse.org/reference/map2.html'>map2</a></span><span class='o'>(</span><span class='nv'>artist</span>, <span class='nv'>album</span>, <span class='nv'>genius_album</span><span class='o'>)</span><span class='o'>)</span>
+
+<span class='nv'>album_lyrics</span></code></pre>
+</div>
+<p>Now when you view this you will see that each value within the <code>tracks</code> column is <code>&lt;tibble&gt;</code>. This means that that value is infact another <code>tibble</code>. We expand this using <a href="https://tidyr.tidyverse.org/reference/nest.html"><code>tidyr::unnest()</code></a>.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'># Unnest the lyrics to expand </span>
+<span class='nv'>lyrics</span> <span class='o'>&lt;-</span> <span class='nv'>album_lyrics</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://tidyr.tidyverse.org/reference/nest.html'>unnest</a></span><span class='o'>(</span><span class='nv'>tracks</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>    <span class='c'># Expanding the lyrics </span>
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/arrange.html'>arrange</a></span><span class='o'>(</span><span class='nf'><a href='https://dplyr.tidyverse.org/reference/desc.html'>desc</a></span><span class='o'>(</span><span class='nv'>artist</span><span class='o'>)</span><span class='o'>)</span> <span class='c'># Arranging by artist name </span>
+
+<span class='nf'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='o'>(</span><span class='nv'>lyrics</span><span class='o'>)</span></code></pre>
+</div>
+<h2 id="song-lyrics">Song Lyrics</h2>
+<h3 id="genius-lyrics"><code>genius_lyrics()</code></h3>
+<p>Getting lyrics to a single song is pretty easy. Let's get in our <strong>ELEMENT.</strong> and checkout <strong>DNA.</strong> by <em>Kendrick Lamar</em>. But first, note that the <code>genius_lyrics()</code> function takes two main arguments, <code>artist</code> and <code>song</code>. Be sure to spell the name of the artist and the song correctly.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>DNA</span> <span class='o'>&lt;-</span> <span class='nf'>genius_lyrics</span><span class='o'>(</span>artist <span class='o'>=</span> <span class='s'>"Kendrick Lamar"</span>, song <span class='o'>=</span> <span class='s'>"DNA."</span><span class='o'>)</span>
+
+<span class='nv'>DNA</span></code></pre>
+</div>
+<p>This returns a <code>tibble</code> with three columns <code>title</code>, <code>text</code>, and <code>line</code>. However, you can specifiy additional arguments to control the amount of information to be returned using the <code>info</code> argument.</p>
+<ul>
+<li><code>info = "title"</code> (default): Return the lyrics, line number, and song title.</li>
+<li><code>info = "simple"</code>: Return just the lyrics and line number.</li>
+<li><code>info = "artist"</code>: Return the lyrics, line number, and artist.</li>
+<li><code>info = "all"</code>: Return lyrics, line number, song title, artist.</li>
+</ul>
+<h2 id="tracklists">Tracklists</h2>
+<p><code>genius_tracklist()</code>, given an <code>artist</code> and an <code>album</code> will return a barebones <code>tibble</code> with the track title, track number, and the url to the lyrics.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'>genius_tracklist</span><span class='o'>(</span>artist <span class='o'>=</span> <span class='s'>"Basement"</span>, album <span class='o'>=</span> <span class='s'>"Colourmeinkindness"</span><span class='o'>)</span> </code></pre>
+</div>
+<h2 id="nitty-gritty">Nitty Gritty</h2>
+<p><code>genius_lyrics()</code> generates a url to Genius which is fed to <code>genius_url()</code>, the function that does the heavy lifting of actually fetching lyrics.</p>
+<p>I have not figured out all of the patterns that are used for generating the Genius.com urls, so errors are bound to happen. If <code>genius_lyrics()</code> returns an error. Try utilizing <code>genius_tracklist()</code> and <code>genius_url()</code> together to get the song lyrics.</p>
+<p>For example, say "(No One Knows Me) Like the Piano" by <em>Sampha</em> wasn't working in a standard <code>genius_lyrics()</code> call.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>piano</span> <span class='o'>&lt;-</span> <span class='nf'>genius_lyrics</span><span class='o'>(</span><span class='s'>"Sampha"</span>, <span class='s'>"(No One Knows Me) Like the Piano"</span><span class='o'>)</span></code></pre>
+</div>
+<p>We could grab the tracklist for the album <em>Process</em> which the song is from. We could then isolate the url for <em>(No One Knows Me) Like the Piano</em> and feed that into `genius_url().</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'># Get the tracklist for </span>
+<span class='nv'>process</span> <span class='o'>&lt;-</span> <span class='nf'>genius_tracklist</span><span class='o'>(</span><span class='s'>"Sampha"</span>, <span class='s'>"Process"</span><span class='o'>)</span>
+
+<span class='c'># Filter down to find the individual song</span>
+<span class='nv'>piano_info</span> <span class='o'>&lt;-</span> <span class='nv'>process</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='o'>(</span><span class='nv'>title</span> <span class='o'>==</span> <span class='s'>"(No One Knows Me) Like the Piano"</span><span class='o'>)</span>
+
+<span class='c'># Filter song using string detection</span>
+<span class='c'># process %&gt;% </span>
+<span class='c'>#  filter(stringr::str_detect(title, coll("Like the piano", ignore_case = TRUE)))</span>
+
+<span class='nv'>piano_url</span> <span class='o'>&lt;-</span> <span class='nv'>piano_info</span><span class='o'>$</span><span class='nv'>track_url</span></code></pre>
+</div>
+<p>Now that we have the url, feed it into <code>genius_url()</code>.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'>genius_url</span><span class='o'>(</span><span class='nv'>piano_url</span>, info <span class='o'>=</span> <span class='s'>"simple"</span><span class='o'>)</span></code></pre>
+</div>
+<hr />
+<h1 id="on-the-internals">On the Internals</h1>
+<h2 id="generative-functions">Generative functions</h2>
+<p>This package works almost entirely on pattern detection. The urls from <em>Genius</em> are (mostly) easily reproducible (shout out to <a href="https://twitter.com/CivicAngela">Angela Li</a> for pointing this out).</p>
+<p>The two functions that generate urls are <code>gen_song_url()</code> and <code>gen_album_url()</code>. To see how the functions work, try feeding an artist and song title to <code>gen_song_url()</code> and an artist and album title to <code>gen_album_url()</code>.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'>gen_song_url</span><span class='o'>(</span><span class='s'>"Laura Marling"</span>, <span class='s'>"Soothing"</span><span class='o'>)</span></code></pre>
+</div>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'>gen_album_url</span><span class='o'>(</span><span class='s'>"Daniel Caesar"</span>, <span class='s'>"Freudian"</span><span class='o'>)</span></code></pre>
+</div>
+<p><code>genius_lyrics()</code> calls <code>gen_song_url()</code> and feeds the output to <code>genius_url()</code> which preforms the scraping.</p>
+<p>Getting lyrics for albums is slightly more involved. It first calls <code>genius_tracklist()</code> which first calls <code>gen_album_url()</code> then using the handy package <code>rvest</code> scrapes the song titles, track numbers, and song lyric urls. Next, the song urls from the output are iterated over and fed to <code>genius_url()</code>.</p>
+<p>To make this more clear, take a look inside of <code>genius_album()</code></p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>genius_album</span> <span class='o'>&lt;-</span> <span class='kr'>function</span><span class='o'>(</span><span class='nv'>artist</span> <span class='o'>=</span> <span class='kc'>NULL</span>, <span class='nv'>album</span> <span class='o'>=</span> <span class='kc'>NULL</span>, <span class='nv'>info</span> <span class='o'>=</span> <span class='s'>"simple"</span><span class='o'>)</span> <span class='o'>&#123;</span>
+
+  <span class='c'># Obtain tracklist from genius_tracklist</span>
+  <span class='nv'>album</span> <span class='o'>&lt;-</span> <span class='nf'>genius_tracklist</span><span class='o'>(</span><span class='nv'>artist</span>, <span class='nv'>album</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+
+    <span class='c'># Iterate over the url to the song title</span>
+    <span class='nf'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='o'>(</span>lyrics <span class='o'>=</span> <span class='nf'><a href='https://purrr.tidyverse.org/reference/map.html'>map</a></span><span class='o'>(</span><span class='nv'>track_url</span>, <span class='nv'>genius_url</span>, <span class='nv'>info</span><span class='o'>)</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+
+    <span class='c'># Unnest the tibble with lyrics</span>
+    <span class='nf'><a href='https://tidyr.tidyverse.org/reference/nest.html'>unnest</a></span><span class='o'>(</span><span class='nv'>lyrics</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+    
+    <span class='c'># Deselect the track url</span>
+    <span class='nf'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='o'>(</span><span class='o'>-</span><span class='nv'>track_url</span><span class='o'>)</span>
+
+
+  <span class='kr'><a href='https://rdrr.io/r/base/function.html'>return</a></span><span class='o'>(</span><span class='nv'>album</span><span class='o'>)</span>
+<span class='o'>&#125;</span></code></pre>
+</div>
+<h3 id="notes">Notes:</h3>
+<p>As this is my first <em>"package"</em> there will be many issues. Please submit an issue and I will do my best to attend to it.</p>
+<p>There are already issues of which I am present (the lack of error handling). If you would like to take those on, please go ahead and make a pull request. Please contact me on <a href="https://josiah.rs/posts/introducing-geniusr/twitter.com/josiahparry">Twitter</a>.</p>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <script>
+            (() => {
+                try {
+                    const stored = localStorage.getItem("themeMode");
+                    if (
+                        stored
+                            ? stored === "dark"
+                            : matchMedia("(prefers-color-scheme: dark)").matches
+                    ) {
+                        document.documentElement.classList.add("dark");
+                    }
+                } catch (_) {}
+
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"></script>
+        
+    </body>
+</html>

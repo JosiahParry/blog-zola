@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Josiah Parry - nlp</title>
+    <link rel="self" type="application/atom+xml" href="https://josiah.rs/tags/nlp/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://josiah.rs"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2018-01-27T00:00:00+00:00</updated>
+    <id>https://josiah.rs/tags/nlp/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Introducing geniusR</title>
+        <published>2018-01-27T00:00:00+00:00</published>
+        <updated>2018-01-27T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/introducing-geniusr/"/>
+        <id>https://josiah.rs/posts/introducing-geniusr/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/introducing-geniusr/">&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;nf&#x27;&gt;knitr&lt;&#x2F;span&gt;&lt;span class=&#x27;nf&#x27;&gt;::&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;pkg&#x2F;knitr&#x2F;man&#x2F;opts_chunk.html&#x27;&gt;opts_chunk&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;$&lt;&#x2F;span&gt;&lt;span class=&#x27;nf&#x27;&gt;set&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;eval&lt;span class=&#x27;o&#x27;&gt;=&lt;&#x2F;span&gt;&lt;span class=&#x27;kc&#x27;&gt;FALSE&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;h1 id=&quot;introducing-geniusr&quot;&gt;Introducing geniusR&lt;&#x2F;h1&gt;
+&lt;p&gt;&lt;code&gt;geniusR&lt;&#x2F;code&gt; enables quick and easy download of song lyrics. The intent behind the package is to be able to perform text based analyses on songs in a tidy[text] format.&lt;&#x2F;p&gt;
+&lt;p&gt;This package was inspired by the release of Kendrick Lamar&#x27;s most recent album, &lt;strong&gt;DAMN.&lt;&#x2F;strong&gt;. As most programmers do, I spent way too long to simplify a task, that being accessing song lyrics. Genius (formerly Rap Genius) is the most widly accessible platform for lyrics.&lt;&#x2F;p&gt;
+&lt;p&gt;The functions in this package enable easy access of individual song lyrics, album tracklists, and lyrics to whole albums.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;install-and-load-the-package&quot;&gt;Install and load the package&lt;&#x2F;h2&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;nf&#x27;&gt;devtools&lt;&#x2F;span&gt;&lt;span class=&#x27;nf&#x27;&gt;::&lt;&#x2F;span&gt;&lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;devtools.r-lib.org&#x2F;reference&#x2F;remote-reexports.html&#x27;&gt;install_github&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;s&#x27;&gt;&quot;josiahparry&#x2F;geniusR&quot;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;Load the package:&lt;&#x2F;p&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;kr&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;base&#x2F;library.html&#x27;&gt;library&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;geniusR&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+&lt;span class=&#x27;kr&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;base&#x2F;library.html&#x27;&gt;library&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;tidyverse.tidyverse.org&#x27;&gt;tidyverse&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt; &lt;span class=&#x27;c&#x27;&gt;# For manipulation&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;h1 id=&quot;getting-lyrics&quot;&gt;Getting Lyrics&lt;&#x2F;h1&gt;
+&lt;h2 id=&quot;whole-albums&quot;&gt;Whole Albums&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;code&gt;genius_album()&lt;&#x2F;code&gt; allows you to download the lyrics for an entire album in a &lt;code&gt;tidy&lt;&#x2F;code&gt; format. There are two arguments &lt;code&gt;artists&lt;&#x2F;code&gt; and &lt;code&gt;album&lt;&#x2F;code&gt;. Supply the quoted name of artist and the album (if it gives you issues check that you have the album name and artists as specified on &lt;a href=&quot;https:&#x2F;&#x2F;genius.com&quot;&gt;Genius&lt;&#x2F;a&gt;).&lt;&#x2F;p&gt;
+&lt;p&gt;This returns a tidy data frame with three columns:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;title&lt;&#x2F;code&gt;: track name&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;track_n&lt;&#x2F;code&gt;: track number&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;text&lt;&#x2F;code&gt;: lyrics&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;nv&#x27;&gt;emotions_math&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&#x27;nf&#x27;&gt;genius_album&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;artist &lt;span class=&#x27;o&#x27;&gt;=&lt;&#x2F;span&gt; &lt;span class=&#x27;s&#x27;&gt;&quot;Margaret Glaspy&quot;&lt;&#x2F;span&gt;, album &lt;span class=&#x27;o&#x27;&gt;=&lt;&#x2F;span&gt; &lt;span class=&#x27;s&#x27;&gt;&quot;Emotions and Math&quot;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+&lt;span class=&#x27;nv&#x27;&gt;emotions_math&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;h2 id=&quot;multiple-albums&quot;&gt;Multiple Albums&lt;&#x2F;h2&gt;
+&lt;p&gt;If you wish to download multiple albums from multiple artists, try and keep it tidy and avoid binding rows if you can. We can achieve this in a tidy workflow by creating a tibble with two columns: &lt;code&gt;artist&lt;&#x2F;code&gt; and &lt;code&gt;album&lt;&#x2F;code&gt; where each row is an artist and their album. We can then iterate over those columns with &lt;code&gt;purrr:map2()&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;In this example I will extract 3 albums from Kendrick Lamar and Sara Bareilles (two of my favotire musicians). The first step is to create the tibble with artists and album titles.&lt;&#x2F;p&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;nv&#x27;&gt;albums&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;lt;-&lt;&#x2F;span&gt;  &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;tibble.tidyverse.org&#x2F;reference&#x2F;tibble.html&#x27;&gt;tibble&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;
+  artist &lt;span class=&#x27;o&#x27;&gt;=&lt;&#x2F;span&gt; &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;base&#x2F;c.html&#x27;&gt;c&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;
+    &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;base&#x2F;rep.html&#x27;&gt;rep&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;s&#x27;&gt;&quot;Kendrick Lamar&quot;&lt;&#x2F;span&gt;, &lt;span class=&#x27;m&#x27;&gt;3&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;, 
+    &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;base&#x2F;rep.html&#x27;&gt;rep&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;s&#x27;&gt;&quot;Sara Bareilles&quot;&lt;&#x2F;span&gt;, &lt;span class=&#x27;m&#x27;&gt;3&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+    &lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;,
+  album &lt;span class=&#x27;o&#x27;&gt;=&lt;&#x2F;span&gt; &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;base&#x2F;c.html&#x27;&gt;c&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;
+    &lt;span class=&#x27;s&#x27;&gt;&quot;Section 80&quot;&lt;&#x2F;span&gt;, &lt;span class=&#x27;s&#x27;&gt;&quot;Good Kid, M.A.A.D City&quot;&lt;&#x2F;span&gt;, &lt;span class=&#x27;s&#x27;&gt;&quot;DAMN.&quot;&lt;&#x2F;span&gt;,
+    &lt;span class=&#x27;s&#x27;&gt;&quot;The Blessed Unrest&quot;&lt;&#x2F;span&gt;, &lt;span class=&#x27;s&#x27;&gt;&quot;Kaleidoscope Heart&quot;&lt;&#x2F;span&gt;, &lt;span class=&#x27;s&#x27;&gt;&quot;Little Voice&quot;&lt;&#x2F;span&gt;
+    &lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+
+&lt;span class=&#x27;nv&#x27;&gt;albums&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;No we can iterate over each row using the &lt;code&gt;map2&lt;&#x2F;code&gt; function. This allows us to feed each value from the &lt;code&gt;artist&lt;&#x2F;code&gt; and &lt;code&gt;album&lt;&#x2F;code&gt; columns to the &lt;code&gt;genius_album()&lt;&#x2F;code&gt; function. Utilizing a &lt;code&gt;map&lt;&#x2F;code&gt; call within a &lt;a href=&quot;https:&#x2F;&#x2F;dplyr.tidyverse.org&#x2F;reference&#x2F;mutate.html&quot;&gt;&lt;code&gt;dplyr::mutate()&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; function creates a list column where each value is a &lt;code&gt;tibble&lt;&#x2F;code&gt; with the data frame from &lt;code&gt;genius_album()&lt;&#x2F;code&gt;. We will later unnest this.&lt;&#x2F;p&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;c&#x27;&gt;## We will have an additional artist column that will have to be dropped&lt;&#x2F;span&gt;
+&lt;span class=&#x27;nv&#x27;&gt;album_lyrics&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&#x27;nv&#x27;&gt;albums&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;magrittr.tidyverse.org&#x2F;reference&#x2F;pipe.html&#x27;&gt;%&amp;gt;%&lt;&#x2F;a&gt;&lt;&#x2F;span&gt; 
+  &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;dplyr.tidyverse.org&#x2F;reference&#x2F;mutate.html&#x27;&gt;mutate&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;tracks &lt;span class=&#x27;o&#x27;&gt;=&lt;&#x2F;span&gt; &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;purrr.tidyverse.org&#x2F;reference&#x2F;map2.html&#x27;&gt;map2&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;artist&lt;&#x2F;span&gt;, &lt;span class=&#x27;nv&#x27;&gt;album&lt;&#x2F;span&gt;, &lt;span class=&#x27;nv&#x27;&gt;genius_album&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+
+&lt;span class=&#x27;nv&#x27;&gt;album_lyrics&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;Now when you view this you will see that each value within the &lt;code&gt;tracks&lt;&#x2F;code&gt; column is &lt;code&gt;&amp;lt;tibble&amp;gt;&lt;&#x2F;code&gt;. This means that that value is infact another &lt;code&gt;tibble&lt;&#x2F;code&gt;. We expand this using &lt;a href=&quot;https:&#x2F;&#x2F;tidyr.tidyverse.org&#x2F;reference&#x2F;nest.html&quot;&gt;&lt;code&gt;tidyr::unnest()&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;c&#x27;&gt;# Unnest the lyrics to expand &lt;&#x2F;span&gt;
+&lt;span class=&#x27;nv&#x27;&gt;lyrics&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&#x27;nv&#x27;&gt;album_lyrics&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;magrittr.tidyverse.org&#x2F;reference&#x2F;pipe.html&#x27;&gt;%&amp;gt;%&lt;&#x2F;a&gt;&lt;&#x2F;span&gt; 
+  &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;tidyr.tidyverse.org&#x2F;reference&#x2F;nest.html&#x27;&gt;unnest&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;tracks&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;magrittr.tidyverse.org&#x2F;reference&#x2F;pipe.html&#x27;&gt;%&amp;gt;%&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;    &lt;span class=&#x27;c&#x27;&gt;# Expanding the lyrics &lt;&#x2F;span&gt;
+  &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;dplyr.tidyverse.org&#x2F;reference&#x2F;arrange.html&#x27;&gt;arrange&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;dplyr.tidyverse.org&#x2F;reference&#x2F;desc.html&#x27;&gt;desc&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;artist&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt; &lt;span class=&#x27;c&#x27;&gt;# Arranging by artist name &lt;&#x2F;span&gt;
+
+&lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;utils&#x2F;head.html&#x27;&gt;head&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;lyrics&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;h2 id=&quot;song-lyrics&quot;&gt;Song Lyrics&lt;&#x2F;h2&gt;
+&lt;h3 id=&quot;genius-lyrics&quot;&gt;&lt;code&gt;genius_lyrics()&lt;&#x2F;code&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;Getting lyrics to a single song is pretty easy. Let&#x27;s get in our &lt;strong&gt;ELEMENT.&lt;&#x2F;strong&gt; and checkout &lt;strong&gt;DNA.&lt;&#x2F;strong&gt; by &lt;em&gt;Kendrick Lamar&lt;&#x2F;em&gt;. But first, note that the &lt;code&gt;genius_lyrics()&lt;&#x2F;code&gt; function takes two main arguments, &lt;code&gt;artist&lt;&#x2F;code&gt; and &lt;code&gt;song&lt;&#x2F;code&gt;. Be sure to spell the name of the artist and the song correctly.&lt;&#x2F;p&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;nv&#x27;&gt;DNA&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&#x27;nf&#x27;&gt;genius_lyrics&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;artist &lt;span class=&#x27;o&#x27;&gt;=&lt;&#x2F;span&gt; &lt;span class=&#x27;s&#x27;&gt;&quot;Kendrick Lamar&quot;&lt;&#x2F;span&gt;, song &lt;span class=&#x27;o&#x27;&gt;=&lt;&#x2F;span&gt; &lt;span class=&#x27;s&#x27;&gt;&quot;DNA.&quot;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+
+&lt;span class=&#x27;nv&#x27;&gt;DNA&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;This returns a &lt;code&gt;tibble&lt;&#x2F;code&gt; with three columns &lt;code&gt;title&lt;&#x2F;code&gt;, &lt;code&gt;text&lt;&#x2F;code&gt;, and &lt;code&gt;line&lt;&#x2F;code&gt;. However, you can specifiy additional arguments to control the amount of information to be returned using the &lt;code&gt;info&lt;&#x2F;code&gt; argument.&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;info = &quot;title&quot;&lt;&#x2F;code&gt; (default): Return the lyrics, line number, and song title.&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;info = &quot;simple&quot;&lt;&#x2F;code&gt;: Return just the lyrics and line number.&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;info = &quot;artist&quot;&lt;&#x2F;code&gt;: Return the lyrics, line number, and artist.&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;code&gt;info = &quot;all&quot;&lt;&#x2F;code&gt;: Return lyrics, line number, song title, artist.&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;tracklists&quot;&gt;Tracklists&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;code&gt;genius_tracklist()&lt;&#x2F;code&gt;, given an &lt;code&gt;artist&lt;&#x2F;code&gt; and an &lt;code&gt;album&lt;&#x2F;code&gt; will return a barebones &lt;code&gt;tibble&lt;&#x2F;code&gt; with the track title, track number, and the url to the lyrics.&lt;&#x2F;p&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;nf&#x27;&gt;genius_tracklist&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;artist &lt;span class=&#x27;o&#x27;&gt;=&lt;&#x2F;span&gt; &lt;span class=&#x27;s&#x27;&gt;&quot;Basement&quot;&lt;&#x2F;span&gt;, album &lt;span class=&#x27;o&#x27;&gt;=&lt;&#x2F;span&gt; &lt;span class=&#x27;s&#x27;&gt;&quot;Colourmeinkindness&quot;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt; &lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;h2 id=&quot;nitty-gritty&quot;&gt;Nitty Gritty&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;code&gt;genius_lyrics()&lt;&#x2F;code&gt; generates a url to Genius which is fed to &lt;code&gt;genius_url()&lt;&#x2F;code&gt;, the function that does the heavy lifting of actually fetching lyrics.&lt;&#x2F;p&gt;
+&lt;p&gt;I have not figured out all of the patterns that are used for generating the Genius.com urls, so errors are bound to happen. If &lt;code&gt;genius_lyrics()&lt;&#x2F;code&gt; returns an error. Try utilizing &lt;code&gt;genius_tracklist()&lt;&#x2F;code&gt; and &lt;code&gt;genius_url()&lt;&#x2F;code&gt; together to get the song lyrics.&lt;&#x2F;p&gt;
+&lt;p&gt;For example, say &quot;(No One Knows Me) Like the Piano&quot; by &lt;em&gt;Sampha&lt;&#x2F;em&gt; wasn&#x27;t working in a standard &lt;code&gt;genius_lyrics()&lt;&#x2F;code&gt; call.&lt;&#x2F;p&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;nv&#x27;&gt;piano&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&#x27;nf&#x27;&gt;genius_lyrics&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;s&#x27;&gt;&quot;Sampha&quot;&lt;&#x2F;span&gt;, &lt;span class=&#x27;s&#x27;&gt;&quot;(No One Knows Me) Like the Piano&quot;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;We could grab the tracklist for the album &lt;em&gt;Process&lt;&#x2F;em&gt; which the song is from. We could then isolate the url for &lt;em&gt;(No One Knows Me) Like the Piano&lt;&#x2F;em&gt; and feed that into `genius_url().&lt;&#x2F;p&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;c&#x27;&gt;# Get the tracklist for &lt;&#x2F;span&gt;
+&lt;span class=&#x27;nv&#x27;&gt;process&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&#x27;nf&#x27;&gt;genius_tracklist&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;s&#x27;&gt;&quot;Sampha&quot;&lt;&#x2F;span&gt;, &lt;span class=&#x27;s&#x27;&gt;&quot;Process&quot;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+
+&lt;span class=&#x27;c&#x27;&gt;# Filter down to find the individual song&lt;&#x2F;span&gt;
+&lt;span class=&#x27;nv&#x27;&gt;piano_info&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&#x27;nv&#x27;&gt;process&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;magrittr.tidyverse.org&#x2F;reference&#x2F;pipe.html&#x27;&gt;%&amp;gt;%&lt;&#x2F;a&gt;&lt;&#x2F;span&gt; 
+  &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;dplyr.tidyverse.org&#x2F;reference&#x2F;filter.html&#x27;&gt;filter&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;title&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;==&lt;&#x2F;span&gt; &lt;span class=&#x27;s&#x27;&gt;&quot;(No One Knows Me) Like the Piano&quot;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+
+&lt;span class=&#x27;c&#x27;&gt;# Filter song using string detection&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;# process %&amp;gt;% &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#  filter(stringr::str_detect(title, coll(&quot;Like the piano&quot;, ignore_case = TRUE)))&lt;&#x2F;span&gt;
+
+&lt;span class=&#x27;nv&#x27;&gt;piano_url&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&#x27;nv&#x27;&gt;piano_info&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;$&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;track_url&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;Now that we have the url, feed it into &lt;code&gt;genius_url()&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;nf&#x27;&gt;genius_url&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;piano_url&lt;&#x2F;span&gt;, info &lt;span class=&#x27;o&#x27;&gt;=&lt;&#x2F;span&gt; &lt;span class=&#x27;s&#x27;&gt;&quot;simple&quot;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;hr &#x2F;&gt;
+&lt;h1 id=&quot;on-the-internals&quot;&gt;On the Internals&lt;&#x2F;h1&gt;
+&lt;h2 id=&quot;generative-functions&quot;&gt;Generative functions&lt;&#x2F;h2&gt;
+&lt;p&gt;This package works almost entirely on pattern detection. The urls from &lt;em&gt;Genius&lt;&#x2F;em&gt; are (mostly) easily reproducible (shout out to &lt;a href=&quot;https:&#x2F;&#x2F;twitter.com&#x2F;CivicAngela&quot;&gt;Angela Li&lt;&#x2F;a&gt; for pointing this out).&lt;&#x2F;p&gt;
+&lt;p&gt;The two functions that generate urls are &lt;code&gt;gen_song_url()&lt;&#x2F;code&gt; and &lt;code&gt;gen_album_url()&lt;&#x2F;code&gt;. To see how the functions work, try feeding an artist and song title to &lt;code&gt;gen_song_url()&lt;&#x2F;code&gt; and an artist and album title to &lt;code&gt;gen_album_url()&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;nf&#x27;&gt;gen_song_url&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;s&#x27;&gt;&quot;Laura Marling&quot;&lt;&#x2F;span&gt;, &lt;span class=&#x27;s&#x27;&gt;&quot;Soothing&quot;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;nf&#x27;&gt;gen_album_url&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;s&#x27;&gt;&quot;Daniel Caesar&quot;&lt;&#x2F;span&gt;, &lt;span class=&#x27;s&#x27;&gt;&quot;Freudian&quot;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;&lt;code&gt;genius_lyrics()&lt;&#x2F;code&gt; calls &lt;code&gt;gen_song_url()&lt;&#x2F;code&gt; and feeds the output to &lt;code&gt;genius_url()&lt;&#x2F;code&gt; which preforms the scraping.&lt;&#x2F;p&gt;
+&lt;p&gt;Getting lyrics for albums is slightly more involved. It first calls &lt;code&gt;genius_tracklist()&lt;&#x2F;code&gt; which first calls &lt;code&gt;gen_album_url()&lt;&#x2F;code&gt; then using the handy package &lt;code&gt;rvest&lt;&#x2F;code&gt; scrapes the song titles, track numbers, and song lyric urls. Next, the song urls from the output are iterated over and fed to &lt;code&gt;genius_url()&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;To make this more clear, take a look inside of &lt;code&gt;genius_album()&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;nv&#x27;&gt;genius_album&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&#x27;kr&#x27;&gt;function&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;artist&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;=&lt;&#x2F;span&gt; &lt;span class=&#x27;kc&#x27;&gt;NULL&lt;&#x2F;span&gt;, &lt;span class=&#x27;nv&#x27;&gt;album&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;=&lt;&#x2F;span&gt; &lt;span class=&#x27;kc&#x27;&gt;NULL&lt;&#x2F;span&gt;, &lt;span class=&#x27;nv&#x27;&gt;info&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;=&lt;&#x2F;span&gt; &lt;span class=&#x27;s&#x27;&gt;&quot;simple&quot;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;#123;&lt;&#x2F;span&gt;
+
+  &lt;span class=&#x27;c&#x27;&gt;# Obtain tracklist from genius_tracklist&lt;&#x2F;span&gt;
+  &lt;span class=&#x27;nv&#x27;&gt;album&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&#x27;nf&#x27;&gt;genius_tracklist&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;artist&lt;&#x2F;span&gt;, &lt;span class=&#x27;nv&#x27;&gt;album&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;magrittr.tidyverse.org&#x2F;reference&#x2F;pipe.html&#x27;&gt;%&amp;gt;%&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;
+
+    &lt;span class=&#x27;c&#x27;&gt;# Iterate over the url to the song title&lt;&#x2F;span&gt;
+    &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;dplyr.tidyverse.org&#x2F;reference&#x2F;mutate.html&#x27;&gt;mutate&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;lyrics &lt;span class=&#x27;o&#x27;&gt;=&lt;&#x2F;span&gt; &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;purrr.tidyverse.org&#x2F;reference&#x2F;map.html&#x27;&gt;map&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;track_url&lt;&#x2F;span&gt;, &lt;span class=&#x27;nv&#x27;&gt;genius_url&lt;&#x2F;span&gt;, &lt;span class=&#x27;nv&#x27;&gt;info&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;magrittr.tidyverse.org&#x2F;reference&#x2F;pipe.html&#x27;&gt;%&amp;gt;%&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;
+
+    &lt;span class=&#x27;c&#x27;&gt;# Unnest the tibble with lyrics&lt;&#x2F;span&gt;
+    &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;tidyr.tidyverse.org&#x2F;reference&#x2F;nest.html&#x27;&gt;unnest&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;lyrics&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;magrittr.tidyverse.org&#x2F;reference&#x2F;pipe.html&#x27;&gt;%&amp;gt;%&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;
+    
+    &lt;span class=&#x27;c&#x27;&gt;# Deselect the track url&lt;&#x2F;span&gt;
+    &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;dplyr.tidyverse.org&#x2F;reference&#x2F;select.html&#x27;&gt;select&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;-&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;track_url&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+
+
+  &lt;span class=&#x27;kr&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;base&#x2F;function.html&#x27;&gt;return&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;album&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+&lt;span class=&#x27;o&#x27;&gt;&amp;#125;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;h3 id=&quot;notes&quot;&gt;Notes:&lt;&#x2F;h3&gt;
+&lt;p&gt;As this is my first &lt;em&gt;&quot;package&quot;&lt;&#x2F;em&gt; there will be many issues. Please submit an issue and I will do my best to attend to it.&lt;&#x2F;p&gt;
+&lt;p&gt;There are already issues of which I am present (the lack of error handling). If you would like to take those on, please go ahead and make a pull request. Please contact me on &lt;a href=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;introducing-geniusr&#x2F;twitter.com&#x2F;josiahparry&quot;&gt;Twitter&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

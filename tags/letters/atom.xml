@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Josiah Parry - letters</title>
+    <link rel="self" type="application/atom+xml" href="https://josiah.rs/tags/letters/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://josiah.rs"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2018-11-15T00:00:00+00:00</updated>
+    <id>https://josiah.rs/tags/letters/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Introducing: Letters to a layperson</title>
+        <published>2018-11-15T00:00:00+00:00</published>
+        <updated>2018-11-15T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/introducing-letters-to-a-layperson/"/>
+        <id>https://josiah.rs/posts/introducing-letters-to-a-layperson/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/introducing-letters-to-a-layperson/">&lt;p&gt;I have been in the world of academia for nearly five years now. During this time I’ve read countless &lt;em&gt;scholarly&lt;&#x2F;em&gt; journal articles that I’ve struggled to wrap my head around. The academic language is riddled with obfuscating words like “milieux” and “nexus” which are often used to explain relatively simple concepts in a not so simple language. I’ve had to train myself to understand the academic language and translate it to regular people (layperson) speak.&lt;&#x2F;p&gt;
+&lt;p&gt;The academic dialect is often associated with the &quot;elitist media” (see &lt;a href=&quot;https:&#x2F;&#x2F;chomsky.info&#x2F;199710__&#x2F;&quot;&gt;Chomsky&lt;&#x2F;a&gt;) which has recently been blamed for creating a strong divide in American politics—as we’ve seen since the beginning of the 2016 presidential primaries. Many words, phrases, and ideas have been shrouded by this language barrier.  I have been trying to break down this barrier for myself for years now. I feel like I’ve only made a small dent. I have been trying to educate myself, a layperson, on these phrases and concepts.&lt;&#x2F;p&gt;
+&lt;p&gt;As an undergraduate student I studied sociology and anthropology, but I found that I was enamored with economics, political science, urban theory, data science, psychology, and other disciplines. Across these fields there are identical concepts represented by different words or phrases—an ever frustrating thing. This is a barrier to understanding these fields. You must know certain ideas, words, and histories to understand the content.&lt;&#x2F;p&gt;
+&lt;p&gt;I have been collecting notes on these ideas and often revisit them to remind myself of what they are, what they mean, and why they exist. These notes were created for a myself, a layperson.&lt;&#x2F;p&gt;
+&lt;p&gt;In this series of forthcoming posts, I will write about concepts that I wish I knew better in a language that I can understand. I call this collection of posts &lt;em&gt;Letters To a Layperson&lt;&#x2F;em&gt;, inspired by the phenomenal book &lt;em&gt;Letters to a Young Contrarian&lt;&#x2F;em&gt; by Christopher Hitchens.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

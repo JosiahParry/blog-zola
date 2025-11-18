@@ -1,0 +1,1213 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            Posts | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- KaTeX for math rendering -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-bold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-xs font-mono"
+            />
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="flex-1 overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-1 text-sm font-mono pl-3 font-semibold border-l-2 border-primary -ml-px"
+                    >
+                        Posts
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/contact/"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        Contact
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64 relative">
+    <!-- Categories sidebar (absolute right) -->
+    <aside class="hidden xl:block absolute right-12 top-12">
+        <h2 class="text-lg font-semibold italic mb-4">Categories</h2>
+        <ul class="space-y-1">
+             
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;databricks&#x2F;"
+                    class="text-sm font-medium hover:underline"
+                >
+                    databricks (1)
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;deep-learning&#x2F;"
+                    class="text-sm font-medium hover:underline"
+                >
+                    deep-learning (1)
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;docker&#x2F;"
+                    class="text-sm font-medium hover:underline"
+                >
+                    Docker (1)
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;geniusr&#x2F;"
+                    class="text-sm font-medium hover:underline"
+                >
+                    geniusR (1)
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;gnn&#x2F;"
+                    class="text-sm font-medium hover:underline"
+                >
+                    gnn (1)
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;history&#x2F;"
+                    class="text-sm font-medium hover:underline"
+                >
+                    history (1)
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;letters&#x2F;"
+                    class="text-sm font-medium hover:underline"
+                >
+                    letters (1)
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;machine-learning&#x2F;"
+                    class="text-sm font-medium hover:underline"
+                >
+                    machine learning (1)
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;politics&#x2F;"
+                    class="text-sm font-medium hover:underline"
+                >
+                    politics (5)
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;python&#x2F;"
+                    class="text-sm font-medium hover:underline"
+                >
+                    Python (1)
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;r&#x2F;"
+                    class="text-sm font-medium hover:underline"
+                >
+                    R (16)
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;security&#x2F;"
+                    class="text-sm font-medium hover:underline"
+                >
+                    security (1)
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;sociology&#x2F;"
+                    class="text-sm font-medium hover:underline"
+                >
+                    sociology (1)
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;spatial&#x2F;"
+                    class="text-sm font-medium hover:underline"
+                >
+                    spatial (2)
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;tutorial&#x2F;"
+                    class="text-sm font-medium hover:underline"
+                >
+                    tutorial (4)
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;us&#x2F;"
+                    class="text-sm font-medium hover:underline"
+                >
+                    US (1)
+                </a>
+            </li>
+            
+        </ul>
+    </aside>
+
+    <!-- Posts list (centered) -->
+    <div class="max-w-3xl mx-auto">
+        <h1 class="text-4xl font-bold italic mb-6">Posts</h1>
+
+        <div class="space-y-4">
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;gnn-for-sds&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        Graph Neural Nets for Spatial Data Science
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        
+                        <span class="badge-secondary">spatial</span>
+                        
+                        <span class="badge-secondary">r</span>
+                        
+                        <span class="badge-secondary">deep-learning</span>
+                        
+                        <span class="badge-secondary">gnn</span>
+                        
+                    </div>
+                    
+                    <time
+                        datetime="2025-11-16"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        November 16, 2025
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;r-scripts-as-notebooks&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        Make your R scripts Databricks notebooks
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        
+                        <span class="badge-secondary">databricks</span>
+                        
+                        <span class="badge-secondary">r</span>
+                        
+                    </div>
+                    
+                    <time
+                        datetime="2022-05-11"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        May 11, 2022
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;exploratory-spatial-data-analysis-in-r&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        Exploratory Spatial Data Analysis in R
+                    </h2>
+                     
+                    <time
+                        datetime="2022-04-28"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        April 28, 2022
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;my-new-ide-theme-xxemocandylandxx&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        My new IDE theme: xxEmoCandyLandxx
+                    </h2>
+                     
+                    <time
+                        datetime="2022-04-06"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        April 06, 2022
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;an-open-system-requirements-database&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        Actually identifying R package System Requirements
+                    </h2>
+                     
+                    <time
+                        datetime="2022-04-05"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        April 05, 2022
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;installing-python-on-my-m1-in-under-10-minutes&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        Installing Python on my M1 in under 10 minutes
+                    </h2>
+                     
+                    <time
+                        datetime="2022-02-12"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        February 12, 2022
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;tf-is-a-statistical-moment&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        The heck is a statistical moment??
+                    </h2>
+                     
+                    <time
+                        datetime="2022-02-12"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        February 12, 2022
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;sliced-a-brief-reflection&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        SLICED! a brief reflection
+                    </h2>
+                     
+                    <time
+                        datetime="2021-06-18"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        June 18, 2021
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;2021-04-27-boston-user&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                         {cpcinema} &amp; associated journey
+                    </h2>
+                     
+                    <time
+                        datetime="2021-04-28"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        April 28, 2021
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;osint-youtube&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        OSINT in 7 minutes
+                    </h2>
+                     
+                    <time
+                        datetime="2021-04-04"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        April 04, 2021
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;language-agnostic&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        APIs: the language agnostic love story
+                    </h2>
+                     
+                    <time
+                        datetime="2021-03-28"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        March 28, 2021
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;python-r&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        Python &amp; R in production — the API way
+                    </h2>
+                     
+                    <time
+                        datetime="2021-03-28"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        March 28, 2021
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;cpcinema&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        Color Palette Cinema
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        
+                        <span class="badge-secondary">R</span>
+                        
+                    </div>
+                    
+                    <time
+                        datetime="2021-03-14"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        March 14, 2021
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;secure-package-environment&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        Secure R Package Environments
+                    </h2>
+                     
+                    <time
+                        datetime="2020-12-09"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        December 09, 2020
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;critical-race-theory&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        What is critical race theory, anyways?
+                    </h2>
+                     
+                    <time
+                        datetime="2020-09-14"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        September 14, 2020
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;demographic-change-white-fear-and-social-construction-of-race&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        Demographic Change, White Fear, and Social Construction of Race
+                    </h2>
+                     
+                    <time
+                        datetime="2020-09-07"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        September 07, 2020
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;gzip-api&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        Medium Data and Production API Pipeline
+                    </h2>
+                     
+                    <time
+                        datetime="2020-09-05"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        September 05, 2020
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;red-queen-effect&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        The Red Queen Effect
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        
+                        <span class="badge-secondary">politics</span>
+                        
+                    </div>
+                    
+                    <time
+                        datetime="2020-06-12"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        June 12, 2020
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;excel-in-prod&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        Excel in pRod
+                    </h2>
+                     
+                    <time
+                        datetime="2020-03-01"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        March 01, 2020
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;r-history&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        Design Paradigms in R
+                    </h2>
+                     
+                    <time
+                        datetime="2020-02-19"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        February 19, 2020
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;cran-2019&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        R Security Concerns and 2019 CRAN downloads
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        
+                        <span class="badge-secondary">R</span>
+                        
+                        <span class="badge-secondary">security</span>
+                        
+                    </div>
+                    
+                    <time
+                        datetime="2020-02-04"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        February 04, 2020
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;gs4-auth&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        Non-interactive user tokens with googlesheets4
+                    </h2>
+                     
+                    <time
+                        datetime="2020-01-13"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        January 13, 2020
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;spss-haven&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        Finding an SPSS {haven}
+                    </h2>
+                     
+                    <time
+                        datetime="2019-12-14"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        December 14, 2019
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;intro-tidymodels&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        Intro to Tidy Modeling
+                    </h2>
+                     
+                    <time
+                        datetime="2019-09-12"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        September 12, 2019
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;epa-waterquality&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        Water Quality Analysis
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        
+                        <span class="badge-secondary">R</span>
+                        
+                        <span class="badge-secondary">spatial</span>
+                        
+                    </div>
+                    
+                    <time
+                        datetime="2019-08-09"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        August 09, 2019
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;my-parts&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        ∑ { my parts }
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        
+                        <span class="badge-secondary">R</span>
+                        
+                        <span class="badge-secondary">politics</span>
+                        
+                    </div>
+                    
+                    <time
+                        datetime="2019-08-04"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        August 04, 2019
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;scraping-4-campaigns&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        Web-scraping for Campaigns
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        
+                        <span class="badge-secondary">R</span>
+                        
+                        <span class="badge-secondary">politics</span>
+                        
+                    </div>
+                    
+                    <time
+                        datetime="2019-06-11"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        June 11, 2019
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;trendyy-4-campaigns&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        Google Trends for Campaigns
+                    </h2>
+                     
+                    <time
+                        datetime="2019-06-11"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        June 11, 2019
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;introducing-trendyy&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        Introducing trendyy
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        
+                        <span class="badge-secondary">R</span>
+                        
+                    </div>
+                    
+                    <time
+                        datetime="2019-05-25"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        May 25, 2019
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;genius-learnr-tutorial&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        genius tutorial
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        
+                        <span class="badge-secondary">R</span>
+                        
+                    </div>
+                    
+                    <time
+                        datetime="2019-05-08"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        May 08, 2019
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;genius-api&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        genius Plumber API
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        
+                        <span class="badge-secondary">R</span>
+                        
+                        <span class="badge-secondary">Docker</span>
+                        
+                        <span class="badge-secondary">Python</span>
+                        
+                    </div>
+                    
+                    <time
+                        datetime="2019-03-30"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        March 30, 2019
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;shutdown-politics&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        The Cost of Gridlock
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        
+                        <span class="badge-secondary">politics</span>
+                        
+                    </div>
+                    
+                    <time
+                        datetime="2019-02-06"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        February 06, 2019
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;xgb-feature-importance&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        xgboost feature importance
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        
+                        <span class="badge-secondary">R</span>
+                        
+                        <span class="badge-secondary">machine learning</span>
+                        
+                    </div>
+                    
+                    <time
+                        datetime="2018-12-01"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        December 01, 2018
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;function-methods&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        [Not so] generic functions
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        
+                        <span class="badge-secondary">R</span>
+                        
+                        <span class="badge-secondary">tutorial</span>
+                        
+                    </div>
+                    
+                    <time
+                        datetime="2018-11-28"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        November 28, 2018
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;us-representation-i&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        US Representation: Part I
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        
+                        <span class="badge-secondary">politics</span>
+                        
+                        <span class="badge-secondary">history</span>
+                        
+                        <span class="badge-secondary">sociology</span>
+                        
+                        <span class="badge-secondary">US</span>
+                        
+                    </div>
+                    
+                    <time
+                        datetime="2018-11-25"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        November 25, 2018
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;introducing-letters-to-a-layperson&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        Introducing: Letters to a layperson
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        
+                        <span class="badge-secondary">letters</span>
+                        
+                    </div>
+                    
+                    <time
+                        datetime="2018-11-15"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        November 15, 2018
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;read-chunked-csv&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        Reading Multiple csvs as 1 data frame
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        
+                        <span class="badge-secondary">R</span>
+                        
+                        <span class="badge-secondary">tutorial</span>
+                        
+                    </div>
+                    
+                    <time
+                        datetime="2018-10-27"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        October 27, 2018
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;write-chunked-csv&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        Chunking your csv
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        
+                        <span class="badge-secondary">R</span>
+                        
+                        <span class="badge-secondary">tutorial</span>
+                        
+                    </div>
+                    
+                    <time
+                        datetime="2018-10-27"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        October 27, 2018
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;tidy-coursera-r-programming&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        Coursera R-Programming: Week 2 Problems
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        
+                        <span class="badge-secondary">R</span>
+                        
+                        <span class="badge-secondary">tutorial</span>
+                        
+                    </div>
+                    
+                    <time
+                        datetime="2018-04-14"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        April 14, 2018
+                    </time>
+                </a>
+            </article>
+            
+            <article>
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;introducing-geniusr&#x2F;" class="block group">
+                    <h2
+                        class="text-xl font-medium italic group-hover:underline"
+                    >
+                        Introducing geniusR
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        
+                        <span class="badge-secondary">R</span>
+                        
+                        <span class="badge-secondary">geniusR</span>
+                        
+                    </div>
+                    
+                    <time
+                        datetime="2018-01-27"
+                        class="text-sm text-muted-foreground font-mono"
+                    >
+                        January 27, 2018
+                    </time>
+                </a>
+            </article>
+            
+        </div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <script>
+            (() => {
+                try {
+                    const stored = localStorage.getItem("themeMode");
+                    if (
+                        stored
+                            ? stored === "dark"
+                            : matchMedia("(prefers-color-scheme: dark)").matches
+                    ) {
+                        document.documentElement.classList.add("dark");
+                    }
+                } catch (_) {}
+
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"></script>
+        
+    </body>
+</html>

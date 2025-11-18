@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            Python &amp; R in production — the API way | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- KaTeX for math rendering -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-bold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-xs font-mono"
+            />
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="flex-1 overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-1 text-sm font-mono pl-3 font-semibold border-l-2 border-primary -ml-px"
+                    >
+                        Posts
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/contact/"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        Contact
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">Python &amp; R in production — the API way</h1>
+
+          
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >March 28, 2021</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><div class="highlight">
+</div>
+<p>In my <a href="https://josiahparry.com/post/2021-03-28-language-agnostic/">previous post</a> I discussed how we can alter the R &amp; Python story to be predicated on APIs as a way to bridge the language divide. The R &amp; Python love story feels almost like unrequited love <a href="https://www.linkedin.com/in/katiemasiello/">(h/t)</a>. Much of the development towards integrating the two languages has been heavily focused on the R user experience. While the developments with respect to reticulate have been enormous and cannot go understated, it might be worthwhile exploring another way in which R &amp; Python and, for that matter, Python &amp; R can be utilized together.</p>
+<p>By shifting from language based tools that call the other language and translate their objects like reticulate and rpy2, to APIs we can develop robust <strong>language agnostic</strong> data science pipelines. I want to provide two motivating examples that explore the interplay between R &amp; Python.</p>
+<h2 id="calling-python-from-r-without-reticulate">Calling Python from R (without reticulate)</h2>
+<p>When we talk about R &amp; Python we typically are referring to reticulate, whether that be through python code chunks, the <a href="https://tensorflow.rstudio.com/">{tensorflow}</a> package, or reticulate itself. However, as discussed in my previous post, another way that we can do this is via API. <a href="https://flask.palletsprojects.com/en/1.1.x/">Flask</a> can be used to create RESTful APIs.</p>
+<p>On the RStudio Connect demo server there is a <a href="https://colorado.rstudio.com/rsc/flask-stock-service/">Flask app</a> which provides historical stock prices for a few tickers. We can create a simple windowed summary visualization utilizing the Flask app, httr, dplyr, and ggplot2. Let's break this down. First we use the httr library to send an HTTP request to the Flask app.</p>
+<pre data-lang="r" style="background-color:#2b303b;color:#c0c5ce;" class="language-r "><code class="language-r" data-lang="r"><span style="color:#96b5b4;">library</span><span>(httr)
+</span><span style="color:#96b5b4;">library</span><span>(tidyverse)
+</span><span>
+</span><span>flask_call &lt;- &quot;</span><span style="color:#a3be8c;">https://colorado.rstudio.com/rsc/flask-stock-service/stocks/AAPL/history</span><span>&quot;
+</span><span>
+</span><span>aapl &lt;- </span><span style="color:#bf616a;">GET</span><span>(flask_call) %&gt;% 
+</span><span>  </span><span style="color:#bf616a;">content</span><span>(</span><span style="color:#bf616a;">as </span><span>= &quot;</span><span style="color:#a3be8c;">text</span><span>&quot;, </span><span style="color:#bf616a;">encoding </span><span>= &quot;</span><span style="color:#a3be8c;">utf-8</span><span>&quot;) %&gt;% 
+</span><span>  jsonlite::</span><span style="color:#bf616a;">fromJSON</span><span>() %&gt;% 
+</span><span>  </span><span style="color:#bf616a;">as_tibble</span><span>()
+</span></code></pre>
+<p>By sending this HTTP request, we are then kicking off a Python process which returns our dataset. We can then use dplyr to aggregate our dataset as we normally would.</p>
+<pre data-lang="r" style="background-color:#2b303b;color:#c0c5ce;" class="language-r "><code class="language-r" data-lang="r"><span>aapl_yearly &lt;- aapl %&gt;% 
+</span><span>  </span><span style="color:#bf616a;">group_by</span><span>(</span><span style="color:#bf616a;">year </span><span>= lubridate::</span><span style="color:#bf616a;">year</span><span>(date)) %&gt;% 
+</span><span>  </span><span style="color:#bf616a;">summarise</span><span>(</span><span style="color:#bf616a;">avg_adj </span><span>= </span><span style="color:#96b5b4;">mean</span><span>(adjusted)) 
+</span><span>
+</span><span style="color:#96b5b4;">head</span><span>(aapl_yearly)
+</span><span style="color:#65737e;">#&gt; # A tibble: 6 x 2
+</span><span style="color:#65737e;">#&gt;    year avg_adj
+</span><span style="color:#65737e;">#&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+</span><span style="color:#65737e;">#&gt; 1  2010    24.9
+</span><span style="color:#65737e;">#&gt; 2  2011    34.8
+</span><span style="color:#65737e;">#&gt; 3  2012    56.1
+</span><span style="color:#65737e;">#&gt; 4  2013    53.1
+</span><span style="color:#65737e;">#&gt; 5  2014    84.3
+</span><span style="color:#65737e;">#&gt; 6  2015   113.
+</span></code></pre>
+<p>Finally we utilize ggplot2 to create the simple visualization.</p>
+<pre data-lang="r" style="background-color:#2b303b;color:#c0c5ce;" class="language-r "><code class="language-r" data-lang="r"><span style="color:#bf616a;">ggplot</span><span>(aapl_yearly, </span><span style="color:#bf616a;">aes</span><span>(year, avg_adj)) +
+</span><span>  </span><span style="color:#bf616a;">geom_line</span><span>() + 
+</span><span>  </span><span style="color:#bf616a;">labs</span><span>(</span><span style="color:#bf616a;">title </span><span>= &quot;</span><span style="color:#a3be8c;">AAPL stock growth</span><span>&quot;, </span><span style="color:#bf616a;">x </span><span>= &quot;&quot;, </span><span style="color:#bf616a;">y </span><span>= &quot;</span><span style="color:#a3be8c;">Average Adjusted</span><span>&quot;) +
+</span><span>  </span><span style="color:#bf616a;">scale_y_continuous</span><span>(</span><span style="color:#bf616a;">labels </span><span>= scales::dollar) + 
+</span><span>  </span><span style="color:#bf616a;">theme_minimal</span><span>()
+</span></code></pre>
+<div class="highlight">
+<img src="/post/2021-03-28-python-r_files/aapl-stock.png" width="80%" style="display: block; margin: auto;" />
+</div>
+<p>That was simple, right? In the above code chunks we utilized both R and python while only interacting and writing R code. That's the brilliance of this approach.</p>
+<h2 id="calling-r-from-python">Calling R from Python</h2>
+<p>The less often discussed part of this love story---hence unrequited love story---is how can Python users utilize R within their own workflows. Often machine learning engineers will use Python in combination with Scikit Learn to create their models. To illustrate how we can let both R and Python users shine I wanted to adapt the wonderful <a href="https://solutions.rstudio.com/example/bike_predict/">Bike Prediction</a> example from the Solutions Engineering team at RStudio.</p>
+<div class="highlight">
+<img src="https://solutions.rstudio.com/example/images/bike-predict/bp-overview.png" width="85%" style="display: block; margin: auto;" />
+</div>
+<p>The Bike Prediction project is an example of orchestrating a number of data science artifacts into a holistic system on RStudio Connect that all work in unity. This example could just as well have been written entirely with Python. It could even be written as a combination of both R and Python. And that is what I'd like to illustrate.</p>
+<p>The bike prediction app utilizes a custom R package and the power of dbplyr to perform scheduled ETL jobs. It is effective, efficient, and already deployed. Say one has a colleague who would like to create a new machine learning model using the same data how can we enable them to do so? The example works within the context of its own R Markdown that retrains the model. Rather than making a one time export of the data from the ETL process, we can make the data available consistently through a RESTful API hosted <a href="https://colorado.rstudio.com/rsc/bike-data-api/">here</a>.</p>
+<div class="highlight">
+<img src="https://user-images.githubusercontent.com/13534508/112771576-7c9a1200-8ffa-11eb-9be1-87a0a617ed23.png" width="80%" style="display: block; margin: auto;" />
+</div>
+<p>The training and testing data have been made available through a plumber API that is hosted on RStudio Connect. With the data being available through an API, all that is needed to interact with it is the <code>requests</code> library. Everything else is as one would anticipate!</p>
+<pre data-lang="python" style="background-color:#2b303b;color:#c0c5ce;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#b48ead;">import </span><span>requests
+</span><span style="color:#b48ead;">import </span><span>pandas </span><span style="color:#b48ead;">as </span><span>pd
+</span><span style="color:#b48ead;">from </span><span>xgboost </span><span style="color:#b48ead;">import </span><span>XGBRegressor
+</span><span style="color:#b48ead;">from </span><span>sklearn.metrics </span><span style="color:#b48ead;">import </span><span>mean_squared_error
+</span></code></pre>
+<p>In the below code chunk we call the Plumber API using an HTTP request which kicks off an R process. That R process utilizes dbplyr and lubridate to extract and partition data for training and testing.</p>
+<pre data-lang="python" style="background-color:#2b303b;color:#c0c5ce;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#65737e;"># Fetch data from Plumber API 
+</span><span>test_dat_raw = requests.</span><span style="color:#bf616a;">get</span><span>(&quot;</span><span style="color:#a3be8c;">https://colorado.rstudio.com/rsc/bike-data-api/testing-data</span><span>&quot;)
+</span><span>test_dat = pd.</span><span style="color:#bf616a;">read_json</span><span>(test_dat_raw.text)
+</span><span>
+</span><span>train_dat_raw = requests.</span><span style="color:#bf616a;">get</span><span>(&quot;</span><span style="color:#a3be8c;">https://colorado.rstudio.com/rsc/bike-data-api/training-data</span><span>&quot;)
+</span><span>train_dat = pd.</span><span style="color:#bf616a;">read_json</span><span>(train_dat_raw.text)
+</span></code></pre>
+<p>Now that the data have been processed by R and loaded as a pandas dataframe the model training can continue as standard.</p>
+<pre data-lang="python" style="background-color:#2b303b;color:#c0c5ce;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#65737e;"># partition data and one hot encode day of week
+</span><span>train_x = pd.</span><span style="color:#bf616a;">concat</span><span>([train_dat[[&quot;</span><span style="color:#a3be8c;">hour</span><span>&quot;, &quot;</span><span style="color:#a3be8c;">month</span><span>&quot;, &quot;</span><span style="color:#a3be8c;">lat</span><span>&quot;, &quot;</span><span style="color:#a3be8c;">lon</span><span>&quot;]], pd.</span><span style="color:#bf616a;">get_dummies</span><span>(train_dat.dow)], </span><span style="color:#bf616a;">axis </span><span>= </span><span style="color:#d08770;">1</span><span>)
+</span><span>train_y = train_dat[&quot;</span><span style="color:#a3be8c;">n_bikes</span><span>&quot;]
+</span><span>
+</span><span style="color:#65737e;"># instantiate xgb model object
+</span><span>model = </span><span style="color:#bf616a;">XGBRegressor</span><span>()
+</span><span> 
+</span><span style="color:#65737e;"># fit the model with the training data
+</span><span>model.</span><span style="color:#bf616a;">fit</span><span>(train_x,train_y)
+</span><span>
+</span><span style="color:#65737e;"># predict the target on the test dataset
+</span><span>test_dow = pd.</span><span style="color:#bf616a;">get_dummies</span><span>(pd.</span><span style="color:#bf616a;">Categorical</span><span>(test_dat.dow, </span><span style="color:#bf616a;">categories </span><span>= [&#39;</span><span style="color:#a3be8c;">Friday</span><span>&#39;, &#39;</span><span style="color:#a3be8c;">Monday</span><span>&#39;, &#39;</span><span style="color:#a3be8c;">Saturday</span><span>&#39;, &#39;</span><span style="color:#a3be8c;">Sunday</span><span>&#39;, &#39;</span><span style="color:#a3be8c;">Thursday</span><span>&#39;, &#39;</span><span style="color:#a3be8c;">Tuesday</span><span>&#39;, &#39;</span><span style="color:#a3be8c;">Wednesday</span><span>&#39;]))
+</span><span>test_x = pd.</span><span style="color:#bf616a;">concat</span><span>([test_dat[[&quot;</span><span style="color:#a3be8c;">hour</span><span>&quot;, &quot;</span><span style="color:#a3be8c;">month</span><span>&quot;, &quot;</span><span style="color:#a3be8c;">lat</span><span>&quot;, &quot;</span><span style="color:#a3be8c;">lon</span><span>&quot;]], test_dow], </span><span style="color:#bf616a;">axis </span><span>= </span><span style="color:#d08770;">1</span><span>)
+</span><span>test_y = test_dat.n_bikes
+</span></code></pre>
+<pre data-lang="python" style="background-color:#2b303b;color:#c0c5ce;" class="language-python "><code class="language-python" data-lang="python"><span style="color:#65737e;"># predict the target on the test dataset
+</span><span>predict_test = model.</span><span style="color:#bf616a;">predict</span><span>(test_x)
+</span><span> 
+</span><span style="color:#65737e;"># MSE on test dataset
+</span><span style="color:#bf616a;">mean_squared_error</span><span>(test_y,predict_test, </span><span style="color:#bf616a;">squared </span><span>= </span><span style="color:#d08770;">False</span><span>)
+</span><span style="color:#65737e;">#&gt; 4.502217132673415
+</span></code></pre>
+<p>Through the API both R <em>and</em> Python were able to flourish all the while building extensible infrastructure that can be utilized beyond their own team. The API approach enables the R and Python user to extend their tools beyond their direct team without having to adopt a new toolkit.</p>
+<h2 id="adopting-apis-for-cross-language-collaboration">Adopting APIs for cross language collaboration</h2>
+<p>While data scientists may usually think of APIs as something that they use to interact with SaaS products or extract data, they are also a tool that can be utilized to build out the data science infrastructure of a team. Through Flask, Plumber, and other libraries that turn code into RESTful APIs, data scientists can bridge language divides with exceptional ease. I think we ought to begin to transition the ways in which we think about language divides. We ought to utilize the universal language of HTTP more thoroughly. By creating these APIs we not only can aid other data scientists, but entirely other teams. A React JS web development can then tap into your API to either serve up predictions, extract data, send files, or whatever else you can dream up. Let's not limit ourselves to one language. Let's build out APIs to enable all languages to thrive.</p>
+<p><em>Disclaimer: This is a personal opinion and not endorsed or published by RStudio. My statements represent no one but myself---sometimes not even that.</em></p>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <script>
+            (() => {
+                try {
+                    const stored = localStorage.getItem("themeMode");
+                    if (
+                        stored
+                            ? stored === "dark"
+                            : matchMedia("(prefers-color-scheme: dark)").matches
+                    ) {
+                        document.documentElement.classList.add("dark");
+                    }
+                } catch (_) {}
+
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"></script>
+        
+    </body>
+</html>

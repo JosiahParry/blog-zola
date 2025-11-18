@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Josiah Parry - gnn</title>
+    <link rel="self" type="application/atom+xml" href="https://josiah.rs/categories/gnn/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://josiah.rs"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2025-11-16T00:00:00+00:00</updated>
+    <id>https://josiah.rs/categories/gnn/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Graph Neural Nets for Spatial Data Science</title>
+        <published>2025-11-16T00:00:00+00:00</published>
+        <updated>2025-11-16T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/gnn-for-sds/"/>
+        <id>https://josiah.rs/posts/gnn-for-sds/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/gnn-for-sds/">&lt;p&gt;I’ve been saying this for years and I’ll say it again:&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;em&gt;Spatial data is just a graph&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;I’ve been diving &lt;em&gt;deep&lt;&#x2F;em&gt; into &lt;strong&gt;Graph Neural Networks&lt;&#x2F;strong&gt; (GNN) to
+understand how we can use them for “GeoAI” and spatial machine learning.&lt;&#x2F;p&gt;
+&lt;p&gt;This post is going to build the intuition for why Graph Neural Networks
+are perfect for spatial data (non-raster).&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;spatial-weights-matrices-are-graphs&quot;&gt;Spatial Weights Matrices are graphs&lt;&#x2F;h2&gt;
+&lt;p&gt;A graph is defined as a set &lt;strong&gt;nodes&lt;&#x2F;strong&gt; connected by &lt;strong&gt;edges&lt;&#x2F;strong&gt;. Nodes can
+be thought of as “things” or “entities” and then the connections between
+them are the edges. The nodes can be thought of as &lt;strong&gt;rows&lt;&#x2F;strong&gt; in a
+dataset. Then the edges are an additional “edge list” that informs us of
+connectivity between them.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-r &quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;library&lt;&#x2F;span&gt;&lt;span&gt;(igraph)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;set.seed&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;g &amp;lt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;sample_gnm&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;6&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;11&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;plot&lt;&#x2F;span&gt;&lt;span&gt;(g)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;gnn-for-sds&#x2F;index_files&#x2F;figure-commonmark&#x2F;unnamed-chunk-1-1.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;!-- --&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;When we do spatial statistics we need to create the concept of a
+&lt;strong&gt;neighborhood&lt;&#x2F;strong&gt;. For example with polygons, we typically use
+&lt;strong&gt;contiguity&lt;&#x2F;strong&gt; to define our neighborhood.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-r &quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;library&lt;&#x2F;span&gt;&lt;span&gt;(sf)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;data&lt;&#x2F;span&gt;&lt;span&gt;(guerry, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;package &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;sfdep&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;plot&lt;&#x2F;span&gt;&lt;span&gt;(guerry&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt;geometry)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;gnn-for-sds&#x2F;index_files&#x2F;figure-commonmark&#x2F;unnamed-chunk-2-1.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;!-- --&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;If we identify &lt;em&gt;neighborhoods&lt;&#x2F;em&gt; based on contiguity we then identify our
+neighbors based on that which we use to create a &lt;strong&gt;spatial weights
+matrix&lt;&#x2F;strong&gt;.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-r &quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;library&lt;&#x2F;span&gt;&lt;span&gt;(spdep)
+&lt;&#x2F;span&gt;&lt;span&gt;nb &amp;lt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;poly2nb&lt;&#x2F;span&gt;&lt;span&gt;(guerry)
+&lt;&#x2F;span&gt;&lt;span&gt;lw &amp;lt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;nb2listw&lt;&#x2F;span&gt;&lt;span&gt;(nb)
+&lt;&#x2F;span&gt;&lt;span&gt;lw
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Characteristics of weights list object:
+&lt;&#x2F;span&gt;&lt;span&gt;Neighbour list object:
+&lt;&#x2F;span&gt;&lt;span&gt;Number of regions: 85 
+&lt;&#x2F;span&gt;&lt;span&gt;Number of nonzero links: 420 
+&lt;&#x2F;span&gt;&lt;span&gt;Percentage nonzero weights: 5.813149 
+&lt;&#x2F;span&gt;&lt;span&gt;Average number of links: 4.941176 
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Weights style: W 
+&lt;&#x2F;span&gt;&lt;span&gt;Weights constants summary:
+&lt;&#x2F;span&gt;&lt;span&gt;   n   nn S0      S1       S2
+&lt;&#x2F;span&gt;&lt;span&gt;W 85 7225 85 37.2761 347.6683
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;div class=&quot;aside&quot;&gt;
+&lt;p&gt;The &lt;code&gt;listw&lt;&#x2F;code&gt; object from spdep is the representation of the spatial
+weights matrix.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;The spatial weights matrix is a &lt;strong&gt;sparse matrix&lt;&#x2F;strong&gt;. For every location in
+our data set there is a row and a column—&lt;code&gt;n x n&lt;&#x2F;code&gt; matrix. A non-zero
+value in a row indicates a neighbor. The connections between locations
+(or the &lt;strong&gt;spatial weights matrix&lt;&#x2F;strong&gt; (SWM)) can be viewed as a network.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-r &quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;plot&lt;&#x2F;span&gt;&lt;span&gt;(nb, guerry&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt;geometry)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;gnn-for-sds&#x2F;index_files&#x2F;figure-commonmark&#x2F;unnamed-chunk-4-1.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;!-- --&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;As you can see a spatial weight matrix &lt;strong&gt;is a graph&lt;&#x2F;strong&gt;!&lt;&#x2F;p&gt;
+&lt;div class=&quot;aside&quot;&gt;
+&lt;p&gt;To be exceptionally pedantic (as this whole post is) a SWM is a graph
+&lt;em&gt;G&lt;&#x2F;em&gt; = (&lt;em&gt;V&lt;&#x2F;em&gt;, &lt;em&gt;E&lt;&#x2F;em&gt;) where each node, &lt;em&gt;v&lt;&#x2F;em&gt;&lt;sub&gt;&lt;em&gt;i&lt;&#x2F;em&gt;&lt;&#x2F;sub&gt;, is a location in a
+set of nodes (&lt;em&gt;i&lt;&#x2F;em&gt; = 1, ..., &lt;em&gt;n&lt;&#x2F;em&gt;). The edges in the graph
+&lt;em&gt;e&lt;&#x2F;em&gt;&lt;sub&gt;&lt;em&gt;i**j&lt;&#x2F;em&gt;&lt;&#x2F;sub&gt; = (&lt;em&gt;v&lt;&#x2F;em&gt;&lt;sub&gt;&lt;em&gt;i&lt;&#x2F;em&gt;&lt;&#x2F;sub&gt;, &lt;em&gt;v&lt;&#x2F;em&gt;&lt;sub&gt;&lt;em&gt;j&lt;&#x2F;em&gt;&lt;&#x2F;sub&gt;, &lt;em&gt;w&lt;&#x2F;em&gt;&lt;sub&gt;&lt;em&gt;i**j&lt;&#x2F;em&gt;&lt;&#x2F;sub&gt;)
+are the spatial weights between neighbors.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;Okay, moving on.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;spatial-lags-and-message-passing&quot;&gt;Spatial Lags and Message Passing&lt;&#x2F;h2&gt;
+&lt;p&gt;The crux of spatial econometrics is the spatial lag. For all intents and
+purposes, the spatial lag is “just” an average of a variable &lt;em&gt;X&lt;&#x2F;em&gt; over a
+neighborhood.&lt;&#x2F;p&gt;
+&lt;div class=&quot;callout-note&quot;&gt;
+&lt;p&gt;See my &lt;a href=&quot;https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=abrQBSdTk7E&quot;&gt;YouTube video&lt;&#x2F;a&gt; on
+this in more depth.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;pre data-lang=&quot;r&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-r &quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;library&lt;&#x2F;span&gt;&lt;span&gt;(dplyr)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;library&lt;&#x2F;span&gt;&lt;span&gt;(sfdep)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;library&lt;&#x2F;span&gt;&lt;span&gt;(ggplot2)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;library&lt;&#x2F;span&gt;&lt;span&gt;(patchwork)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;df &amp;lt;- guerry_nb |&amp;gt; 
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;mutate&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;crime_lag &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;st_lag&lt;&#x2F;span&gt;&lt;span&gt;(crime_pers, nb, wt))
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;obs &amp;lt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ggplot&lt;&#x2F;span&gt;&lt;span&gt;(df) +
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;geom_sf&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;aes&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;fill &lt;&#x2F;span&gt;&lt;span&gt;= crime_pers)) +
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;scale_fill_viridis_c&lt;&#x2F;span&gt;&lt;span&gt;() +
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;theme_void&lt;&#x2F;span&gt;&lt;span&gt;() +
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;theme&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;legend.position &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;none&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;) +
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;labs&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;title &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Observed&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;lagged &amp;lt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ggplot&lt;&#x2F;span&gt;&lt;span&gt;(df) +
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;geom_sf&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;aes&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;fill &lt;&#x2F;span&gt;&lt;span&gt;= crime_lag)) +
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;scale_fill_viridis_c&lt;&#x2F;span&gt;&lt;span&gt;() +
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;theme_void&lt;&#x2F;span&gt;&lt;span&gt;() +
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;theme&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;legend.position &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;none&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;) +
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;labs&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;title &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;Spatial Lag&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;obs | lagged
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;gnn-for-sds&#x2F;index_files&#x2F;figure-commonmark&#x2F;unnamed-chunk-5-1.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;!-- --&gt;&lt;&#x2F;p&gt;
+&lt;div class=&quot;callout-important&quot;&gt;
+&lt;h2 id=&quot;point-down-don-t-miss-this&quot;&gt;👇🏽 Don’t miss this&lt;&#x2F;h2&gt;
+&lt;p&gt;👉🏼 The spatial lag is a way to &lt;strong&gt;aggregate information&lt;&#x2F;strong&gt; about a
+location’s neighborhood. 👈🏼&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;GNNs are based on the concept of &lt;strong&gt;message passing&lt;&#x2F;strong&gt;. Message passing is
+how we propagate information from a node’s neighbors (edge connections)
+to the node itself.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-r &quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Create a simple 4-node network: central node with 3 neighbors
+&lt;&#x2F;span&gt;&lt;span&gt;edges &amp;lt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;matrix&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;c&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;,  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# node 2 -&amp;gt; central node
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;3&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;,  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# node 3 -&amp;gt; central node
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;4&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1   &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# node 4 -&amp;gt; central node
+&lt;&#x2F;span&gt;&lt;span&gt;), &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ncol &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;byrow &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;TRUE&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;g &amp;lt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;graph_from_edgelist&lt;&#x2F;span&gt;&lt;span&gt;(edges, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;directed &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;TRUE&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Assign values to each node
+&lt;&#x2F;span&gt;&lt;span&gt;node_values &amp;lt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;c&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.2&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.8&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.5&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0.9&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Create layout: central node in middle, others in circle
+&lt;&#x2F;span&gt;&lt;span&gt;layout &amp;lt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;matrix&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;c&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;,           &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# central node
+&lt;&#x2F;span&gt;&lt;span&gt;  -&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;,          &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# node 2
+&lt;&#x2F;span&gt;&lt;span&gt;  -&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;, -&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;,         &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# node 3
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0            &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# node 4
+&lt;&#x2F;span&gt;&lt;span&gt;), &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;ncol &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;byrow &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;TRUE&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Plot
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;plot&lt;&#x2F;span&gt;&lt;span&gt;(g,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;vertex.size &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;30&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;vertex.color &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;rgb&lt;&#x2F;span&gt;&lt;span&gt;(node_values, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;0&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1 &lt;&#x2F;span&gt;&lt;span&gt;- node_values),
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;vertex.label &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;paste0&lt;&#x2F;span&gt;&lt;span&gt;(&amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;x&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;:&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;4&lt;&#x2F;span&gt;&lt;span&gt;),
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;vertex.label.cex &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1.2&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;vertex.label.font &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;vertex.label.color &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;white&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;edge.width &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;2&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;edge.arrow.size &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;edge.color &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;gray50&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;,
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;layout &lt;&#x2F;span&gt;&lt;span&gt;= layout,
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;gnn-for-sds&#x2F;index_files&#x2F;figure-commonmark&#x2F;unnamed-chunk-6-1.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;!-- --&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;In this graph, we have nodes x1 through x4. The nodes x2, x3, and x4 are
+“passing” their message to the focal node. These node values have to be
+summarized in some way. This is typically called an &lt;strong&gt;aggregation
+function&lt;&#x2F;strong&gt;. The most common one? The average!&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;the-takeaway&quot;&gt;The takeaway&lt;&#x2F;h3&gt;
+&lt;p&gt;The spatial lag operator &lt;strong&gt;is message passing&lt;&#x2F;strong&gt;! This means that most of
+our spatial econometric models—spatial lag and spatial error models and
+many others are actually utilizing graph message passing in some way.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;graph-convolution-networks&quot;&gt;Graph Convolution Networks&lt;&#x2F;h2&gt;
+&lt;p&gt;The most common type of GNN is the &lt;strong&gt;Graph Convolution Network&lt;&#x2F;strong&gt; (GCN).&lt;&#x2F;p&gt;
+&lt;div class=&quot;aside&quot;&gt;
+&lt;p&gt;The term “Convolution” is often used for deep learning models that
+perform image detection—typically a &lt;strong&gt;Convolution Neural Network&lt;&#x2F;strong&gt;.
+These apply a “filter” over each pixel in an image and typically take
+the weighted sum (or average) of the neighboring pixels to summarize
+nearby pixels.&lt;&#x2F;p&gt;
+&lt;p&gt;This is literally the same thing! Except pixels have a fixed grid
+whereas we’re generalizing message passing and spatial lags to &lt;em&gt;any&lt;&#x2F;em&gt;
+network with a node and neighbors.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;The GCN is defined from a famous paper &lt;a href=&quot;https:&#x2F;&#x2F;arxiv.org&#x2F;abs&#x2F;1609.02907&quot;&gt;Semi-Supervised Classification
+with Graph Convolutional Networks&lt;&#x2F;a&gt; as:&lt;&#x2F;p&gt;
+&lt;p&gt;$$
+\mathbf{H}^{(k)} = \sigma\left(\tilde{\mathbf{A}}\mathbf{H}^{(k-1)}\mathbf{W}^{(k)}\right)
+$$&lt;&#x2F;p&gt;
+&lt;p&gt;The single layer version of this can be written as:&lt;&#x2F;p&gt;
+&lt;p&gt;$$
+\mathbf{H} = \sigma\left(\tilde{\mathbf{A}} \mathbf{X} \mathbf{W}\right)
+$$&lt;&#x2F;p&gt;
+&lt;p&gt;This is actually a lot less scary once you think of everything as a
+spatial lag and locations on a map. Let’s start with &lt;em&gt;Ã&lt;&#x2F;em&gt;.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;the-adjacency-matrix&quot;&gt;The adjacency matrix&lt;&#x2F;h3&gt;
+&lt;p&gt;$$
+\tilde{\mathbf{A}} = (\mathbf{D} + \mathbf{I})^{-\frac{1}{2}}(\mathbf{I} + \mathbf{A})(\mathbf{D} + \mathbf{I})^{-\frac{1}{2}}
+$$&lt;&#x2F;p&gt;
+&lt;p&gt;This equation is saying that we have an adjacency matrix &lt;em&gt;A&lt;&#x2F;em&gt; which is
+“normalized” (scaled by) the &lt;strong&gt;degree matrix&lt;&#x2F;strong&gt; &lt;em&gt;D&lt;&#x2F;em&gt;. The degree matrix
+counts the number of neighbors per location.&lt;&#x2F;p&gt;
+&lt;p&gt;The matrix D is equivalent to &lt;code&gt;spdep::card(nb)&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;The biggest difference here between spatial econometrics and the GCN is
+that the adjacency matrix &lt;em&gt;A&lt;&#x2F;em&gt; must have “self-loops.” The &lt;em&gt;I&lt;&#x2F;em&gt; + &lt;em&gt;A&lt;&#x2F;em&gt; is
+equivalent to &lt;code&gt;spdep::include.self()&lt;&#x2F;code&gt;. This ensures that the
+neighborhood includes the observed location.&lt;&#x2F;p&gt;
+&lt;div class=&quot;aside&quot;&gt;
+&lt;p&gt;&lt;em&gt;I&lt;&#x2F;em&gt; is called the “identity matrix.” It’s literally just the diagonal of
+a matrix set to 1.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;The point of this matrix is to ensure that when we multiply values
+together the scale is roughly maintained and that the contribution from
+neighbors &lt;strong&gt;and&lt;&#x2F;strong&gt; the focal node (location) are roughly balanced.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;the-weights-matrix-w&quot;&gt;The weights matrix &lt;em&gt;W&lt;&#x2F;em&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;The strength of neural networks is their ability to learn
+representations of our variables—typically using a higher dimension
+representation. For example, taking 3 variables and mapping them onto,
+say, 3 “hidden” dimension would create a total of 9 values of &lt;em&gt;W&lt;&#x2F;em&gt; that
+would be learned on. These embeddings can capture more patterns than
+might be possible from the values themselves.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;gnn-for-sds&#x2F;images&#x2F;paste-3.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;div class=&quot;callout-note&quot;&gt;
+&lt;p&gt;The rows of &lt;em&gt;W&lt;&#x2F;em&gt; correspond to the input variables. The columns indicate
+the “hidden dimensions.” Multiplying by the &lt;em&gt;W&lt;&#x2F;em&gt; creates “node
+embeddings.” The more hidden dimensions the more embedding variables
+there are.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;The matrix &lt;em&gt;W&lt;&#x2F;em&gt; is &lt;strong&gt;learnable&lt;&#x2F;strong&gt; which means that the network adjusts the
+values to best predict the target variable &lt;em&gt;Y&lt;&#x2F;em&gt;. The &lt;em&gt;W&lt;&#x2F;em&gt; is akin to the
+&lt;em&gt;β&lt;&#x2F;em&gt; coefficients of a regression model.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;single-layer-gcn-is-just-regression&quot;&gt;Single layer GCN is just regression&lt;&#x2F;h2&gt;
+&lt;p&gt;In a regression we have a &lt;em&gt;β&lt;&#x2F;em&gt; for each variable in our model. If we have
+3 variables in our &lt;em&gt;X&lt;&#x2F;em&gt; matrix (the predictor variables) and we specify
+that our single layer model only have 1 hidden dimension then the &lt;em&gt;W&lt;&#x2F;em&gt;
+only has 3 values—one per variable. This is essentially a learned
+version of the &lt;em&gt;β&lt;&#x2F;em&gt;!&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;gnn-for-sds&#x2F;images&#x2F;paste-4.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;In this example we only have 1 hidden dimension which means we only have
+1 weight per variable—akin to the actual &lt;em&gt;β&lt;&#x2F;em&gt; of a linear regression.
+Now, this is actually ignoring the message passing aspect of this. To be
+a GCN we need to calculate the spatial lag of each X before we multiply
+by the learned weights. The actual GCN looks like&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;gnn-for-sds&#x2F;images&#x2F;paste-5.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;For the spatial econometricians in the house—this might look like a
+spatially lagged X model without the original X matrix.&lt;&#x2F;p&gt;
+&lt;div class=&quot;aside&quot;&gt;
+&lt;p&gt;See &lt;a href=&quot;https:&#x2F;&#x2F;r-spatial.org&#x2F;book&#x2F;17-Econometrics.html&quot;&gt;Spatial Data Science ch 17 on econometric
+models&lt;&#x2F;a&gt; for a fairly
+terse discussion on these models by Bivand and Pebesma.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;Let’s first create a spatially lagged X model by hand:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-r &quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Create neighborhood structure with self-loops
+&lt;&#x2F;span&gt;&lt;span&gt;nb &amp;lt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;include.self&lt;&#x2F;span&gt;&lt;span&gt;(guerry_nb&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt;nb)
+&lt;&#x2F;span&gt;&lt;span&gt;lw &amp;lt;- spdep::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;nb2listw&lt;&#x2F;span&gt;&lt;span&gt;(nb, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;style &lt;&#x2F;span&gt;&lt;span&gt;= &amp;quot;&lt;&#x2F;span&gt;&lt;span style=&quot;color:#a3be8c;&quot;&gt;W&lt;&#x2F;span&gt;&lt;span&gt;&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Prepare feature matrix
+&lt;&#x2F;span&gt;&lt;span&gt;x &amp;lt;- guerry |&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  sf::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;st_drop_geometry&lt;&#x2F;span&gt;&lt;span&gt;() |&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;select&lt;&#x2F;span&gt;&lt;span&gt;(commerce, crime_pers, donations) |&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;scale&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# calculate spatial lags for each variable
+&lt;&#x2F;span&gt;&lt;span&gt;sp_lags &amp;lt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;lag.listw&lt;&#x2F;span&gt;&lt;span&gt;(lw, x)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# define y variable
+&lt;&#x2F;span&gt;&lt;span&gt;y &amp;lt;- guerry&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt;instruction
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# fit slx model
+&lt;&#x2F;span&gt;&lt;span&gt;slx_mod &amp;lt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;lm&lt;&#x2F;span&gt;&lt;span&gt;(y &lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;~&lt;&#x2F;span&gt;&lt;span&gt; sp_lags)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;summary&lt;&#x2F;span&gt;&lt;span&gt;(slx_mod)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;Call:
+&lt;&#x2F;span&gt;&lt;span&gt;lm(formula = y ~ sp_lags)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Residuals:
+&lt;&#x2F;span&gt;&lt;span&gt;   Min     1Q Median     3Q    Max 
+&lt;&#x2F;span&gt;&lt;span&gt;-45.22 -11.60   0.38  11.55  35.09 
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Coefficients:
+&lt;&#x2F;span&gt;&lt;span&gt;            Estimate Std. Error t value Pr(&amp;gt;|t|)    
+&lt;&#x2F;span&gt;&lt;span&gt;(Intercept) 43.64726    1.93599  22.545  &amp;lt; 2e-16 ***
+&lt;&#x2F;span&gt;&lt;span&gt;sp_lags1    24.27125    2.92102   8.309 1.84e-12 ***
+&lt;&#x2F;span&gt;&lt;span&gt;sp_lags2    -1.06314    3.23981  -0.328    0.744    
+&lt;&#x2F;span&gt;&lt;span&gt;sp_lags3     0.09644    3.84151   0.025    0.980    
+&lt;&#x2F;span&gt;&lt;span&gt;---
+&lt;&#x2F;span&gt;&lt;span&gt;Signif. codes:  0 &amp;#39;***&amp;#39; 0.001 &amp;#39;**&amp;#39; 0.01 &amp;#39;*&amp;#39; 0.05 &amp;#39;.&amp;#39; 0.1 &amp;#39; &amp;#39; 1
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span&gt;Residual standard error: 17.75 on 81 degrees of freedom
+&lt;&#x2F;span&gt;&lt;span&gt;Multiple R-squared:  0.5086,    Adjusted R-squared:  0.4904 
+&lt;&#x2F;span&gt;&lt;span&gt;F-statistic: 27.95 on 3 and 81 DF,  p-value: 1.663e-12
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;If we treat the regression coefficients as our &lt;em&gt;W&lt;&#x2F;em&gt; matrix in a GCN layer
+we can get the &lt;em&gt;exact&lt;&#x2F;em&gt; same values from a GCN layer!&lt;&#x2F;p&gt;
+&lt;p&gt;Here we’re using my
+&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;josiahparry&#x2F;torchgnn&quot;&gt;&lt;code&gt;{torchgnn}&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; package to
+create a &lt;code&gt;layer_gcn()&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;div class=&quot;aside&quot;&gt;
+&lt;p&gt;&lt;code&gt;{torchgnn}&lt;&#x2F;code&gt; is not yet on CRAN. You can install it with
+&lt;code&gt;pak::pak(&quot;josiahparry&#x2F;torchgnn&quot;)&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;pre data-lang=&quot;r&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-r &quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;library&lt;&#x2F;span&gt;&lt;span&gt;(torch)
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;library&lt;&#x2F;span&gt;&lt;span&gt;(torchgnn)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# Create sparse adjacency matrix for GCN
+&lt;&#x2F;span&gt;&lt;span&gt;adj &amp;lt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;adj_from_edgelist&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;rep.int&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;seq_along&lt;&#x2F;span&gt;&lt;span&gt;(nb), &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;lengths&lt;&#x2F;span&gt;&lt;span&gt;(nb)),
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;unlist&lt;&#x2F;span&gt;&lt;span&gt;(nb),
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;unlist&lt;&#x2F;span&gt;&lt;span&gt;(lw&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt;weights), 
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# already handled by spdep
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;symmetric &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;FALSE
+&lt;&#x2F;span&gt;&lt;span&gt;)&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;coalesce&lt;&#x2F;span&gt;&lt;span&gt;()
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# convert X to a tensor for torch
+&lt;&#x2F;span&gt;&lt;span&gt;X &amp;lt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;torch_tensor&lt;&#x2F;span&gt;&lt;span&gt;(x)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# don&amp;#39;t modify the adjacency matrix
+&lt;&#x2F;span&gt;&lt;span&gt;layer &amp;lt;- &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;layer_gcn&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;3&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;, &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;normalize &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;FALSE&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;span&gt;
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# set the weights to the same as a the regression
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;with_no_grad&lt;&#x2F;span&gt;&lt;span&gt;({
+&lt;&#x2F;span&gt;&lt;span&gt;  layer&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt;weight&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;copy_&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;torch_tensor&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;matrix&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;coef&lt;&#x2F;span&gt;&lt;span&gt;(slx_mod)[-&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;], &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;nrow &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;3&lt;&#x2F;span&gt;&lt;span&gt;)))
+&lt;&#x2F;span&gt;&lt;span&gt;})
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;torch_tensor
+&lt;&#x2F;span&gt;&lt;span&gt; 24.2712
+&lt;&#x2F;span&gt;&lt;span&gt; -1.0631
+&lt;&#x2F;span&gt;&lt;span&gt;  0.0964
+&lt;&#x2F;span&gt;&lt;span&gt;[ CPUFloatType{3,1} ][ requires_grad = TRUE ]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre data-lang=&quot;r&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-r &quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span style=&quot;color:#65737e;&quot;&gt;# set the bias to the intercept
+&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;with_no_grad&lt;&#x2F;span&gt;&lt;span&gt;({
+&lt;&#x2F;span&gt;&lt;span&gt;  layer&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt;bias&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;copy_&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;torch_tensor&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;coef&lt;&#x2F;span&gt;&lt;span&gt;(slx_mod)[&lt;&#x2F;span&gt;&lt;span style=&quot;color:#d08770;&quot;&gt;1&lt;&#x2F;span&gt;&lt;span&gt;]))
+&lt;&#x2F;span&gt;&lt;span&gt;})
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;torch_tensor
+&lt;&#x2F;span&gt;&lt;span&gt; 43.6473
+&lt;&#x2F;span&gt;&lt;span&gt;[ CPUFloatType{1,1} ][ requires_grad = TRUE ]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;In the above code check we created a single GCN layer and manually set
+the bias (equivalent to an intercept term) and the weights. Typically
+these would be learned by a training loop. But for the sake of
+education, we’re setting them to be the equivalent to our linear
+regression.&lt;&#x2F;p&gt;
+&lt;p&gt;Next we apply the layer to the &lt;em&gt;X&lt;&#x2F;em&gt; and &lt;em&gt;A&lt;&#x2F;em&gt; matrices to get our &lt;em&gt;Ŷ&lt;&#x2F;em&gt;
+predictions.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; style=&quot;background-color:#2b303b;color:#c0c5ce;&quot; class=&quot;language-r &quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span&gt;tibble::&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;tibble&lt;&#x2F;span&gt;&lt;span&gt;(
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;gcn_preds &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;as.numeric&lt;&#x2F;span&gt;&lt;span&gt;(&lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;layer&lt;&#x2F;span&gt;&lt;span&gt;(X, adj)),
+&lt;&#x2F;span&gt;&lt;span&gt;  &lt;&#x2F;span&gt;&lt;span style=&quot;color:#bf616a;&quot;&gt;slx_preds &lt;&#x2F;span&gt;&lt;span&gt;= &lt;&#x2F;span&gt;&lt;span style=&quot;color:#96b5b4;&quot;&gt;unname&lt;&#x2F;span&gt;&lt;span&gt;(slx_mod&lt;&#x2F;span&gt;&lt;span style=&quot;color:#b48ead;&quot;&gt;$&lt;&#x2F;span&gt;&lt;span&gt;fitted.values)
+&lt;&#x2F;span&gt;&lt;span&gt;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre style=&quot;background-color:#2b303b;color:#c0c5ce;&quot;&gt;&lt;code&gt;&lt;span&gt;# A tibble: 85 × 2
+&lt;&#x2F;span&gt;&lt;span&gt;   gcn_preds slx_preds
+&lt;&#x2F;span&gt;&lt;span&gt;       &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+&lt;&#x2F;span&gt;&lt;span&gt; 1     47.9      47.9 
+&lt;&#x2F;span&gt;&lt;span&gt; 2     18.1      18.1 
+&lt;&#x2F;span&gt;&lt;span&gt; 3     64.9      64.9 
+&lt;&#x2F;span&gt;&lt;span&gt; 4     46.5      46.5 
+&lt;&#x2F;span&gt;&lt;span&gt; 5     52.0      52.0 
+&lt;&#x2F;span&gt;&lt;span&gt; 6     49.4      49.4 
+&lt;&#x2F;span&gt;&lt;span&gt; 7      6.78      6.78
+&lt;&#x2F;span&gt;&lt;span&gt; 8     45.5      45.5 
+&lt;&#x2F;span&gt;&lt;span&gt; 9     10.9      10.9 
+&lt;&#x2F;span&gt;&lt;span&gt;10     44.1      44.1 
+&lt;&#x2F;span&gt;&lt;span&gt;# ℹ 75 more rows
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;fuller-gcn-models&quot;&gt;Fuller GCN models&lt;&#x2F;h2&gt;
+&lt;p&gt;In the above we showed that the GCN layer is literally just a fancy
+regression model using the spatial lags of our input variables. However,
+we assumed that there was not any &lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Activation_function&quot;&gt;activation
+function&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;For fuller examples we can fit a GCN with multiple hidden layers as well
+as an additional activation or loss functions. These GCN models can
+generalize well to classification or regression.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

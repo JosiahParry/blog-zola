@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            Actually identifying R package System Requirements | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- KaTeX for math rendering -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-bold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-xs font-mono"
+            />
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="flex-1 overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-1 text-sm font-mono pl-3 font-semibold border-l-2 border-primary -ml-px"
+                    >
+                        Posts
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/contact/"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        Contact
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">Actually identifying R package System Requirements</h1>
+
+          
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >April 05, 2022</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><p>During my approximately three years at RStudio there were two things that stumped system admins more than anything: proxied authentication and system dependencies for R package (god help anyone trying to install rgdal on RHEL 7). When RStudio Package Manager (RSPM) <a href="https://docs.rstudio.com/rspm/news/#rstudio-package-manager-108">v1.0.8</a> was released there was finally an answer. RSPM can help you identify system requirements via the GUI. Also, there's a restful API that isn't fully supported but can provide these system requirements programatically if needed. As such, I think it is still a little used feature for most RSPM users and admins.</p>
+<p><code>{pak}</code> did a great job of providing an interface to the public installation of RSPM. Back in May 2021 <a href="https://github.com/r-lib/pak/issues/299">I suggested</a> that the API calls to RSPM be made publicly available. Since then <a href="http://pak.r-lib.org/reference/local_system_requirements.html"><code>pak::pkg_system_requirements()</code></a> has become an exported function. It is <em>exceptionally</em> useful. I use it in my current work to create a bash script which installs system requirements into a fresh Databricks compute cluster and then install R packages from RSPM.</p>
+<p>One of my qualms about the RSPM API and thus the output of pak is that it <em>always</em> includes the installation commands for the provided OS--e.g. <code>apt-get install -y</code> which I suppose could be easily <a href="https://stringr.tidyverse.org/reference/str_remove.html"><code>stringr::str_remove()</code></a>d.</p>
+<p>The second qualm has been that this relies on RSPM. The logic has been semi-hidden behind a closed-source tool. However, RStudio maintains a repository <a href="https://github.com/rstudio/r-system-requirements/"><code>r-system-requirements</code></a> which is used by RSPM to identify system requirements from a packages <code>DESCRIPTION</code> file.</p>
+<p>All of the logic for RSPM is in that repository. And that's why I made <code>https://r-sysreqs.josiahparry.com</code>. It's a way to provide the REST API functionality from RSPM without having to rely strictly on the public installation.</p>
+<p>Users can use the functionality from <a href="https://github.com/JosiahParry/r-sysreqs"><code>{sysreqs}</code></a> to make this api available on their own machines.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'>sysreqs</span><span class='nf'>::</span><span class='nf'><a href='https://r-sysreqs.josiahparry.com/reference/get_pkgs_sysreqs.html'>get_pkgs_sysreqs</a></span><span class='o'>(</span><span class='nf'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='o'>(</span><span class='s'>"rgdal"</span>, <span class='s'>"igraph"</span><span class='o'>)</span>,
+                          <span class='s'>"ubuntu"</span>, <span class='s'>"18.04"</span><span class='o'>)</span> |&gt; 
+  <span class='nf'>tidyr</span><span class='nf'>::</span><span class='nf'><a href='https://tidyr.tidyverse.org/reference/nest.html'>unnest</a></span><span class='o'>(</span><span class='nv'>dependencies</span><span class='o'>)</span>
+<span class='c'>#&gt; <span style='color: #555555;'># A tibble: 6 × 5</span></span>
+<span class='c'>#&gt;   pkg    name    dependencies pre_installs post_installs</span>
+<span class='c'>#&gt;   <span style='color: #555555; font-style: italic;'>&lt;chr&gt;</span>  <span style='color: #555555; font-style: italic;'>&lt;chr&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;chr&gt;</span>        <span style='color: #555555; font-style: italic;'>&lt;chr&gt;</span>        <span style='color: #555555; font-style: italic;'>&lt;chr&gt;</span>        </span>
+<span class='c'>#&gt; <span style='color: #555555;'>1</span> rgdal  gdal    libgdal-dev  <span style='color: #BB0000;'>NA</span>           <span style='color: #BB0000;'>NA</span>           </span>
+<span class='c'>#&gt; <span style='color: #555555;'>2</span> rgdal  gdal    gdal-bin     <span style='color: #BB0000;'>NA</span>           <span style='color: #BB0000;'>NA</span>           </span>
+<span class='c'>#&gt; <span style='color: #555555;'>3</span> rgdal  proj    libproj-dev  <span style='color: #BB0000;'>NA</span>           <span style='color: #BB0000;'>NA</span>           </span>
+<span class='c'>#&gt; <span style='color: #555555;'>4</span> igraph glpk    libglpk-dev  <span style='color: #BB0000;'>NA</span>           <span style='color: #BB0000;'>NA</span>           </span>
+<span class='c'>#&gt; <span style='color: #555555;'>5</span> igraph gmp     libgmp3-dev  <span style='color: #BB0000;'>NA</span>           <span style='color: #BB0000;'>NA</span>           </span>
+<span class='c'>#&gt; <span style='color: #555555;'>6</span> igraph libxml2 libxml2-dev  <span style='color: #BB0000;'>NA</span>           <span style='color: #BB0000;'>NA</span></span></code></pre>
+</div>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <script>
+            (() => {
+                try {
+                    const stored = localStorage.getItem("themeMode");
+                    if (
+                        stored
+                            ? stored === "dark"
+                            : matchMedia("(prefers-color-scheme: dark)").matches
+                    ) {
+                        document.documentElement.classList.add("dark");
+                    }
+                } catch (_) {}
+
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"></script>
+        
+    </body>
+</html>

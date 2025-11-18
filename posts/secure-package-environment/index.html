@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            Secure R Package Environments | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- KaTeX for math rendering -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-bold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-xs font-mono"
+            />
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="flex-1 overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-1 text-sm font-mono pl-3 font-semibold border-l-2 border-primary -ml-px"
+                    >
+                        Posts
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/contact/"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        Contact
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">Secure R Package Environments</h1>
+
+          
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >December 09, 2020</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><h2 id="securing-your-r-package-environment">Securing your R Package Environment</h2>
+<p>One of the biggest challenges faced by public sector organizations and other security conscious groups is package management. These groups are typically characterized air gapped network environments—i.e. no internet connectivity to the outside world. The purpose of an air gapped network is to get rid of any possibility of an intrusion in your network from an unwanted visitor. Air gapped installations come with some challenges particularly with package management.</p>
+<p>Typically, when you want to install a new package it comes from The Comprehensive R Archive Network (CRAN). While CRAN has a comprehensive testing system as part of their <a href="https://www.r-project.org/doc/R-SDLC.pdf">software development life cycle</a>, security teams are still hesitant to trust any domains outside of their network.</p>
+<p>At RStudio, our solution to this is our <a href="https://rstudio.com/products/package-manager/">RStudio Package Manager</a> or RSPM for short.  "RStudio Package Manager is a repository management server to organize and centralize R packages across your team, department, or entire organization." With RSPM there are a few different ways of addressing this concern. Here I'll walk through some different approaches. Each subsequent approach is stricter than the last.</p>
+<h3 id="approach-1-trusted-connect">Approach 1: trusted connect</h3>
+<p>The first approach to do this is to install and configure RSPM in your air gapped network. However, RSPM will need special permission to reach out to our sync service (<code>https://rspm-sync.rstudio.com</code>). In many cases security teams are willing to open up an outbound internet connection to just RStudio's sync service—we hope you trust us!</p>
+<p>This solution is the easiest as it is a quick configuration. Moreover, packages will only be installed as they are requested. Giving access to the sync service also enables your team to be able to download the latest versions of packages from CRAN.</p>
+<h3 id="approach-2-air-gapped-cran">Approach 2: Air-gapped CRAN</h3>
+<p>The limitation of the first approach is that is permits a constant outbound internet connection. For some groups, this is a no go. The next best approach then is to have a completely air-gapped CRAN mirror. To do this you will need an internet connection for a brief amount of time—there's no way to have data magically appear on your server! During the brief period in which your proxy is open you will have to copy all of CRAN, binaries and source, into your server. RSPM provides a <a href="https://docs.rstudio.com/rspm/admin/appendix/airgapped-installs/">utility tool</a> to do this. Once complete, you can close your network again and be confident that there is no possibility of having any connection with the outside world.</p>
+<p>Once you've completed moving data into your server everything behaves as expected—just ensure your <code>options('repos')</code> is set properly. The one downside to this approach is that you will not be able to have access to the latest versions of packages. To rectify this, you can sync on periodic basis.</p>
+<h3 id="approach-3-air-gapped-validated-set">Approach 3: Air-gapped validated set</h3>
+<p>Often there are even further restrictions placed on data scientists which limit what packages can be used for their work. We refer to this as a <a href="https://environments.rstudio.com/validated.html">validated set</a> of packages or a <a href="https://docs.rstudio.com/rspm/admin/quickstarts.html#quickstart-curated-cran">curated CRAN</a>. Packages are often "validated" and through that validation process are promoted to the CRAN repository. The upside to this approach is that teams can be confident in the packages their team are using.</p>
+<p>Some approaches to validating the package environment include selecting the top <code>n</code> packages from CRAN (post on identifying those packages <a href="http://josiahparry.com/post/cran-2019/">here</a>), having a subject matter expert provide a list of preferred packages, or a ticketing system. The ticketing system is the least scalable, most restrictive, and will likely hinder your work. I don't recommend it.</p>
+<p>The limitations with this are rather straight forward: your data scientists do not have too much leeway in utilizing packages that may expedite or even enable their work.</p>
+<h3 id="approach-4-approach-3-but-stricter">Approach 4: Approach 3 but stricter</h3>
+<p>With approach 3 there are usually two repositories: 1) a mirror of CRAN and 2) a subset of CRAN. While the subset of CRAN is preferred there is nothing stopping users from using the CRAN repository if they know the URL. To prevent this you can implement strict rules with your proxy to prevent users installing from the CRAN mirror thus forcing users to use the subset. In essence, approach 4 is approach 3 but with an enforcement mechanism.</p>
+<h2 id="review">Review</h2>
+<p>Package management isn't easy. It's even tougher in an offline environment. You're not going to be able to know exactly what every package does. You're going to have to make tradeoffs. You can secure your package environment by migrating packages into your own network. You can implement progressively stricter rules to reduce your exposure to potential packages. RStudio Package Manager is a wonderful tool that will make accomplishing all of this a whole lot easier.</p>
+<p>Feel free to reach out to me via <a href="https://twitter.com/josiahparry">twitter</a> or <a href="mailto:josiah@rstudio.com">email</a> and we can talk this through.</p>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <script>
+            (() => {
+                try {
+                    const stored = localStorage.getItem("themeMode");
+                    if (
+                        stored
+                            ? stored === "dark"
+                            : matchMedia("(prefers-color-scheme: dark)").matches
+                    ) {
+                        document.documentElement.classList.add("dark");
+                    }
+                } catch (_) {}
+
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"></script>
+        
+    </body>
+</html>

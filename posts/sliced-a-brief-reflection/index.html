@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            SLICED! a brief reflection | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- KaTeX for math rendering -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-bold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-xs font-mono"
+            />
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="flex-1 overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-1 text-sm font-mono pl-3 font-semibold border-l-2 border-primary -ml-px"
+                    >
+                        Posts
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/contact/"
+                        class="block py-1 text-sm font-mono pl-3 text-muted-foreground hover:text-foreground hover:underline decoration-primary"
+                    >
+                        Contact
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">SLICED! a brief reflection</h1>
+
+          
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >June 18, 2021</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><p>A few weeks ago I was a contestant on the machine learning game show #SLICED! The format of the challenge is as follows:</p>
+<ul>
+<li>The competition is a total of 2 hours 15 mins</li>
+<li>The first 15 minutes are spent looking at a data set---no programming allowed!</li>
+<li>The next two hours are dedicated to building the best machine learning model possible</li>
+<li>Predictions are submitted to Kaggle, only one prediction set can be used</li>
+<li>Person with the best model wins</li>
+<li>Points are allocated for:
+<ul>
+<li>Best model</li>
+<li>Best graphing</li>
+<li>Crowd favorites</li>
+</ul>
+</li>
+</ul>
+<p>My stream is uploaded to youtube so you can catch it in all of its glory.</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/4RnegRlUKVw" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+</iframe>
+<h2 id="how-i-got-roped-in">How I got roped in</h2>
+<p>About a month ago I saw the below tweet from Jesse Mostipak. Naturally, it piqued my interest.</p>
+<blockquote class="twitter-tweet">
+<p lang="en" dir="ltr">
+Come play with meeeeee! I promise to make you look good. <a href="https://t.co/U7DRXM8deP">https://t.co/U7DRXM8deP</a>
+</p>
+--- Jesse Mostipak is making mirepoix for #SLICED (@kierisi) <a href="https://twitter.com/kierisi/status/1390828946191753217?ref_src=twsrc%5Etfw">May 8, 2021</a>
+</blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<p>Everyone's favorite Tidy-Tuesday-Tom essentially voluntold me. I decided to put my name in the hat and see if I can compete. The challenge, though, is that I have only ever dabbled in machine learning. In May it was something that I had only done a handful of times and with a much older toolset-e.g. caret. If there is one thing I know about myself, it's that there is nothing like a deadline and a concrete objective to get me to learn something.</p>
+<p>I am a strong believer in <a href="https://en.wikipedia.org/wiki/Parkinson&#x27;s_law">Parkinson's Law</a>---you can thank my father for that---which is characterized by the saying "If you wait until the last minute, it only takes a minute to do." Or, more formally, "work expands so as to fill the time available for its completion."</p>
+<p>In essence, the best way for me to get better at machine learning would be to put myself in a situation---as uncomfortable it may be---where I would have to do machine learning. Alternatively, I could just faily miserably but I don't like that.</p>
+<h2 id="getting-a-grip-on">Getting a grip on</h2>
+<p>I have been loosely following the tidymodels ecosystem since the beginning. Previously my understanding of tidymodels only included, recipes, rsample, and parsnip. These three packages can get you exceptionally far, but there are so many additional packages that are instrumental to improving the ML workflow for useRs. These are tune, workflows, and workflowsets.</p>
+<p>The most challenging part of getting started with tidymodels was understanding where each package fits in during the process. The challenging task was to figure out which packages were low level APIs and which were abstractions.</p>
+<h2 id="understanding-tidymodels-libraries">Understanding tidymodels libraries</h2>
+<p>The most basic component of a tidymodel ML process is a recipe ({recipes}) and a model specification ({parsnip}). The recipe determines the features used and any preprocessing steps. The model specification determines which model will be trained. Additionally, we often want to include resampling---e.g. bootstrap or cross validation (called a resamples ({rsample}) object in tidymodels). With these three components we can then utilize the {tune} package to train our model on our resamples. We can build a layer of abstraction from these four components which is called a <code>workflow</code>.</p>
+<p>In the ML process we want to train many models. And rather than just repeating the steps manually for each model, the package <code>workflowsets</code> will create many workflows for you and help you train all of those models quickly. Workflowsets were essential in my approach to sliced.</p>
+<h2 id="tidymodels-resources">Tidymodels resources</h2>
+<p>Getting up to speed with tidymodels was a bit of a challenge. The packages are still actively under development so building corresponding documentation must be a bit of a challenge for the team! With that said, there are so many resources that you can use to get started. Below are some of the ones that I utilized and found helpful.</p>
+<ul>
+<li><a href="http://tmwr.org/">Tidymodeling with R</a></li>
+<li><a href="https://workflowsets.tidymodels.org/articles/evaluating-different-predictor-sets.html">Workflowsets vignette</a></li>
+<li><a href="http://juliasilge.com/">Julia Silge's blog</a></li>
+<li>And a bunch of the help docs</li>
+</ul>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <script>
+            (() => {
+                try {
+                    const stored = localStorage.getItem("themeMode");
+                    if (
+                        stored
+                            ? stored === "dark"
+                            : matchMedia("(prefers-color-scheme: dark)").matches
+                    ) {
+                        document.documentElement.classList.add("dark");
+                    }
+                } catch (_) {}
+
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"></script>
+        
+    </body>
+</html>

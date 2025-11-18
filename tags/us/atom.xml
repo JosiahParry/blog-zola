@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Josiah Parry - US</title>
+    <link rel="self" type="application/atom+xml" href="https://josiah.rs/tags/us/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://josiah.rs"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2019-02-06T00:00:00+00:00</updated>
+    <id>https://josiah.rs/tags/us/atom.xml</id>
+    <entry xml:lang="en">
+        <title>The Cost of Gridlock</title>
+        <published>2019-02-06T00:00:00+00:00</published>
+        <updated>2019-02-06T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/shutdown-politics/"/>
+        <id>https://josiah.rs/posts/shutdown-politics/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/shutdown-politics/">&lt;p&gt;&lt;em&gt;Originally &lt;a href=&quot;https:&#x2F;&#x2F;www.northeastern.edu&#x2F;csshresearch&#x2F;bostonarearesearchinitiative&#x2F;2019&#x2F;02&#x2F;06&#x2F;the-cost-of-gridlock-shutdown-politics-and-their-impact-on-greater-boston&#x2F;&quot;&gt;posted&lt;&#x2F;a&gt; via Boston Area Research Initiative&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;The nation heaved a sigh of relief as President Trump signed a bill on Friday, January 25th, that ended the longest government shutdown in US history. This bill, the &lt;em&gt;Continuing Appropriation Act&lt;&#x2F;em&gt;, provides enough funding to keep the government open until February 15th. After thirty-four days of turmoil for federal workers, it is hard to believe that in another three short weeks, the government can shutdown once again. During this last shutdown over 800,000 federal workers and numerous contractors across the country went without paychecks.&lt;&#x2F;p&gt;
+&lt;p&gt;The Boston area is home to major government contractors such as Raytheon and American Science and Engineering Inc. and as such, has undoubtedly been affected by the shutdown. At BARI, we are taking steps to understand just how much another shutdown could affect the region. The recent release of new demographic estimates from the American Community Survey are being used to aid us in this endeavor.&lt;&#x2F;p&gt;
+&lt;p&gt;During a government shutdown, federal employees are hit the hardest, and in the Boston-Cambridge-Newton area, there are 68 thousand of them (margin of error: 2,400). When the government shuts down, non-essential employees are furloughed. While furloughed, they are not allowed to work, and thereby unable to collect paychecks. The remaining federal workers who are deemed essential are then required to work without pay or the promise of repayment---workers are only repaid if new spending bills allocate funding for it. Due to these circumstances any government shutdown puts federal employees at risk. And based on the distribution of federal employees in the Greater Boston area, another shutdown might disproportionately affect suburban areas.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;img&#x2F;shutdown&#x2F;fed_emp.png&quot; alt=&quot;Federal Employees&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Without funding, government aid sources are also in danger of running out of money. One such aid program is the Supplemental Nutrition Assistance Program (SNAP), which 1 in 10 (11%, margin of error: 1.5%) families in the region utilizes. Throughout the region, reliance on SNAP assistance varies greatly. In some census tracts nearly 7 out of 10 families receive assistance from SNAP. Areas that would be hardest hit by another shutdown are Lawrence and Brockton, where SNAP utilization is highest.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;&#x2F;img&#x2F;shutdown&#x2F;snap_region.png&quot; alt=&quot;SNAP Recipients Boston-Cambridge-Newton&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;In anticipation of funds running out, SNAP payments for the month of February were disbursed on January 20th, leaving recipients to budget their February payments for a period of nearly 40 days. This may cause financial discomfort for some families later in the month. As some research has suggested, families who receive food assistance tend to increase their spending right when payments have been disbursed (Hastings and Washington, 2010), and another shutdown could exacerbate already tight budgets.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;Hastings, Justine, and Ebonya Washington. &quot;The first of the month effect: consumer behavior and store responses.&quot; &lt;em&gt;American economic Journal: economic policy&lt;&#x2F;em&gt; 2, no. 2 (2010): 142-62.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
