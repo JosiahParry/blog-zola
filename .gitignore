@@ -5,7 +5,7 @@ node_modules/
 *.swo
 *~
 .zed
-public/
+/public/
 
 /.quarto/
 **/*.quarto_ipynb

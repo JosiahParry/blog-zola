@@ -1,14 +1,19 @@
 ---
-title: Graph Neural Nets for Spatial Data Science 
+title: Graph Neural Nets for Spatial Data Science
 subtitle: Spatial lags all the way down
 description: Graph Neural Nets for the spatial nerds in the house.
-date: "2025-11-16"
+date: '2025-11-16'
 author: Josiah Parry
 taxonomies:
-  categories: [spatial, r, deep-learning, gnn]
+  categories:
+    - spatial
+    - r
+    - deep-learning
+    - gnn
 code-fold: true
 format: commonmark
 ---
+
 
 I’ve been saying this for years and I’ll say it again:
 
@@ -28,6 +33,9 @@ them are the edges. The nodes can be thought of as **rows** in a
 dataset. Then the edges are an additional “edge list” that informs us of
 connectivity between them.
 
+<details class="code-fold">
+<summary>Code</summary>
+
 ``` r
 library(igraph)
 
@@ -36,11 +44,16 @@ g <- sample_gnm(6, 11)
 plot(g)
 ```
 
-![](index_files/figure-commonmark/unnamed-chunk-1-1.png)<!-- -->
+</details>
+
+![](index_files/figure-commonmark/unnamed-chunk-2-1.png)
 
 When we do spatial statistics we need to create the concept of a
 **neighborhood**. For example with polygons, we typically use
 **contiguity** to define our neighborhood.
+
+<details class="code-fold">
+<summary>Code</summary>
 
 ``` r
 library(sf)
@@ -48,7 +61,9 @@ data(guerry, package = "sfdep")
 plot(guerry$geometry)
 ```
 
-![](index_files/figure-commonmark/unnamed-chunk-2-1.png)<!-- -->
+</details>
+
+![](index_files/figure-commonmark/unnamed-chunk-3-1.png)
 
 If we identify *neighborhoods* based on contiguity we then identify our
 neighbors based on that which we use to create a **spatial weights
@@ -85,11 +100,16 @@ our data set there is a row and a column—`n x n` matrix. A non-zero
 value in a row indicates a neighbor. The connections between locations
 (or the **spatial weights matrix** (SWM)) can be viewed as a network.
 
+<details class="code-fold">
+<summary>Code</summary>
+
 ``` r
 plot(nb, guerry$geometry)
 ```
 
-![](index_files/figure-commonmark/unnamed-chunk-4-1.png)<!-- -->
+</details>
+
+![](index_files/figure-commonmark/unnamed-chunk-5-1.png)
 
 As you can see a spatial weight matrix **is a graph**!
 
@@ -111,12 +131,15 @@ The crux of spatial econometrics is the spatial lag. For all intents and
 purposes, the spatial lag is “just” an average of a variable *X* over a
 neighborhood.
 
-<div class="callout-note">
+<div class="alert-note">
 
 See my [YouTube video](https://www.youtube.com/watch?v=abrQBSdTk7E) on
 this in more depth.
 
 </div>
+
+<details class="code-fold">
+<summary>Code</summary>
 
 ``` r
 library(dplyr)
@@ -144,9 +167,11 @@ lagged <- ggplot(df) +
 obs | lagged
 ```
 
-![](index_files/figure-commonmark/unnamed-chunk-5-1.png)<!-- -->
+</details>
 
-<div class="callout-important">
+![](index_files/figure-commonmark/unnamed-chunk-6-1.png)
+
+<div class="alert-important">
 
 ## 👇🏽 Don’t miss this
 
@@ -158,6 +183,9 @@ location’s neighborhood. 👈🏼
 GNNs are based on the concept of **message passing**. Message passing is
 how we propagate information from a node’s neighbors (edge connections)
 to the node itself.
+
+<details class="code-fold">
+<summary>Code</summary>
 
 ``` r
 # Create a simple 4-node network: central node with 3 neighbors
@@ -195,7 +223,9 @@ plot(g,
 )
 ```
 
-![](index_files/figure-commonmark/unnamed-chunk-6-1.png)<!-- -->
+</details>
+
+![](index_files/figure-commonmark/unnamed-chunk-7-1.png)
 
 In this graph, we have nodes x1 through x4. The nodes x2, x3, and x4 are
 “passing” their message to the focal node. These node values have to be
@@ -281,7 +311,7 @@ might be possible from the values themselves.
 
 ![](images/paste-3.png)
 
-<div class="callout-note">
+<div class="alert-note">
 
 The rows of *W* correspond to the input variables. The columns indicate
 the “hidden dimensions.” Multiplying by the *W* creates “node
@@ -405,24 +435,12 @@ layer <- layer_gcn(3, 1, normalize = FALSE)
 with_no_grad({
   layer$weight$copy_(torch_tensor(matrix(coef(slx_mod)[-1], nrow = 3)))
 })
-```
 
-    torch_tensor
-     24.2712
-     -1.0631
-      0.0964
-    [ CPUFloatType{3,1} ][ requires_grad = TRUE ]
-
-``` r
 # set the bias to the intercept
 with_no_grad({
   layer$bias$copy_(torch_tensor(coef(slx_mod)[1]))
 })
 ```
-
-    torch_tensor
-     43.6473
-    [ CPUFloatType{1,1} ][ requires_grad = TRUE ]
 
 In the above code check we created a single GCN layer and manually set
 the bias (equivalent to an intercept term) and the weights. Typically

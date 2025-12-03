@@ -18,6 +18,10 @@
     @apply text-2xl font-semibold italic border-b-2 pb-2 border-primary;
 }
 
+.josi-prose h3 {
+    @apply text-xl font-semibold mt-6 mb-3;
+}
+
 .badge,
 .badge-outline,
 .badge-secondary {
@@ -34,21 +38,63 @@
     }
 }
 
-.josi-prose .callout-note {
-    @apply p-4 text-xs dark:text-white border-l-4 border-[#4f6196] bg-[#637bbf]/30;
+.josi-prose .alert-note {
+    @apply p-4 border-l-4 border-blue-500 bg-blue-50 dark:bg-blue-950/30;
 }
 
-.josi-prose .callout-important {
-    @apply p-4 text-xs dark:text-white border-l-4 border-[#4f6196] bg-[#637bbf]/30;
+.josi-prose .alert-tip {
+    @apply p-4 border-l-4 border-green-500 bg-green-50 dark:bg-green-950/30;
 }
 
-.callout-note h2 {
-    @apply border-b-none text-sm font-medium not-italic;
-}
-.callout-danger h2 {
-    @apply border-b-none text-sm font-medium not-italic;
+.josi-prose .alert-warning {
+    @apply p-4 border-l-4 border-orange-500 bg-orange-50 dark:bg-orange-950/30;
 }
 
-.callout-important h2 {
-    @apply border-b-none text-sm font-medium not-italic;
+.josi-prose .alert-important {
+    @apply p-4 border-l-4 border-red-400 bg-red-50 dark:bg-red-950/30;
+}
+
+.josi-prose .alert-caution {
+    @apply p-4 border-l-4 border-yellow-500 bg-yellow-50 dark:bg-yellow-950/30;
+}
+
+.alert-note h2,
+.alert-tip h2,
+.alert-warning h2,
+.alert-important h2,
+.alert-caution h2 {
+    @apply border-b-0 text-base font-semibold not-italic mb-2;
+}
+
+.josi-prose .columns {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-4;
+}
+
+.josi-prose .column {
+    @apply flex flex-col;
+}
+
+/* Tab styles */
+.josi-prose .panel-tabset {
+    @apply border border-border rounded-lg overflow-hidden;
+}
+
+.josi-prose .panel-tabset .tab-list {
+    @apply flex border-b border-border bg-muted/30;
+}
+
+.josi-prose .panel-tabset .tab-button {
+    @apply px-4 py-2 font-medium text-sm cursor-pointer border-b-2 border-transparent hover:bg-accent transition-colors not-italic;
+}
+
+.josi-prose .panel-tabset .tab-button.active {
+    @apply border-primary bg-background;
+}
+
+.josi-prose .panel-tabset .tab-content {
+    @apply hidden p-2;
+}
+
+.josi-prose .panel-tabset .tab-content.active {
+    @apply block;
 }

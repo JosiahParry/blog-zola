@@ -10,6 +10,10 @@ code-fold: true
 format: commonmark
 ---
 
+```{r include=FALSE}
+
+```
+
 I've been saying this for years and I'll say it again:
 
 > *Spatial data is just a graph*
@@ -22,7 +26,7 @@ This post is going to build the intuition for why Graph Neural Networks are perf
 
 A graph is defined as a set **nodes** connected by **edges**. Nodes can be thought of as "things" or "entities" and then the connections between them are the edges. The nodes can be thought of as **rows** in a dataset. Then the edges are an additional "edge list" that informs us of connectivity between them.
 
-```{r message=FALSE}
+```{r message=FALSE, collapse = TRUE}
 library(igraph)
 
 set.seed(0)
@@ -70,7 +74,7 @@ Okay, moving on.
 
 The crux of spatial econometrics is the spatial lag. For all intents and purposes, the spatial lag is "just" an average of a variable $X$ over a neighborhood.
 
-::: callout-note
+::: alert-note
 See my [YouTube video](https://www.youtube.com/watch?v=abrQBSdTk7E) on this in more depth.
 :::
 
@@ -100,7 +104,7 @@ lagged <- ggplot(df) +
 obs | lagged
 ```
 
-::: callout-important
+::: alert-important
 ## 👇🏽 Don't miss this
 
 👉🏼 The spatial lag is a way to **aggregate information** about a location's neighborhood. 👈🏼
@@ -198,7 +202,7 @@ The strength of neural networks is their ability to learn representations of our
 
 ![](images/paste-3.png)
 
-::: callout-note
+::: alert-note
 The rows of $W$ correspond to the input variables. The columns indicate the "hidden dimensions." Multiplying by the $W$ creates "node embeddings." The more hidden dimensions the more embedding variables there are.
 :::
 

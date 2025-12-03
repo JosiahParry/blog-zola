@@ -1,0 +1,57 @@
+---
+title: Programatically Create Formulas in R
+taxonomies:
+  categories:
+    - r
+    - package-dev
+date: 2023-01-17T00:00:00.000Z
+---
+
+
+I’m working on a prototype of a tool using R to create some regressions.
+I’d like to take in independent and dependent variables as character
+vectors and use those to create a formula. It took me a minute to figure
+out how to programatically create a formula. It’s a bit tricky because
+formula require unquoted objects (symbols).
+
+The trick is to use the function `reformulate()` ([thanks
+StackOverflow](https://stackoverflow.com/questions/12967797/is-there-a-better-alternative-than-string-manipulation-to-programmatically-build)).
+
+The syntax is `reformulate(x_vars, y_var)`
+
+``` r
+form <- reformulate(c("x1", "x2"), "y")
+form
+```
+
+    y ~ x1 + x2
+
+Nice. Throw it into a function.
+
+``` r
+make_lm <- function(.data, y, x) {
+  form <- reformulate(x, y)
+  lm(form, .data)
+}
+```
+
+Now try it out :)
+
+``` r
+make_lm(
+  iris, 
+  y = "Petal.Width",
+  x = c("Sepal.Length", "Petal.Length")
+)
+```
+
+
+    Call:
+    lm(formula = form, data = .data)
+
+    Coefficients:
+     (Intercept)  Sepal.Length  Petal.Length  
+       -0.008996     -0.082218      0.449376  
+
+This can be a pretty hand pattern in package development. I hope it
+helps you.
