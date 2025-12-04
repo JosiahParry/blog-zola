@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            Web-scraping for Campaigns | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+
+        <!-- Determine theme before loading syntax highlighting -->
+        <script>
+            (() => {
+                const stored = localStorage.getItem("themeMode");
+                // Use stored preference if exists, otherwise always default to dark
+                const isDark = stored ? stored === "dark" : true;
+
+                if (isDark) {
+                    document.documentElement.classList.add("dark");
+                }
+            })();
+        </script>
+
+        <!-- Syntax highlighting themes -->
+        <link rel="stylesheet" href="https://josiah.rs/syntax-dark.css" id="syntax-dark" />
+        <link rel="stylesheet" href="https://josiah.rs/syntax-light.css" id="syntax-light" />
+
+        <!-- KaTeX for math rendering -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        />
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-semibold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4 relative">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-sm bg-muted/50 border border-border"
+                id="search-input"
+            />
+            <div
+                id="search-results"
+                class="hidden absolute top-full left-4 -mt-1 w-96 max-h-96 overflow-y-auto bg-background border border-border rounded-lg shadow-lg z-50 p-2"
+            ></div>
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-2 text-sm pl-3 transition-colors font-medium border-l-2 border-primary -ml-px bg-sidebar-accent"
+                    >
+                        Posts
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Socials -->
+            <div
+                class="mt-4 block py-2 transition-colors font-medium px-3 text-sm bg-sidebar-accent"
+            >
+                <h2
+                    class="text-sm font-medium tracking-tight mb-2 text-muted-foreground border-b border-muted-foreground/20 pb-1"
+                >
+                    Socials
+                </h2>
+                <ul class="space-y-1.5">
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <polygon
+                                points="160 128 112 96 112 160 160 128"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M24,128c0,29.91,3.07,47.45,5.41,56.47A16,16,0,0,0,39,195.42C72.52,208.35,128,208,128,208s55.48.35,89-12.58a16,16,0,0,0,9.63-10.95c2.34-9,5.41-26.56,5.41-56.47s-3.07-47.45-5.41-56.47a16,16,0,0,0-9.63-11C183.48,47.65,128,48,128,48s-55.48-.35-89,12.58a16,16,0,0,0-9.63,11C27.07,80.54,24,98.09,24,128Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://www.youtube.com/@josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >YouTube</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <rect
+                                x="32"
+                                y="32"
+                                width="192"
+                                height="192"
+                                rx="8"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="120"
+                                y1="112"
+                                x2="120"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="88"
+                                y1="112"
+                                x2="88"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M120,140a28,28,0,0,1,56,0v36"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <circle cx="88" cy="84" r="12" />
+                        </svg>
+                        <a
+                            href="https://www.linkedin.com/in/josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >LinkedIn</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M119.83,56A52,52,0,0,0,76,32a51.92,51.92,0,0,0-3.49,44.7A49.28,49.28,0,0,0,64,104v8a48,48,0,0,0,48,48h48a48,48,0,0,0,48-48v-8a49.28,49.28,0,0,0-8.51-27.3A51.92,51.92,0,0,0,196,32a52,52,0,0,0-43.83,24Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,232V192a32,32,0,0,1,32-32h0a32,32,0,0,1,32,32v40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,208H72a32,32,0,0,1-32-32A32,32,0,0,0,8,144"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="http://github.com/josiahparry/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >GitHub</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M160,224H72a32,32,0,0,1-32-32V72A32,32,0,0,1,72,40H184a32,32,0,0,1,32,32v72a32,32,0,0,1-32,32H40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M128,136V104a24,24,0,0,0-48,0v32"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M176,136V104a24,24,0,0,0-48,0"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://fosstodon.org/@josi"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Mastodon</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                            class="w-4 h-4"
+                            fill="currentColor"
+                        >
+                            <path
+                                d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.698-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948"
+                            />
+                        </svg>
+                        <a
+                            href="https://bsky.app/profile/josiahparry.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Bluesky</a
+                        >
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">Web-scraping for Campaigns</h1>
+
+         
+        <div class="flex flex-wrap gap-2 mb-4">
+            
+            <a
+                href="/categories/R"
+                class="badge-secondary cursor pointer"
+                >R</a
+            >
+            
+            <a
+                href="/categories/politics"
+                class="badge-secondary cursor pointer"
+                >politics</a
+            >
+            
+        </div>
+         
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >June 11, 2019</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><p>Note: 2022-11-14 I'm migrating my website and this can no longer be reproduced. This blog post is based on the short guide I wrote back in 2019. <a href="https://r4campaigns.netlify.app/">Please see the old bookdown here</a>.</p>
+<hr />
+<p>As the primaries approach, I am experiencing a mix of angst, FOMO, and excitement. One of my largest concerns is that progressive campaigns are stuck in a sort of antiquated but nonetheless entrenched workflow. Google Sheets reign in metric reporting. Here I want to present one use case (of a few more to come) where R can be leveraged by your data team.</p>
+<p>In this post I show you how to scrape the most recent polling data from FiveThirtyEight. FiveThirtyEight aggregates this data in an available way. This can allow you as a Data Manager to provide a useful report to your Media Manager.</p>
+<p>As always, please feel free to contact me on Twitter <a href="https://twitter.com/josiahparry">@josiahparry</a> if you have any questions or want to discuss this further.</p>
+<hr />
+<h1 id="polling-use-case">Polling use case</h1>
+<p>A very important metric to keep track of is how your candidate is polling. Are they gaining a lead in the polls or falling behind? This data is often reported via traditional news organizations or some other mediums. The supposed demi-God and mythical pollster Nate Silver's organization FiveThirtyEight does a wonderful job aggregating polls. Their page <a href="https://projects.fivethirtyeight.com/2020-primaries/democratic/national/">National 2020 Democratic Presidential Primary Polls</a> has a table of the most recent polls from many different pollsters.</p>
+<p>In this use case we will acquire this data by web scraping using <code>rvest</code>. We will also go over ways to programatically save polls results to a text file. Saving polling results can allow you present a long term view of your candidate's growth during the quarter.</p>
+<h2 id="understanding-rvest">Understanding <code>rvest</code></h2>
+<p>This use case will provide a cursory overview of the package <code>rvest</code>. To learn more go <a href="http://rvest.tidyverse.org/">here</a>.</p>
+<p>Web scraping is the process of extracting data from a website. Websites are written in HTML and CSS. There are a few aspects of these languages that are used in web scraping that is important to know. HTML is written in a series of what are call tags. A tag is a set of characters wrapped in angle brackets---i.e. <code>&lt;img&gt;</code>.</p>
+<p>With CSS (cascading style sheets), web developers can give unique identifiers to a tag. Classes can also be assigned to a tag. Think of these as group. With web scraping we can specify a particular part of a website by it's HTML tag and perhaps it's class or ID. <code>rvest</code> provides a large set of functions to make this simpler.</p>
+<h2 id="example">Example</h2>
+<p>For this example we will be scraping FiveThirtyEight's aggregated poll table. The table can be found at <a href="https://projects.fivethirtyeight.com/2020-primaries/democratic/national/">https://projects.fivethirtyeight.com/2020-primaries/democratic/national/</a>.</p>
+<p>Before we begin, we must always prepare our workspace. Mise en place.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='kr'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='o'>(</span><span class='nv'><a href='https://rvest.tidyverse.org/'>rvest</a></span><span class='o'>)</span>
+<span class='kr'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='o'>(</span><span class='nv'><a href='https://tidyverse.tidyverse.org'>tidyverse</a></span><span class='o'>)</span></code></pre>
+</div>
+<p>The first thing we will have to do is specify what page we will be scraping from. <a href="https://rvest.tidyverse.org/reference/rename.html"><code>html_session()</code></a> will simulate a session in an html browser. By providing a URL to <a href="https://rvest.tidyverse.org/reference/rename.html"><code>html_session()</code></a> we will then be able to access the underlying code of that page. Create an object called <code>session</code> by providing the FiveThirtyEight URL to <a href="https://rvest.tidyverse.org/reference/rename.html"><code>html_session()</code></a>.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>session</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rvest.tidyverse.org/reference/rename.html'>html_session</a></span><span class='o'>(</span><span class='s'>"https://projects.fivethirtyeight.com/2020-primaries/democratic/national/"</span><span class='o'>)</span></code></pre>
+</div>
+<p>The next and most important step is to identify which piece of HTML code contains the table. The easiest way to do this is to open up the webpage in Chrome and open up the Inspect Elements view (on Mac - ⌘ + Shift + C). Now that this is open, click the select element button at the top left corner of the inspection pane. Now hover over the table.</p>
+<p>You will see that the HTML element is highlighted. We can see that it is a <code>table</code> tag. Additionally we see that there are two different classes <code>polls-table</code> and <code>tracker</code>. To specify a class we put a preceding <code>.</code> to the class name---i.e. <code>.class-name</code>. If there are multiple classes we just append the second class name to it---i.e. <code>.first-class.second-class</code>. Be aware that these selectors can be quite finicky and be a bit difficult to figure out. You might need to do some googling or playing around with the selector.</p>
+<p>To actually access the content of this HTML element, we must specify the element using the proper selector. <a href="https://rvest.tidyverse.org/reference/rename.html"><code>html_node()</code></a> will be used to do this. Provide the html session and the CSS selector to <a href="https://rvest.tidyverse.org/reference/rename.html"><code>html_node()</code></a> to extract the HTML element.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>session</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://rvest.tidyverse.org/reference/rename.html'>html_node</a></span><span class='o'>(</span><span class='s'>".polls-table.tracker"</span><span class='o'>)</span></code></pre>
+</div>
+<p>Here we see that this returns on object of class <code>xml_node</code>. This object returns some HTML code but it is still not entirely workable. Since this is an HTML table we want to extract we can use the handy <a href="https://rvest.tidyverse.org/reference/html_table.html"><code>html_table()</code></a>. Note that if this wasn't a table but rather text, you can use <a href="https://rvest.tidyverse.org/reference/html_text.html"><code>html_text()</code></a>.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>session</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://rvest.tidyverse.org/reference/rename.html'>html_node</a></span><span class='o'>(</span><span class='s'>".polls-table.tracker"</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://rvest.tidyverse.org/reference/html_table.html'>html_table</a></span><span class='o'>(</span><span class='o'>)</span></code></pre>
+</div>
+<p>Take note of the extremely informative error. It appears we might have to deal with mismatching columns.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>session</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://rvest.tidyverse.org/reference/rename.html'>html_node</a></span><span class='o'>(</span><span class='s'>".polls-table.tracker"</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://rvest.tidyverse.org/reference/html_table.html'>html_table</a></span><span class='o'>(</span>fill <span class='o'>=</span> <span class='kc'>TRUE</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='o'>(</span><span class='o'>)</span></code></pre>
+</div>
+<p>This is much better! But based on visual inspection the column headers are not properly matched. There are a few things that need to be sorted out: there are two date columns, there are commas and percents where numeric columns should be, the column headers are a little messy, and the table isn't a tibble (this is just personal preference).</p>
+<p>We will handle the final two issues first as they are easiest to deal with. The function <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names()</code></a> from <code>janitor</code> will handle the column headers, and <a href="https://tibble.tidyverse.org/reference/as_tibble.html"><code>as_tibble()</code></a> will coerce the data.frame into a proper tibble. Save this semi-clean tibble into an object called <code>polls</code>.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>polls</span> <span class='o'>&lt;-</span> <span class='nv'>session</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://rvest.tidyverse.org/reference/rename.html'>html_node</a></span><span class='o'>(</span><span class='s'>".polls-table.tracker"</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://rvest.tidyverse.org/reference/html_table.html'>html_table</a></span><span class='o'>(</span>fill <span class='o'>=</span> <span class='kc'>TRUE</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'>janitor</span><span class='nf'>::</span><span class='nf'><a href='https://rdrr.io/pkg/janitor/man/clean_names.html'>clean_names</a></span><span class='o'>(</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://tibble.tidyverse.org/reference/as_tibble.html'>as_tibble</a></span><span class='o'>(</span><span class='o'>)</span>
+
+<span class='nv'>polls</span></code></pre>
+</div>
+<p>We want to shift over the column names to the right just once. Unfortunately there is no elegant way to do this (that I am aware of). We can see that the first column is completely useless so that can be removed. Once that column is removed we can reset the names this way they will be well aligned.</p>
+<p>We will start by creating a vector of the original column names.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>col_names</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='o'>(</span><span class='nv'>polls</span><span class='o'>)</span>
+<span class='nv'>col_names</span></code></pre>
+</div>
+<p>Unfortunately this also presents another issue. Once a column is deselected, there will be one more column name than column. So we will need to select all but the last element of the original names. We will create a vector called <code>new_names</code>.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'># identify the integer number of the last column</span>
+<span class='nv'>last_col</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/r/base/length.html'>length</a></span><span class='o'>(</span><span class='nv'>col_names</span><span class='o'>)</span> <span class='o'>-</span> <span class='m'>1</span>
+
+<span class='c'># create a vector which will be used for the new names</span>
+<span class='nv'>new_names</span> <span class='o'>&lt;-</span> <span class='nv'>col_names</span><span class='o'>[</span><span class='m'>1</span><span class='o'>:</span><span class='nv'>last_col</span><span class='o'>]</span></code></pre>
+</div>
+<p>Now we can try implementing the hacky solution. Here we will deselect the first column and reset the names using <a href="https://rdrr.io/r/stats/setNames.html"><code>setNames()</code></a>. Following, we will use the <a href="https://dplyr.tidyverse.org/reference/mutate_all.html"><code>mutate_at()</code></a> variant to remove the percent sign from every candidate column and coerce them into integer columns. Here we will specify which variables to <em>not</em> mutate at within <a href="https://ggplot2.tidyverse.org/reference/vars.html"><code>vars()</code></a>.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>polls</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='o'>(</span><span class='o'>-</span><span class='m'>1</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>  
+  <span class='nf'><a href='https://rdrr.io/r/stats/setNames.html'>setNames</a></span><span class='o'>(</span><span class='nv'>new_names</span><span class='o'>)</span><span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='o'>(</span><span class='o'>-</span><span class='m'>1</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/mutate_all.html'>mutate_at</a></span><span class='o'>(</span><span class='nf'><a href='https://ggplot2.tidyverse.org/reference/vars.html'>vars</a></span><span class='o'>(</span><span class='o'>-</span><span class='nf'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='o'>(</span><span class='s'>"dates"</span>, <span class='s'>"pollster"</span>, <span class='s'>"sample"</span>, <span class='s'>"sample_2"</span><span class='o'>)</span><span class='o'>)</span>, 
+            <span class='o'>~</span><span class='nf'><a href='https://rdrr.io/r/base/integer.html'>as.integer</a></span><span class='o'>(</span><span class='nf'><a href='https://stringr.tidyverse.org/reference/str_remove.html'>str_remove</a></span><span class='o'>(</span><span class='nv'>.</span>, <span class='s'>"%"</span><span class='o'>)</span><span class='o'>)</span><span class='o'>)</span>
+
+</code></pre>
+</div>
+<p>Now we must tidy the data. We will use <a href="https://tidyr.tidyverse.org/reference/gather.html"><code>tidyr::gather()</code></a> to transform the data from wide to long. In short, gather takes the column headers (the <code>key</code> argument) and creates a new variable from the values of the columns (the <code>value</code> argument). In this case, we will create a new column called <code>candidate</code> from the column headers and a second column called <code>points</code> which are a candidates polling percentage. Next we deselect any columns that we do not want to be gathered.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>polls</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='o'>(</span><span class='o'>-</span><span class='m'>1</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://rdrr.io/r/stats/setNames.html'>setNames</a></span><span class='o'>(</span><span class='nv'>new_names</span><span class='o'>)</span><span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='o'>(</span><span class='o'>-</span><span class='m'>1</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/mutate_all.html'>mutate_at</a></span><span class='o'>(</span><span class='nf'><a href='https://ggplot2.tidyverse.org/reference/vars.html'>vars</a></span><span class='o'>(</span><span class='o'>-</span><span class='nf'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='o'>(</span><span class='s'>"dates"</span>, <span class='s'>"pollster"</span>, <span class='s'>"sample"</span>, <span class='s'>"sample_2"</span><span class='o'>)</span><span class='o'>)</span>,
+            <span class='o'>~</span><span class='nf'><a href='https://rdrr.io/r/base/integer.html'>as.integer</a></span><span class='o'>(</span><span class='nf'><a href='https://stringr.tidyverse.org/reference/str_remove.html'>str_remove</a></span><span class='o'>(</span><span class='nv'>.</span>, <span class='s'>"%"</span><span class='o'>)</span><span class='o'>)</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://tidyr.tidyverse.org/reference/gather.html'>gather</a></span><span class='o'>(</span><span class='nv'>candidate</span>, <span class='nv'>points</span>, <span class='o'>-</span><span class='nv'>dates</span>, <span class='o'>-</span><span class='nv'>pollster</span>, <span class='o'>-</span><span class='nv'>sample</span>, <span class='o'>-</span><span class='nv'>sample_2</span><span class='o'>)</span></code></pre>
+</div>
+<p>There are a few more house-keeping things that need to be done to improve this data set. <code>sample_2</code> is rather uninformative. On the FiveThirtyEight website there is a key which describes what these values represent (<code>A = ADULTS, RV = REGISTERED VOTERS, V = VOTERS, LV = LIKELY VOTERS</code>). This should be specified in our data set. In addition the <code>sample</code> column ought to be cast into an integer column. And finally, those messy dates will need to be cleaned. My approach to this requires creating a function to handle this cleaning. First, the simple stuff.</p>
+<p>To do the first two above steps, we will continue our function chain and save it to a new variable <code>polls_tidy</code>.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>polls_tidy</span> <span class='o'>&lt;-</span> <span class='nv'>polls</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='o'>(</span><span class='o'>-</span><span class='m'>1</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://rdrr.io/r/stats/setNames.html'>setNames</a></span><span class='o'>(</span><span class='nv'>new_names</span><span class='o'>)</span><span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='o'>(</span><span class='o'>-</span><span class='m'>1</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/mutate_all.html'>mutate_at</a></span><span class='o'>(</span><span class='nf'><a href='https://ggplot2.tidyverse.org/reference/vars.html'>vars</a></span><span class='o'>(</span><span class='o'>-</span><span class='nf'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='o'>(</span><span class='s'>"dates"</span>, <span class='s'>"pollster"</span>, <span class='s'>"sample"</span>, <span class='s'>"sample_2"</span><span class='o'>)</span><span class='o'>)</span>, 
+            <span class='o'>~</span><span class='nf'><a href='https://rdrr.io/r/base/integer.html'>as.integer</a></span><span class='o'>(</span><span class='nf'><a href='https://stringr.tidyverse.org/reference/str_remove.html'>str_remove</a></span><span class='o'>(</span><span class='nv'>.</span>, <span class='s'>"%"</span><span class='o'>)</span><span class='o'>)</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://tidyr.tidyverse.org/reference/gather.html'>gather</a></span><span class='o'>(</span><span class='nv'>candidate</span>, <span class='nv'>points</span>, <span class='o'>-</span><span class='nv'>dates</span>, <span class='o'>-</span><span class='nv'>pollster</span>, <span class='o'>-</span><span class='nv'>sample</span>, <span class='o'>-</span><span class='nv'>sample_2</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='o'>(</span>sample_2 <span class='o'>=</span> <span class='nf'><a href='https://dplyr.tidyverse.org/reference/case_when.html'>case_when</a></span><span class='o'>(</span>
+    <span class='nv'>sample_2</span> <span class='o'>==</span> <span class='s'>"RV"</span> <span class='o'>~</span> <span class='s'>"Registered Voters"</span>,
+    <span class='nv'>sample_2</span> <span class='o'>==</span> <span class='s'>"LV"</span> <span class='o'>~</span> <span class='s'>"Likely Voters"</span>,
+    <span class='nv'>sample_2</span> <span class='o'>==</span> <span class='s'>"A"</span> <span class='o'>~</span> <span class='s'>"Adults"</span>,
+    <span class='nv'>sample_2</span> <span class='o'>==</span> <span class='s'>"V"</span> <span class='o'>~</span> <span class='s'>"Voters"</span>
+  <span class='o'>)</span>,
+  sample <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/integer.html'>as.integer</a></span><span class='o'>(</span><span class='nf'><a href='https://stringr.tidyverse.org/reference/str_remove.html'>str_remove</a></span><span class='o'>(</span><span class='nv'>sample</span>, <span class='s'>","</span><span class='o'>)</span><span class='o'>)</span><span class='o'>)</span>
+
+<span class='nv'>polls_tidy</span></code></pre>
+</div>
+<h3 id="date-cleaning">Date cleaning</h3>
+<p>Next we must work to clean the date field. I find that when working with a messy column, creating a single function which handles the cleaning is one of the most effective approaches. Here we will create a function which takes a value provided from the <code>dates</code> field and return a cleaned date. There are two unique cases I identified. There are poll dates which occurred during a single month, or a poll that spanned two months. The dates are separated by a single hyphen <code>-</code>. If we split the date at <code>-</code> we will either receive two elements with a month indicated or one month with a day and a day number. In the latter case we will have to carry over the month. Then the year can be appended to it and parsed as a date using the <code>lubridate</code> package. For more on <code>lubridate</code> visit <a href="https://lubridate.tidyverse.org/">here</a>.</p>
+<p>The function will only return one date at a time. The two arguments will be <code>date</code> and <code>.return</code> to indicate whether the first or second date should be provided. The internals of this function rely heavily on the <code>stringr</code> package (see R for Data Science <a href="https://r4ds.had.co.nz/strings.html">Chapter 14</a>). <a href="https://rdrr.io/r/base/switch.html"><code>switch()</code></a> at the end of the function determines which date should be returned (see Advanced R <a href="https://adv-r.hadley.nz/control-flow.html">Chapter 5</a>).</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>clean_date</span> <span class='o'>&lt;-</span> <span class='kr'>function</span><span class='o'>(</span><span class='nv'>date</span>, <span class='nv'>.return</span> <span class='o'>=</span> <span class='s'>"first"</span><span class='o'>)</span> <span class='o'>&#123;</span>
+  <span class='c'># take date and split at the comma to get the year and the month-day combo</span>
+  <span class='nv'>date_split</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://stringr.tidyverse.org/reference/str_split.html'>str_split</a></span><span class='o'>(</span><span class='nv'>date</span>, <span class='s'>","</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='c'># remove from list / coerce to vector</span>
+    <span class='nf'><a href='https://rdrr.io/r/base/unlist.html'>unlist</a></span><span class='o'>(</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='c'># remove extra white space</span>
+    <span class='nf'><a href='https://stringr.tidyverse.org/reference/str_trim.html'>str_trim</a></span><span class='o'>(</span><span class='o'>)</span>
+  
+  <span class='c'># extract the year</span>
+  <span class='nv'>date_year</span> <span class='o'>&lt;-</span> <span class='nv'>date_split</span><span class='o'>[</span><span class='m'>2</span><span class='o'>]</span>
+  
+  <span class='c'># split the month day portion and coerce to vector</span>
+  <span class='nv'>dates</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/r/base/unlist.html'>unlist</a></span><span class='o'>(</span><span class='nf'><a href='https://stringr.tidyverse.org/reference/str_split.html'>str_split</a></span><span class='o'>(</span><span class='nv'>date_split</span><span class='o'>[</span><span class='m'>1</span><span class='o'>]</span>,  <span class='s'>"-"</span><span class='o'>)</span><span class='o'>)</span>
+  
+  <span class='c'># paste the month day and year together then parse as date using `mdy()`</span>
+  <span class='nv'>first_date</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='o'>(</span><span class='nv'>dates</span><span class='o'>[</span><span class='m'>1</span><span class='o'>]</span>, <span class='nv'>date_year</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='nf'>lubridate</span><span class='nf'>::</span><span class='nf'><a href='https://lubridate.tidyverse.org/reference/ymd.html'>mdy</a></span><span class='o'>(</span><span class='o'>)</span>
+  
+  <span class='nv'>second_date</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/r/base/ifelse.html'>ifelse</a></span><span class='o'>(</span><span class='o'>!</span><span class='nf'><a href='https://stringr.tidyverse.org/reference/str_detect.html'>str_detect</a></span><span class='o'>(</span><span class='nv'>dates</span><span class='o'>[</span><span class='m'>2</span><span class='o'>]</span>, <span class='s'>"[A-z]+"</span><span class='o'>)</span>,
+                        yes <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='o'>(</span><span class='nf'><a href='https://stringr.tidyverse.org/reference/str_extract.html'>str_extract</a></span><span class='o'>(</span><span class='nv'>dates</span><span class='o'>[</span><span class='m'>1</span><span class='o'>]</span>, <span class='s'>"[A-z]+"</span><span class='o'>)</span>, 
+                              <span class='nv'>dates</span><span class='o'>[</span><span class='m'>2</span><span class='o'>]</span>, 
+                              <span class='nv'>date_year</span><span class='o'>)</span>, 
+                        no <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='o'>(</span><span class='nv'>dates</span><span class='o'>[</span><span class='m'>2</span><span class='o'>]</span>, <span class='nv'>date_year</span><span class='o'>)</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='nf'>lubridate</span><span class='nf'>::</span><span class='nf'><a href='https://lubridate.tidyverse.org/reference/ymd.html'>mdy</a></span><span class='o'>(</span><span class='o'>)</span>
+  
+  <span class='kr'><a href='https://rdrr.io/r/base/switch.html'>switch</a></span><span class='o'>(</span><span class='nv'>.return</span>, 
+         first <span class='o'>=</span> <span class='kr'><a href='https://rdrr.io/r/base/function.html'>return</a></span><span class='o'>(</span><span class='nv'>first_date</span><span class='o'>)</span>,
+         second <span class='o'>=</span> <span class='kr'><a href='https://rdrr.io/r/base/function.html'>return</a></span><span class='o'>(</span><span class='nv'>second_date</span><span class='o'>)</span>
+         <span class='o'>)</span>
+  
+<span class='o'>&#125;</span>
+
+<span class='c'># test on a date</span>
+<span class='nf'>clean_date</span><span class='o'>(</span><span class='nv'>polls_tidy</span><span class='o'>$</span><span class='nv'>dates</span><span class='o'>[</span><span class='m'>10</span><span class='o'>]</span>, .return <span class='o'>=</span> <span class='s'>"first"</span><span class='o'>)</span>
+<span class='nf'>clean_date</span><span class='o'>(</span><span class='nv'>polls_tidy</span><span class='o'>$</span><span class='nv'>dates</span><span class='o'>[</span><span class='m'>10</span><span class='o'>]</span>, .return <span class='o'>=</span> <span class='s'>"second"</span><span class='o'>)</span></code></pre>
+</div>
+<p>We can use this new function to create two new columns <code>poll_start</code> and <code>poll_end</code> using <a href="https://dplyr.tidyverse.org/reference/mutate.html"><code>mutate()</code></a>. Following this we can deselect the original <code>dates</code> column, remove any observations missing a <code>points</code> value, remove duplicates using <a href="https://dplyr.tidyverse.org/reference/distinct.html"><code>distinct()</code></a>, and save this to <code>polls_clean</code>.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>polls_clean</span> <span class='o'>&lt;-</span> <span class='nv'>polls_tidy</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='o'>(</span>poll_start <span class='o'>=</span> <span class='nf'>clean_date</span><span class='o'>(</span><span class='nv'>dates</span>, <span class='s'>"first"</span><span class='o'>)</span>,
+         poll_end <span class='o'>=</span> <span class='nf'>clean_date</span><span class='o'>(</span><span class='nv'>dates</span>, <span class='s'>"second"</span><span class='o'>)</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='o'>(</span><span class='o'>-</span><span class='nv'>dates</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='o'>(</span><span class='o'>!</span><span class='nf'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span><span class='o'>(</span><span class='nv'>points</span><span class='o'>)</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/distinct.html'>distinct</a></span><span class='o'>(</span><span class='o'>)</span>
+
+<span class='nv'>polls_clean</span></code></pre>
+</div>
+<h3 id="visualization">Visualization</h3>
+<p>The cleaned data can be aggregated and visualized.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>avg_polls</span> <span class='o'>&lt;-</span> <span class='nv'>polls_clean</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='o'>(</span><span class='nv'>candidate</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarise</a></span><span class='o'>(</span>avg_points <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='o'>(</span><span class='nv'>points</span>, na.rm <span class='o'>=</span> <span class='kc'>TRUE</span><span class='o'>)</span>,
+            min_points <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/Extremes.html'>min</a></span><span class='o'>(</span><span class='nv'>points</span>, na.rm <span class='o'>=</span> <span class='kc'>TRUE</span><span class='o'>)</span>,
+            max_points <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/Extremes.html'>max</a></span><span class='o'>(</span><span class='nv'>points</span>, na.rm <span class='o'>=</span> <span class='kc'>TRUE</span><span class='o'>)</span>,
+            n_polls <span class='o'>=</span> <span class='nf'><a href='https://dplyr.tidyverse.org/reference/context.html'>n</a></span><span class='o'>(</span><span class='o'>)</span> <span class='o'>-</span> <span class='nf'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='o'>(</span><span class='nf'><a href='https://rdrr.io/r/base/NA.html'>is.na</a></span><span class='o'>(</span><span class='nv'>points</span><span class='o'>)</span><span class='o'>)</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> <span class='c'># identify how many polls candidate is in</span>
+  <span class='c'># remove candidates who appear in 50 or fewer polls: i.e. HRC</span>
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='o'>(</span><span class='nv'>n_polls</span> <span class='o'>&gt;</span> <span class='m'>50</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/arrange.html'>arrange</a></span><span class='o'>(</span><span class='o'>-</span><span class='nv'>avg_points</span><span class='o'>)</span>
+
+<span class='nv'>avg_polls</span></code></pre>
+</div>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>avg_polls</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='o'>(</span>candidate <span class='o'>=</span> <span class='nf'><a href='https://forcats.tidyverse.org/reference/fct_reorder.html'>fct_reorder</a></span><span class='o'>(</span><span class='nv'>candidate</span>, <span class='nv'>avg_points</span><span class='o'>)</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='o'>(</span><span class='nf'><a href='https://ggplot2.tidyverse.org/reference/aes.html'>aes</a></span><span class='o'>(</span><span class='nv'>candidate</span>, <span class='nv'>avg_points</span><span class='o'>)</span><span class='o'>)</span> <span class='o'>+</span>
+  <span class='nf'><a href='https://ggplot2.tidyverse.org/reference/geom_bar.html'>geom_col</a></span><span class='o'>(</span><span class='o'>)</span> <span class='o'>+</span> 
+  <span class='nf'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_minimal</a></span><span class='o'>(</span><span class='o'>)</span> <span class='o'>+</span>
+  <span class='nf'><a href='https://ggplot2.tidyverse.org/reference/coord_flip.html'>coord_flip</a></span><span class='o'>(</span><span class='o'>)</span> <span class='o'>+</span>
+  <span class='nf'><a href='https://ggplot2.tidyverse.org/reference/labs.html'>labs</a></span><span class='o'>(</span>title <span class='o'>=</span> <span class='s'>"Polls Standings"</span>, x <span class='o'>=</span> <span class='s'>""</span>, y <span class='o'>=</span> <span class='s'>"%"</span><span class='o'>)</span></code></pre>
+</div>
+<h2 id="creating-historic-polling-data">Creating historic polling data</h2>
+<p>It may become useful to have a running history of how candidates have been polling. We can use R to write a csv file of the data from FiveThirtyEight. However, what happens when the polls update? How we can we keep the previous data <em>and</em> the new data? We will work through an example using a combination of <a href="https://dplyr.tidyverse.org/reference/bind.html"><code>bind_rows()</code></a> and <a href="https://dplyr.tidyverse.org/reference/distinct.html"><code>distinct()</code></a>. I want to emphasize that this is not a good practice if you need to scale to hundreds of thousand of rows. This works in this case as the data are inherently small.</p>
+<p>To start, I have created a sample dataset which contains 80% of these polls (maybe less by the time you do this!). Note that is probably best to version control this or have multiple copies as a failsafe.</p>
+<p>The approach we will take is to read in the historic polls data set and bind rows with the <code>polls_clean</code> data we have scraped. Next we remove duplicate rows using <a href="https://dplyr.tidyverse.org/reference/distinct.html"><code>distinct()</code></a>.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>old_polls</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://readr.tidyverse.org/reference/read_delim.html'>read_csv</a></span><span class='o'>(</span><span class='s'>"https://raw.githubusercontent.com/JosiahParry/r-4-campaigns/master/data/polls.csv"</span><span class='o'>)</span>
+
+<span class='nv'>old_polls</span>
+
+<span class='nv'>updated_polls</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://dplyr.tidyverse.org/reference/bind.html'>bind_rows</a></span><span class='o'>(</span><span class='nv'>old_polls</span>, <span class='nv'>polls_clean</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/distinct.html'>distinct</a></span><span class='o'>(</span><span class='o'>)</span>
+
+<span class='nv'>updated_polls</span></code></pre>
+</div>
+<p>Now you have a cleaned data set which has been integrated with the recently scraped data. Write this to a csv using <a href="https://readr.tidyverse.org/reference/write_delim.html"><code>write_csv()</code></a> for later use.</p>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <!-- Basecoat sidebar component -->
+        <script
+            src="https://josiah.rs/js/basecoat/sidebar.min.js"
+            defer
+        ></script>
+        <!-- Sidebar toggle for mobile -->
+        <script src="https://josiah.rs/js/sidebar-toggle.js" defer></script>
+        <!-- Custom tabs for panel-tabset -->
+        <script src="https://josiah.rs/js/tabs.js" defer></script>
+        <!-- Search functionality -->
+        <script src="https://josiah.rs/js/search.js" defer></script>
+        <script>
+            (() => {
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+
+                    // Toggle syntax highlighting themes via media attribute
+                    const darkSyntax = document.getElementById("syntax-dark");
+                    const lightSyntax = document.getElementById("syntax-light");
+                    if (darkSyntax && lightSyntax) {
+                        darkSyntax.media = dark ? "all" : "not all";
+                        lightSyntax.media = dark ? "not all" : "all";
+                    }
+
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        ></script>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"
+        ></script>
+        
+    </body>
+</html>

@@ -1,0 +1,829 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            [Not so] generic functions | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+
+        <!-- Determine theme before loading syntax highlighting -->
+        <script>
+            (() => {
+                const stored = localStorage.getItem("themeMode");
+                // Use stored preference if exists, otherwise always default to dark
+                const isDark = stored ? stored === "dark" : true;
+
+                if (isDark) {
+                    document.documentElement.classList.add("dark");
+                }
+            })();
+        </script>
+
+        <!-- Syntax highlighting themes -->
+        <link rel="stylesheet" href="https://josiah.rs/syntax-dark.css" id="syntax-dark" />
+        <link rel="stylesheet" href="https://josiah.rs/syntax-light.css" id="syntax-light" />
+
+        <!-- KaTeX for math rendering -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        />
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-semibold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4 relative">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-sm bg-muted/50 border border-border"
+                id="search-input"
+            />
+            <div
+                id="search-results"
+                class="hidden absolute top-full left-4 -mt-1 w-96 max-h-96 overflow-y-auto bg-background border border-border rounded-lg shadow-lg z-50 p-2"
+            ></div>
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-2 text-sm pl-3 transition-colors font-medium border-l-2 border-primary -ml-px bg-sidebar-accent"
+                    >
+                        Posts
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Socials -->
+            <div
+                class="mt-4 block py-2 transition-colors font-medium px-3 text-sm bg-sidebar-accent"
+            >
+                <h2
+                    class="text-sm font-medium tracking-tight mb-2 text-muted-foreground border-b border-muted-foreground/20 pb-1"
+                >
+                    Socials
+                </h2>
+                <ul class="space-y-1.5">
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <polygon
+                                points="160 128 112 96 112 160 160 128"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M24,128c0,29.91,3.07,47.45,5.41,56.47A16,16,0,0,0,39,195.42C72.52,208.35,128,208,128,208s55.48.35,89-12.58a16,16,0,0,0,9.63-10.95c2.34-9,5.41-26.56,5.41-56.47s-3.07-47.45-5.41-56.47a16,16,0,0,0-9.63-11C183.48,47.65,128,48,128,48s-55.48-.35-89,12.58a16,16,0,0,0-9.63,11C27.07,80.54,24,98.09,24,128Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://www.youtube.com/@josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >YouTube</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <rect
+                                x="32"
+                                y="32"
+                                width="192"
+                                height="192"
+                                rx="8"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="120"
+                                y1="112"
+                                x2="120"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="88"
+                                y1="112"
+                                x2="88"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M120,140a28,28,0,0,1,56,0v36"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <circle cx="88" cy="84" r="12" />
+                        </svg>
+                        <a
+                            href="https://www.linkedin.com/in/josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >LinkedIn</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M119.83,56A52,52,0,0,0,76,32a51.92,51.92,0,0,0-3.49,44.7A49.28,49.28,0,0,0,64,104v8a48,48,0,0,0,48,48h48a48,48,0,0,0,48-48v-8a49.28,49.28,0,0,0-8.51-27.3A51.92,51.92,0,0,0,196,32a52,52,0,0,0-43.83,24Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,232V192a32,32,0,0,1,32-32h0a32,32,0,0,1,32,32v40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,208H72a32,32,0,0,1-32-32A32,32,0,0,0,8,144"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="http://github.com/josiahparry/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >GitHub</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M160,224H72a32,32,0,0,1-32-32V72A32,32,0,0,1,72,40H184a32,32,0,0,1,32,32v72a32,32,0,0,1-32,32H40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M128,136V104a24,24,0,0,0-48,0v32"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M176,136V104a24,24,0,0,0-48,0"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://fosstodon.org/@josi"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Mastodon</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                            class="w-4 h-4"
+                            fill="currentColor"
+                        >
+                            <path
+                                d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.698-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948"
+                            />
+                        </svg>
+                        <a
+                            href="https://bsky.app/profile/josiahparry.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Bluesky</a
+                        >
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">[Not so] generic functions</h1>
+
+         
+        <div class="flex flex-wrap gap-2 mb-4">
+            
+            <a
+                href="/categories/R"
+                class="badge-secondary cursor pointer"
+                >R</a
+            >
+            
+            <a
+                href="/categories/tutorial"
+                class="badge-secondary cursor pointer"
+                >tutorial</a
+            >
+            
+        </div>
+         
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >November 28, 2018</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><p>Lately I have been doing more of my spatial analysis work in R with the help of the <code>sf</code> package. One shapefile I was working with had some horrendously named columns, and naturally, I tried to clean them using the <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names()</code></a> function from the <code>janitor</code> package. But lo, an egregious error occurred. To this end, I officially filed my complaint as an <a href="https://github.com/sfirke/janitor/pull/249">issue</a>. The solution presented was to <em>simply</em> create a method for <code>sf</code> objects.</p>
+<p>Yeah, methods, how tough can those be? Apparently the process isn't at all difficult. But figuring out the process? That was difficult. This post will explain how I went about the process for converting the <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names()</code></a> function into a <em>generic</em> (I'll explain this in a second), and creating a <em>method</em> for <code>sf</code> and <code>tbl_graph</code> objects.</p>
+<h3 id="the-jargon">The Jargon</h3>
+<p>Okay, I want to address the jargon. What the hell is a <em>generic</em> function, and what is a <em>method</em>? But first, I want to give a quick tl;dr on what a function is. I define as function as bit of code that takes an input, changes it in some way, and produces an output. Even simpler, a function takes an input and creates an output.</p>
+<h4 id="generic-functions">Generic Functions</h4>
+<p>Now, what is a <em><strong>generic</strong></em> function? My favorite definition that I've seen so far comes from <em>LispWorks Ltd</em> (their website is a historic landmark, I recommend you give it a look for a reminder of what the internet used to be). They define a <a href="http://clhs.lisp.se/Body/07_fa.htm">generic function</a> as</p>
+<blockquote>
+<p>a function whose behavior depends on the classes or identities of the arguments supplied to it.</p>
+</blockquote>
+<p>This means that we have to create a function that looks at the class of an object and perform an operation based on the object class. That means if there is <code>"numeric"</code> or <code>"list"</code> object, they will be treated differently. These are called <code>methods</code>. Note: you can find the class of an object by using the <a href="https://rdrr.io/r/base/class.html"><code>class()</code></a> function on any object.</p>
+<h4 id="methods">Methods</h4>
+<p>To steal from <em>LispWorks Ltd</em> again, a <a href="http://clhs.lisp.se/Body/26_glo_m.htm#method">method</a> is</p>
+<blockquote>
+<p>part of a generic function which provides information about how that generic function should behave [for] certain classes.</p>
+</blockquote>
+<p>This means that a method is part of a generic function and has to be defined separately. Imagine we have a generic function called <code>f</code> with methods for <code>list</code> and <code>numeric</code> objects. The way that we would denote these methods is by putting a period after the function name and indicating the type of object the function is to be used on. These would look like <code>f.list</code> and <code>f.numeric</code> respectively.</p>
+<p>But to save time you can always create a <code>default</code> method which will be dispatched (used) on any object that it hasn't been explicitly told how to operate on (by a specific method).</p>
+<p>Now that the intuition of what generic functions and methods R, we can begin the work of actually creating them. This tutorial will walk through the steps I took in changing the <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names()</code></a> from a standard function into a generic function with methods for <code>sf</code> objects and <code>tbl_graph</code> objects from the <a href="https://github.com/r-spatial/sf"><code>sf</code></a> and <a href="https://github.com/thomasp85/tidygraph"><code>tidygraph</code></a> packages respectively.</p>
+<p>A brief overview of the process:</p>
+<ol>
+<li>Define the generic function</li>
+<li>Create a default method</li>
+<li>Create additional methods</li>
+</ol>
+<p>A quick note: The code that follows is not identical to that of the package. I will be changing it up to make it simpler to read and understand what is happening.</p>
+<h3 id="the-generic-method">The Generic Method</h3>
+<p>The first step, as described above, is to create a generic function. Generic functions are made by creating a new function with the body containing only a call to the <a href="https://rdrr.io/r/base/UseMethod.html"><code>UseMethod()</code></a> function. The only argument to this is the name of your generic function---this should be the same as the name of the function you are making. This tells R that you are creating a generic function. Additionally, you should add any arguments that will be necessary for your function. Here, there are two arguments: <code>dat</code> and <code>case</code>. These indicate the data to be cleaned and the preferred style for them to be cleaned according to.</p>
+<p>I am not setting any default values for <code>dat</code> to make it required, whereas I am setting <code>case</code> to <code>"snake"</code>.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>clean_names</span> <span class='o'>&lt;-</span> <span class='kr'>function</span><span class='o'>(</span><span class='nv'>dat</span>, <span class='nv'>case</span> <span class='o'>=</span> <span class='s'>"snake"</span><span class='o'>)</span> <span class='o'>&#123;</span>
+  <span class='kr'><a href='https://rdrr.io/r/base/UseMethod.html'>UseMethod</a></span><span class='o'>(</span><span class='s'>"clean_names"</span><span class='o'>)</span>
+<span class='o'>&#125;</span></code></pre>
+</div>
+<p>Now we have created a generic function. But this function doesn't know how to run on any given object types. In other words, there are no methods associated with it. To illustrate this try using the <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names()</code></a> function we just defined on objects of different types.</p>
+<pre class="z-code"><code><span class="z-text z-plain">clean_names(1) # numeric 
+</span><span class="z-text z-plain">clean_names(&quot;test&quot;) # character 
+</span><span class="z-text z-plain">clean_names(TRUE) # logical 
+</span></code></pre>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'>#&gt; [1] "no applicable method for 'clean_names' applied to an object of class \"c('double', 'numeric')\""</span></code></pre>
+</div>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'>#&gt; [1] "no applicable method for 'clean_names' applied to an object of class \"character\""</span></code></pre>
+</div>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'>#&gt; [1] "no applicable method for 'clean_names' applied to an object of class \"logical\""</span></code></pre>
+</div>
+<p>The output of these calls say <code>no applicable method for 'x' applied to an object of [class]</code>. In order to prevent this from happening, we can create a default method. A default method will always be used if the function doesn't have a method for the provided object type.</p>
+<h3 id="the-default-method">The Default Method</h3>
+<p>Remember that methods are indicated by writing <code>function.method</code>. It is also important to note that the <code>method</code> should indicate an object class. To figure out what class an object is you can use the <a href="https://rdrr.io/r/base/class.html"><code>class()</code></a> function. For example <code>class(1)</code> tells you that the number <code>1</code> is "numeric".</p>
+<p>In this next step I want to create a default method that will be used on every object that there isn't a method explicitly for. To do this I will create a function called <code>clean_names.default</code>.</p>
+<p>As background, the <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names()</code></a> function takes a data frame and changes column headers to fit a given style. <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names()</code></a> in the <a href="https://github.com/sfirke/janitor">development version</a> is based on the function <a href="https://rdrr.io/pkg/janitor/man/make_clean_names.html"><code>make_clean_names()</code></a> which takes a character vector and makes each value match a given style (the default is snake, and you should only use snake case because everything else is wrong * sarcasm * ).</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='kr'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='o'>(</span><span class='nv'><a href='https://github.com/sfirke/janitor'>janitor</a></span><span class='o'>)</span></code></pre>
+</div>
+<p>Now let's see how this function works. For this we will use the ugliest character vector I have ever seen from the <a href="https://github.com/sfirke/janitor/blob/master/tests/testthat/test-clean-names.R">tests</a> for <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names()</code></a> (h/t @sfirke for making this).</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>ugly_names</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='o'>(</span>
+  <span class='s'>"sp ace"</span>, <span class='s'>"repeated"</span>, <span class='s'>"a**^@"</span>, <span class='s'>"%"</span>, <span class='s'>"*"</span>, <span class='s'>"!"</span>,
+  <span class='s'>"d(!)9"</span>, <span class='s'>"REPEATED"</span>, <span class='s'>"can\"'t"</span>, <span class='s'>"hi_`there`"</span>, <span class='s'>"  leading spaces"</span>,
+  <span class='s'>"€"</span>, <span class='s'>"ação"</span>, <span class='s'>"Farœ"</span>, <span class='s'>"a b c d e f"</span>, <span class='s'>"testCamelCase"</span>, <span class='s'>"!leadingpunct"</span>,
+  <span class='s'>"average # of days"</span>, <span class='s'>"jan2009sales"</span>, <span class='s'>"jan 2009 sales"</span>
+<span class='o'>)</span>
+
+<span class='nv'>ugly_names</span>
+<span class='c'>#&gt;  [1] "sp ace"            "repeated"          "a**^@"             "%"                </span>
+<span class='c'>#&gt;  [5] "*"                 "!"                 "d(!)9"             "REPEATED"         </span>
+<span class='c'>#&gt;  [9] "can\"'t"           "hi_`there`"        "  leading spaces"  "€"                </span>
+<span class='c'>#&gt; [13] "ação"              "Farœ"              "a b c d e f"       "testCamelCase"    </span>
+<span class='c'>#&gt; [17] "!leadingpunct"     "average # of days" "jan2009sales"      "jan 2009 sales"</span></code></pre>
+</div>
+<p>Now to see how this function works:</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'><a href='https://rdrr.io/pkg/janitor/man/make_clean_names.html'>make_clean_names</a></span><span class='o'>(</span><span class='nv'>ugly_names</span><span class='o'>)</span>
+<span class='c'>#&gt;  [1] "sp_ace"                 "repeated"               "a"                     </span>
+<span class='c'>#&gt;  [4] "percent"                "x"                      "x_2"                   </span>
+<span class='c'>#&gt;  [7] "d_9"                    "repeated_2"             "cant"                  </span>
+<span class='c'>#&gt; [10] "hi_there"               "leading_spaces"         "x_3"                   </span>
+<span class='c'>#&gt; [13] "acao"                   "faroe"                  "a_b_c_d_e_f"           </span>
+<span class='c'>#&gt; [16] "test_camel_case"        "leadingpunct"           "average_number_of_days"</span>
+<span class='c'>#&gt; [19] "jan2009sales"           "jan_2009_sales"</span></code></pre>
+</div>
+<p>Très magnifique!</p>
+<p>The body of the default method will take column names from a dataframe, clean them, and reassign them. Before we can do this, a dataframe is needed!</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'># create a data frame with 20 columns</span>
+<span class='nv'>test_df</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://tibble.tidyverse.org/reference/as_tibble.html'>as_tibble</a></span><span class='o'>(</span><span class='nf'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='o'>(</span><span class='nf'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span><span class='o'>(</span><span class='m'>100</span>, <span class='m'>20</span><span class='o'>)</span>, ncol <span class='o'>=</span> <span class='m'>20</span><span class='o'>)</span><span class='o'>)</span>
+
+<span class='c'># makes the column names the `ugly_names` vector</span>
+<span class='nf'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='o'>(</span><span class='nv'>test_df</span><span class='o'>)</span> <span class='o'>&lt;-</span> <span class='nv'>ugly_names</span>
+
+<span class='c'># print the data frame.</span>
+<span class='nv'>test_df</span>
+<span class='c'>#&gt; <span style='color: #555555;'># A tibble: 1 × 20</span></span>
+<span class='c'>#&gt;   `sp ace` repeated `a**^@`   `%`   `*`   `!` `d(!)9` REPEATED `can"'t` hi_\th…¹   lea…²</span>
+<span class='c'>#&gt;      <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>    <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>    <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>    <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>    <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>1</span>       78       18      99    28    26    38      43       73       51       33      23</span>
+<span class='c'>#&gt; <span style='color: #555555;'># … with 9 more variables: `€` &lt;int&gt;, ação &lt;int&gt;, Farœ &lt;int&gt;, `a b c d e f` &lt;int&gt;,</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>#   testCamelCase &lt;int&gt;, `!leadingpunct` &lt;int&gt;, `average # of days` &lt;int&gt;,</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>#   jan2009sales &lt;int&gt;, `jan 2009 sales` &lt;int&gt;, and abbreviated variable names</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>#   ¹​`hi_\`there\``, ²​`  leading spaces`</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'># ℹ Use `colnames()` to see all variable names</span></span></code></pre>
+</div>
+<p>The process for writing this function is:</p>
+<ul>
+<li>take a dataframe</li>
+<li>take the old column names and clean them</li>
+<li>reassign the column names as the new clean names</li>
+<li>return the object</li>
+</ul>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>clean_names.default</span> <span class='o'>&lt;-</span> <span class='kr'>function</span><span class='o'>(</span><span class='nv'>dat</span>, <span class='nv'>case</span> <span class='o'>=</span> <span class='s'>"snake"</span><span class='o'>)</span> <span class='o'>&#123;</span> 
+  <span class='c'># retrieve the old names</span>
+  <span class='nv'>old_names</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='o'>(</span><span class='nv'>dat</span><span class='o'>)</span>
+  <span class='c'># clean the old names</span>
+  <span class='nv'>new_names</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/pkg/janitor/man/make_clean_names.html'>make_clean_names</a></span><span class='o'>(</span><span class='nv'>old_names</span>, case <span class='o'>=</span> <span class='nv'>case</span><span class='o'>)</span>
+  <span class='c'># assign the column names as the clean names vector</span>
+  <span class='nf'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='o'>(</span><span class='nv'>dat</span><span class='o'>)</span> <span class='o'>&lt;-</span> <span class='nv'>new_names</span>
+  <span class='c'># return the data</span>
+  <span class='kr'><a href='https://rdrr.io/r/base/function.html'>return</a></span><span class='o'>(</span><span class='nv'>dat</span><span class='o'>)</span>
+  <span class='o'>&#125;</span></code></pre>
+</div>
+<p>Now that the default method has been defined. Try running the function on our test dataframe!</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'><a href='https://rdrr.io/pkg/janitor/man/clean_names.html'>clean_names</a></span><span class='o'>(</span><span class='nv'>test_df</span><span class='o'>)</span>
+<span class='c'>#&gt; <span style='color: #555555;'># A tibble: 1 × 20</span></span>
+<span class='c'>#&gt;   sp_ace repeated     a percent     x   x_2   d_9 repeated_2  cant hi_th…¹ leadi…²   x_3</span>
+<span class='c'>#&gt;    <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>    <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>      <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>1</span>     78       18    99      28    26    38    43         73    51      33      23    27</span>
+<span class='c'>#&gt; <span style='color: #555555;'># … with 8 more variables: acao &lt;int&gt;, faroe &lt;int&gt;, a_b_c_d_e_f &lt;int&gt;,</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>#   test_camel_case &lt;int&gt;, leadingpunct &lt;int&gt;, average_number_of_days &lt;int&gt;,</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>#   jan2009sales &lt;int&gt;, jan_2009_sales &lt;int&gt;, and abbreviated variable names ¹​hi_there,</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>#   ²​leading_spaces</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'># ℹ Use `colnames()` to see all variable names</span></span></code></pre>
+</div>
+<p>Oh, my gorsh. Look at that! We can try replicating this with a named vector to see how the default method dispatched on unknown objects!</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'># create a vector with 20 elements</span>
+<span class='nv'>test_vect</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='o'>(</span><span class='m'>1</span><span class='o'>:</span><span class='m'>20</span><span class='o'>)</span>
+
+<span class='c'># name each element with the ugly_names vector </span>
+<span class='nf'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='o'>(</span><span class='nv'>test_vect</span><span class='o'>)</span> <span class='o'>&lt;-</span> <span class='nv'>ugly_names</span>
+
+<span class='c'># try cleaning!</span>
+<span class='nf'><a href='https://rdrr.io/pkg/janitor/man/clean_names.html'>clean_names</a></span><span class='o'>(</span><span class='nv'>test_vect</span><span class='o'>)</span>
+<span class='c'>#&gt;                 sp_ace               repeated                      a </span>
+<span class='c'>#&gt;                      1                      2                      3 </span>
+<span class='c'>#&gt;                percent                      x                    x_2 </span>
+<span class='c'>#&gt;                      4                      5                      6 </span>
+<span class='c'>#&gt;                    d_9             repeated_2                   cant </span>
+<span class='c'>#&gt;                      7                      8                      9 </span>
+<span class='c'>#&gt;               hi_there         leading_spaces                    x_3 </span>
+<span class='c'>#&gt;                     10                     11                     12 </span>
+<span class='c'>#&gt;                   acao                  faroe            a_b_c_d_e_f </span>
+<span class='c'>#&gt;                     13                     14                     15 </span>
+<span class='c'>#&gt;        test_camel_case           leadingpunct average_number_of_days </span>
+<span class='c'>#&gt;                     16                     17                     18 </span>
+<span class='c'>#&gt;           jan2009sales         jan_2009_sales </span>
+<span class='c'>#&gt;                     19                     20</span></code></pre>
+</div>
+<p>It looks like this default function works super well with named objects! Now, we will broach the problem I started with, <code>sf</code> objects.</p>
+<h3 id="sf-method"><code>sf</code> method</h3>
+<p>This section will go over the process for creating the <code>sf</code> method. If you have not ever used the <code>sf</code> package, I suggest you give it a try! It makes dataframe objects with spatial data associated with it. This allows you to perform many of the functions from the <code>tidyverse</code> to spatial data.</p>
+<p>Before getting into it, I want to create a test object to work with. I will take the <code>test_df</code> column, create longitude and latitude columns, and then convert it into an <code>sf</code> object. The details of <code>sf</code> objects is out of the scope of this post.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='kr'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='o'>(</span><span class='nv'><a href='https://r-spatial.github.io/sf/'>sf</a></span><span class='o'>)</span>
+
+<span class='nv'>test_sf</span> <span class='o'>&lt;-</span> <span class='nv'>test_df</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+  <span class='c'># create xy columns</span>
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='o'>(</span>long <span class='o'>=</span> <span class='o'>-</span><span class='m'>80</span>, 
+         lat <span class='o'>=</span> <span class='m'>40</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='c'># convert to sf object </span>
+  <span class='nf'><a href='https://r-spatial.github.io/sf/reference/st_as_sf.html'>st_as_sf</a></span><span class='o'>(</span>coords <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='o'>(</span><span class='s'>"long"</span>, <span class='s'>"lat"</span><span class='o'>)</span><span class='o'>)</span>
+
+<span class='c'># converting geometry column name to poor style</span>
+<span class='nf'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='o'>(</span><span class='nv'>test_sf</span><span class='o'>)</span><span class='o'>[</span><span class='m'>21</span><span class='o'>]</span> <span class='o'>&lt;-</span> <span class='s'>"Geometry"</span>
+
+<span class='c'># telling sf which column is now the geometry</span>
+<span class='nf'><a href='https://r-spatial.github.io/sf/reference/st_geometry.html'>st_geometry</a></span><span class='o'>(</span><span class='nv'>test_sf</span><span class='o'>)</span> <span class='o'>&lt;-</span> <span class='s'>"Geometry"</span>
+
+<span class='nv'>test_sf</span>
+<span class='c'>#&gt; Simple feature collection with 1 feature and 20 fields</span>
+<span class='c'>#&gt; Geometry type: POINT</span>
+<span class='c'>#&gt; Dimension:     XY</span>
+<span class='c'>#&gt; Bounding box:  xmin: -80 ymin: 40 xmax: -80 ymax: 40</span>
+<span class='c'>#&gt; CRS:           NA</span>
+<span class='c'>#&gt; <span style='color: #555555;'># A tibble: 1 × 21</span></span>
+<span class='c'>#&gt;   `sp ace` repeated `a**^@`   `%`   `*`   `!` `d(!)9` REPEATED `can"'t` hi_\th…¹   lea…²</span>
+<span class='c'>#&gt;      <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>    <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>    <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>    <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>    <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>1</span>       78       18      99    28    26    38      43       73       51       33      23</span>
+<span class='c'>#&gt; <span style='color: #555555;'># … with 10 more variables: `€` &lt;int&gt;, ação &lt;int&gt;, Farœ &lt;int&gt;, `a b c d e f` &lt;int&gt;,</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>#   testCamelCase &lt;int&gt;, `!leadingpunct` &lt;int&gt;, `average # of days` &lt;int&gt;,</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>#   jan2009sales &lt;int&gt;, `jan 2009 sales` &lt;int&gt;, Geometry &lt;POINT&gt;, and abbreviated</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>#   variable names ¹​`hi_\`there\``, ²​`  leading spaces`</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'># ℹ Use `colnames()` to see all variable names</span></span></code></pre>
+</div>
+<p>The <code>sf</code> object has been created. But now how does our default method of the <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names()</code></a> function work on this object? There is only one way to know, try it.</p>
+<pre class="z-code"><code><span class="z-text z-plain">clean_names(test_sf)
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Error in st_geometry.sf(x) : attr(obj, &quot;sf_column&quot;) does not point to a geometry column. Did you rename it, without setting st_geometry(obj) &lt;- &quot;newname&quot;?
+</span></code></pre>
+<p>Notice how it fails. <code>sf</code> noticed that I changed the name of the geometry column without explicitly telling it I did so. Since the geometry column is <em>almost</em> always the last column of an sf object, we can use the <a href="https://rdrr.io/pkg/janitor/man/make_clean_names.html"><code>make_clean_names()</code></a> function on every column but the last one! To do this we will use the <a href="https://dplyr.tidyverse.org/reference/select_all.html"><code>rename_at()</code></a> function from <code>dplyr</code>. This function allows you rename columns based on their name or position, and a function that renames it (in this case, <a href="https://rdrr.io/pkg/janitor/man/make_clean_names.html"><code>make_clean_names()</code></a>).</p>
+<p>For this example dataset, say I wanted to clean the first column. How would I do that? Note that the first column is called <code>sp ace</code>. How this works can be seen in a simple example. In the below function call we are using the <a href="https://dplyr.tidyverse.org/reference/select_all.html"><code>rename_at()</code></a> function (for more, go <a href="https://dplyr.tidyverse.org/reference/select.html">here</a>), selecting the first column name, and renaming it using the <a href="https://rdrr.io/pkg/janitor/man/make_clean_names.html"><code>make_clean_names()</code></a> function.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'><a href='https://dplyr.tidyverse.org/reference/select_all.html'>rename_at</a></span><span class='o'>(</span><span class='nv'>test_df</span>, .vars <span class='o'>=</span> <span class='nf'><a href='https://ggplot2.tidyverse.org/reference/vars.html'>vars</a></span><span class='o'>(</span><span class='m'>1</span><span class='o'>)</span>, .funs <span class='o'>=</span> <span class='nv'>make_clean_names</span><span class='o'>)</span>
+<span class='c'>#&gt; <span style='color: #555555;'># A tibble: 1 × 20</span></span>
+<span class='c'>#&gt;   sp_ace repea…¹ `a**^@`   `%`   `*`   `!` `d(!)9` REPEA…² can"'…³ hi_\t…⁴   lea…⁵   `€`</span>
+<span class='c'>#&gt;    <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>1</span>     78      18      99    28    26    38      43      73      51      33      23    27</span>
+<span class='c'>#&gt; <span style='color: #555555;'># … with 8 more variables: ação &lt;int&gt;, Farœ &lt;int&gt;, `a b c d e f` &lt;int&gt;,</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>#   testCamelCase &lt;int&gt;, `!leadingpunct` &lt;int&gt;, `average # of days` &lt;int&gt;,</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>#   jan2009sales &lt;int&gt;, `jan 2009 sales` &lt;int&gt;, and abbreviated variable names</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>#   ¹​repeated, ²​REPEATED, ³​`can"'t`, ⁴​`hi_\`there\``, ⁵​`  leading spaces`</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'># ℹ Use `colnames()` to see all variable names</span></span></code></pre>
+</div>
+<p>Notice how only the first column has been cleaned. It went from <code>sp ace</code> to <code>sp_ace</code>. The goal is to replicate this for all columns <em>except</em> the last one.</p>
+<p>To write the sf method, the above line of code can be adapted to select columns 1 through the number of columns <em>minus</em> 1 (so geometry isn't selected). In order to make this work, we need to identify the second to last column---this will be supplied as the ending value of our selected variables.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>clean_names.sf</span> <span class='o'>&lt;-</span> <span class='kr'>function</span><span class='o'>(</span><span class='nv'>dat</span>, <span class='nv'>case</span> <span class='o'>=</span> <span class='s'>"snake"</span><span class='o'>)</span> <span class='o'>&#123;</span>
+  <span class='c'># identify last column that is not geometry</span>
+  <span class='nv'>last_col_to_clean</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='o'>(</span><span class='nv'>dat</span><span class='o'>)</span> <span class='o'>-</span> <span class='m'>1</span>
+  <span class='c'># create a new dat object</span>
+  <span class='nv'>dat</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://dplyr.tidyverse.org/reference/select_all.html'>rename_at</a></span><span class='o'>(</span><span class='nv'>dat</span>, 
+                   <span class='c'># rename the first up until the second to last</span>
+                   .vars <span class='o'>=</span> <span class='nf'><a href='https://ggplot2.tidyverse.org/reference/vars.html'>vars</a></span><span class='o'>(</span><span class='m'>1</span><span class='o'>:</span><span class='nv'>last_col_to_clean</span><span class='o'>)</span>, 
+                   <span class='c'># clean using the make_clean_names</span>
+                   .funs <span class='o'>=</span> <span class='nv'>make_clean_names</span><span class='o'>)</span>
+  <span class='kr'><a href='https://rdrr.io/r/base/function.html'>return</a></span><span class='o'>(</span><span class='nv'>dat</span><span class='o'>)</span>
+<span class='o'>&#125;</span></code></pre>
+</div>
+<p>Voilà! Our first non-default method has been created. This means that when an <code>sf</code> object is supplied to our generic function <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names()</code></a> it looks at the class of the object---<code>class(sf_object)</code>---notices it's an <code>sf</code> object, then dispatches (uses) the <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names.sf()</code></a> method instead of the default.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'><a href='https://rdrr.io/pkg/janitor/man/clean_names.html'>clean_names</a></span><span class='o'>(</span><span class='nv'>test_sf</span><span class='o'>)</span>
+<span class='c'>#&gt; Simple feature collection with 1 feature and 20 fields</span>
+<span class='c'>#&gt; Geometry type: POINT</span>
+<span class='c'>#&gt; Dimension:     XY</span>
+<span class='c'>#&gt; Bounding box:  xmin: -80 ymin: 40 xmax: -80 ymax: 40</span>
+<span class='c'>#&gt; CRS:           NA</span>
+<span class='c'>#&gt; <span style='color: #555555;'># A tibble: 1 × 21</span></span>
+<span class='c'>#&gt;   sp_ace repeated     a percent     x   x_2   d_9 repeated_2  cant hi_th…¹ leadi…²   x_3</span>
+<span class='c'>#&gt;    <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>    <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>      <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>1</span>     78       18    99      28    26    38    43         73    51      33      23    27</span>
+<span class='c'>#&gt; <span style='color: #555555;'># … with 9 more variables: acao &lt;int&gt;, faroe &lt;int&gt;, a_b_c_d_e_f &lt;int&gt;,</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>#   test_camel_case &lt;int&gt;, leadingpunct &lt;int&gt;, average_number_of_days &lt;int&gt;,</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>#   jan2009sales &lt;int&gt;, jan_2009_sales &lt;int&gt;, Geometry &lt;POINT&gt;, and abbreviated</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>#   variable names ¹​hi_there, ²​leading_spaces</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'># ℹ Use `colnames()` to see all variable names</span></span></code></pre>
+</div>
+<p>Here we see that it worked exactly as we hoped. Every column but the last has been altered. This allows <code>sf</code> to name it's geometry columns whatever it would like without disrupting it.</p>
+<p>Shortly after this addition was added to the package I became aware of another type of object that had problems using <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names()</code></a>. This is the <code>tbl_graph</code> object from the <code>tidygraph</code> package from Thomas Lin Pederson.</p>
+<h3 id="tbl-graph-method"><code>tbl_graph</code> method</h3>
+<p>In issue <a href="https://github.com/sfirke/janitor/issues/252">#252</a> <a href="https://github.com/gvdr">@gvdr</a> noted that calling <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names()</code></a> on a <code>tbl_graph</code> doesn't execute. Thankfully <a href="https://github.com/Tazinho">@Tazinho</a> noted that you could easily clean the column headers by using the <a href="https://dplyr.tidyverse.org/reference/select_all.html"><code>rename_all()</code></a> function from <code>dplyr</code>.</p>
+<p>Here the solution was even easier than above. As a reminder, in order to make the <code>tbl_graph</code> method, we need to specify the name of the generic followed by the object class.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>clean_names.tbl_graph</span> <span class='o'>&lt;-</span> <span class='kr'>function</span><span class='o'>(</span><span class='nv'>dat</span>, <span class='nv'>case</span> <span class='o'>=</span> <span class='s'>"snake"</span><span class='o'>)</span> <span class='o'>&#123;</span> 
+  <span class='c'># rename all columns</span>
+  <span class='nv'>dat</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://dplyr.tidyverse.org/reference/select_all.html'>rename_all</a></span><span class='o'>(</span><span class='nv'>dat</span>, <span class='nv'>make_clean_names</span><span class='o'>)</span>
+  <span class='kr'><a href='https://rdrr.io/r/base/function.html'>return</a></span><span class='o'>(</span><span class='nv'>dat</span><span class='o'>)</span>
+  <span class='o'>&#125;</span></code></pre>
+</div>
+<p>In order to test the function, we will need a graph to test it on. This example draws on the example used in the issue.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='kr'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='o'>(</span><span class='nv'><a href='https://tidygraph.data-imaginist.com'>tidygraph</a></span><span class='o'>)</span>
+<span class='c'># create test graph to test clean_names</span>
+<span class='nv'>test_graph</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://tidygraph.data-imaginist.com/reference/sampling_games.html'>play_erdos_renyi</a></span><span class='o'>(</span><span class='m'>0</span>, <span class='m'>0.5</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='c'># attach test_df as columns </span>
+  <span class='nf'><a href='https://tidygraph.data-imaginist.com/reference/bind_graphs.html'>bind_nodes</a></span><span class='o'>(</span><span class='nv'>test_df</span><span class='o'>)</span>
+
+<span class='nv'>test_graph</span>
+<span class='c'>#&gt; <span style='color: #555555;'># A tbl_graph: 1 nodes and 0 edges</span></span>
+<span class='c'><span style='color: #555555;'>#&gt; #</span></span>
+<span class='c'><span style='color: #555555;'>#&gt; # A rooted tree</span></span>
+<span class='c'><span style='color: #555555;'>#&gt; #</span></span>
+<span class='c'><span style='color: #555555;'>#&gt; # Node Data: 1 × 20 (active)</span></span>
+<span class='c'>#&gt;   sp ace… repeat… `a**^@`   `%`   `*`   `!` `d(!)9` REPEAT… can"'t… hi_\th…   lead…</span>
+<span class='c'>#&gt;     <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>1</span>      78      18      99    28    26    38      43      73      51      33      23</span>
+<span class='c'>#&gt; <span style='color: #555555;'># … with 9 more variables: `€` &lt;int&gt;, ação &lt;int&gt;, Farœ &lt;int&gt;, `a b c d e f` &lt;int&gt;,</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>#   testCamelCase &lt;int&gt;, `!leadingpunct` &lt;int&gt;, `average # of days` &lt;int&gt;,</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>#   jan2009sales &lt;int&gt;, `jan 2009 sales` &lt;int&gt;</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>#</span></span>
+<span class='c'><span style='color: #555555;'>#&gt; # Edge Data: 0 × 2</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'># … with 2 variables: from &lt;int&gt;, to &lt;int&gt;</span></span></code></pre>
+</div>
+<p>Here we see that there is a graph with only 1 node and 0 edges (relations) with bad column headers (for more, visit the <a href="https://github.com/thomasp85/tidygraph/">GitHub page</a>). Now we can test this as well.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'><a href='https://rdrr.io/pkg/janitor/man/clean_names.html'>clean_names</a></span><span class='o'>(</span><span class='nv'>test_graph</span><span class='o'>)</span>
+<span class='c'>#&gt; <span style='color: #555555;'># A tbl_graph: 1 nodes and 0 edges</span></span>
+<span class='c'><span style='color: #555555;'>#&gt; #</span></span>
+<span class='c'><span style='color: #555555;'>#&gt; # A rooted tree</span></span>
+<span class='c'><span style='color: #555555;'>#&gt; #</span></span>
+<span class='c'><span style='color: #555555;'>#&gt; # Node Data: 1 × 20 (active)</span></span>
+<span class='c'>#&gt;   sp_ace repeat…     a percent     x   x_2   d_9 repeat…  cant hi_the… leadin…   x_3</span>
+<span class='c'>#&gt;    <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span>   <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span> <span style='color: #555555; font-style: italic;'>&lt;int&gt;</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>1</span>     78      18    99      28    26    38    43      73    51      33      23    27</span>
+<span class='c'>#&gt; <span style='color: #555555;'># … with 8 more variables: acao &lt;int&gt;, faroe &lt;int&gt;, a_b_c_d_e_f &lt;int&gt;,</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>#   test_camel_case &lt;int&gt;, leadingpunct &lt;int&gt;, average_number_of_days &lt;int&gt;,</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>#   jan2009sales &lt;int&gt;, jan_2009_sales &lt;int&gt;</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'>#</span></span>
+<span class='c'><span style='color: #555555;'>#&gt; # Edge Data: 0 × 2</span></span>
+<span class='c'>#&gt; <span style='color: #555555;'># … with 2 variables: from &lt;int&gt;, to &lt;int&gt;</span></span></code></pre>
+</div>
+<p>It worked as anticipated!</p>
+<h3 id="review-tl-dr">Review (tl;dr)</h3>
+<p>In the preceding sections we learned what generic functions and methods are. How to create a generic function, a default method, and methods for objects of different classes.</p>
+<ul>
+<li><strong>generic function</strong>: "A generic function is a function whose behavior depends on the classes or identities of the arguments supplied to it"</li>
+<li><strong>generic function method</strong>: "part of a generic function and which provides information about how that generic function should behave [for] certain classes"</li>
+</ul>
+<p>The process to create a function with a method is to:</p>
+<ol>
+<li>Create a generic function with:
+<ul>
+<li><code>f_x &lt;- function() { UseMethod("f_x") }</code></li>
+</ul>
+</li>
+<li>Define the default method with:
+<ul>
+<li><code>f_x.default &lt;- function() { do something }</code></li>
+</ul>
+</li>
+<li>Define object class specific methods with:
+<ul>
+<li><code>f_x.class &lt;- function() { do something else}</code></li>
+</ul>
+</li>
+</ol>
+<h4 id="notes">Notes</h4>
+<p>If you have not yet encountered the <code>janitor</code> package it will help you tremendously with various data cleaning processes. Clearly, <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>clean_names()</code></a> is my favorite function as it helps me enforce my preferred style (and the only). If you are not aware of <em>"proper"</em> R style, I suggest you read the <a href="http://adv-r.had.co.nz/Style.html">style guide</a> in <a href="http://adv-r.had.co.nz/">Advanced R</a>.</p>
+<p>While on the subject of <em>Advanced R</em>, I suggest you read the "Creating new methods and generics" <a href="http://adv-r.had.co.nz/OO-essentials.html">section</a> of it. I struggled comprehending it at first because I didn't even know what a method was. However, if after reading this you feel like you want more, that's the place to go.</p>
+<p>I'd like to thank <a href="https://github.com/sfirke">@sfirke</a> for being exceptionally helpful in guiding my contributions to the <code>janitor</code> package.</p>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <!-- Basecoat sidebar component -->
+        <script
+            src="https://josiah.rs/js/basecoat/sidebar.min.js"
+            defer
+        ></script>
+        <!-- Sidebar toggle for mobile -->
+        <script src="https://josiah.rs/js/sidebar-toggle.js" defer></script>
+        <!-- Custom tabs for panel-tabset -->
+        <script src="https://josiah.rs/js/tabs.js" defer></script>
+        <!-- Search functionality -->
+        <script src="https://josiah.rs/js/search.js" defer></script>
+        <script>
+            (() => {
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+
+                    // Toggle syntax highlighting themes via media attribute
+                    const darkSyntax = document.getElementById("syntax-dark");
+                    const lightSyntax = document.getElementById("syntax-light");
+                    if (darkSyntax && lightSyntax) {
+                        darkSyntax.media = dark ? "all" : "not all";
+                        lightSyntax.media = dark ? "not all" : "all";
+                    }
+
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        ></script>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"
+        ></script>
+        
+    </body>
+</html>

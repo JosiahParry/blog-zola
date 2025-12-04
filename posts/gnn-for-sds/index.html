@@ -1,0 +1,874 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            Graph Neural Nets for Spatial Data Science | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+
+        <!-- Determine theme before loading syntax highlighting -->
+        <script>
+            (() => {
+                const stored = localStorage.getItem("themeMode");
+                // Use stored preference if exists, otherwise always default to dark
+                const isDark = stored ? stored === "dark" : true;
+
+                if (isDark) {
+                    document.documentElement.classList.add("dark");
+                }
+            })();
+        </script>
+
+        <!-- Syntax highlighting themes -->
+        <link rel="stylesheet" href="https://josiah.rs/syntax-dark.css" id="syntax-dark" />
+        <link rel="stylesheet" href="https://josiah.rs/syntax-light.css" id="syntax-light" />
+
+        <!-- KaTeX for math rendering -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        />
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-semibold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4 relative">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-sm bg-muted/50 border border-border"
+                id="search-input"
+            />
+            <div
+                id="search-results"
+                class="hidden absolute top-full left-4 -mt-1 w-96 max-h-96 overflow-y-auto bg-background border border-border rounded-lg shadow-lg z-50 p-2"
+            ></div>
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-2 text-sm pl-3 transition-colors font-medium border-l-2 border-primary -ml-px bg-sidebar-accent"
+                    >
+                        Posts
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Socials -->
+            <div
+                class="mt-4 block py-2 transition-colors font-medium px-3 text-sm bg-sidebar-accent"
+            >
+                <h2
+                    class="text-sm font-medium tracking-tight mb-2 text-muted-foreground border-b border-muted-foreground/20 pb-1"
+                >
+                    Socials
+                </h2>
+                <ul class="space-y-1.5">
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <polygon
+                                points="160 128 112 96 112 160 160 128"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M24,128c0,29.91,3.07,47.45,5.41,56.47A16,16,0,0,0,39,195.42C72.52,208.35,128,208,128,208s55.48.35,89-12.58a16,16,0,0,0,9.63-10.95c2.34-9,5.41-26.56,5.41-56.47s-3.07-47.45-5.41-56.47a16,16,0,0,0-9.63-11C183.48,47.65,128,48,128,48s-55.48-.35-89,12.58a16,16,0,0,0-9.63,11C27.07,80.54,24,98.09,24,128Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://www.youtube.com/@josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >YouTube</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <rect
+                                x="32"
+                                y="32"
+                                width="192"
+                                height="192"
+                                rx="8"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="120"
+                                y1="112"
+                                x2="120"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="88"
+                                y1="112"
+                                x2="88"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M120,140a28,28,0,0,1,56,0v36"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <circle cx="88" cy="84" r="12" />
+                        </svg>
+                        <a
+                            href="https://www.linkedin.com/in/josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >LinkedIn</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M119.83,56A52,52,0,0,0,76,32a51.92,51.92,0,0,0-3.49,44.7A49.28,49.28,0,0,0,64,104v8a48,48,0,0,0,48,48h48a48,48,0,0,0,48-48v-8a49.28,49.28,0,0,0-8.51-27.3A51.92,51.92,0,0,0,196,32a52,52,0,0,0-43.83,24Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,232V192a32,32,0,0,1,32-32h0a32,32,0,0,1,32,32v40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,208H72a32,32,0,0,1-32-32A32,32,0,0,0,8,144"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="http://github.com/josiahparry/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >GitHub</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M160,224H72a32,32,0,0,1-32-32V72A32,32,0,0,1,72,40H184a32,32,0,0,1,32,32v72a32,32,0,0,1-32,32H40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M128,136V104a24,24,0,0,0-48,0v32"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M176,136V104a24,24,0,0,0-48,0"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://fosstodon.org/@josi"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Mastodon</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                            class="w-4 h-4"
+                            fill="currentColor"
+                        >
+                            <path
+                                d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.698-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948"
+                            />
+                        </svg>
+                        <a
+                            href="https://bsky.app/profile/josiahparry.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Bluesky</a
+                        >
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">Graph Neural Nets for Spatial Data Science</h1>
+
+        
+        <p class="text-xl font-light text-accent-foreground mb-4">
+            Graph Neural Nets for the spatial nerds in the house.
+        </p>
+         
+        <div class="flex flex-wrap gap-2 mb-4">
+            
+            <a
+                href="/categories/spatial"
+                class="badge-secondary cursor pointer"
+                >spatial</a
+            >
+            
+            <a
+                href="/categories/r"
+                class="badge-secondary cursor pointer"
+                >r</a
+            >
+            
+            <a
+                href="/categories/deep-learning"
+                class="badge-secondary cursor pointer"
+                >deep-learning</a
+            >
+            
+            <a
+                href="/categories/gnn"
+                class="badge-secondary cursor pointer"
+                >gnn</a
+            >
+            
+        </div>
+         
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >November 16, 2025</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><p>I’ve been saying this for years and I’ll say it again:</p>
+<blockquote>
+<p><em>Spatial data is just a graph</em></p>
+</blockquote>
+<p>I’ve been diving <em>deep</em> into <strong>Graph Neural Networks</strong> (GNN) to
+understand how we can use them for “GeoAI” and spatial machine learning.</p>
+<p>This post is going to build the intuition for why Graph Neural Networks
+are perfect for spatial data (non-raster).</p>
+<h2 id="spatial-weights-matrices-are-graphs">Spatial Weights Matrices are graphs</h2>
+<p>A graph is defined as a set <strong>nodes</strong> connected by <strong>edges</strong>. Nodes can
+be thought of as “things” or “entities” and then the connections between
+them are the edges. The nodes can be thought of as <strong>rows</strong> in a
+dataset. Then the edges are an additional “edge list” that informs us of
+connectivity between them.</p>
+<details class="code-fold">
+<summary>Code</summary>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">library</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>igraph<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">set.seed</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-constant z-numeric z-float z-decimal z-r">0</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">g <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">sample_gnm</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-constant z-numeric z-float z-decimal z-r">6</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-constant z-numeric z-float z-decimal z-r">11</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">plot</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>g<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+</details>
+<p><img src="https://josiah.rs/posts/gnn-for-sds/index_files/figure-commonmark/unnamed-chunk-2-1.png" alt="" /></p>
+<p>When we do spatial statistics we need to create the concept of a
+<strong>neighborhood</strong>. For example with polygons, we typically use
+<strong>contiguity</strong> to define our neighborhood.</p>
+<details class="code-fold">
+<summary>Code</summary>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">library</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>sf<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">data</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>guerry<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">package</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>sfdep<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">plot</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>guerry<span class="z-keyword z-accessor z-dollar z-r">$</span>geometry<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+</details>
+<p><img src="https://josiah.rs/posts/gnn-for-sds/index_files/figure-commonmark/unnamed-chunk-3-1.png" alt="" /></p>
+<p>If we identify <em>neighborhoods</em> based on contiguity we then identify our
+neighbors based on that which we use to create a <strong>spatial weights
+matrix</strong>.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">library</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>spdep<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">nb <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">poly2nb</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>guerry<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">lw <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">nb2listw</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>nb<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">lw
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">Characteristics of weights list object:
+</span><span class="z-text z-plain">Neighbour list object:
+</span><span class="z-text z-plain">Number of regions: 85 
+</span><span class="z-text z-plain">Number of nonzero links: 420 
+</span><span class="z-text z-plain">Percentage nonzero weights: 5.813149 
+</span><span class="z-text z-plain">Average number of links: 4.941176 
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Weights style: W 
+</span><span class="z-text z-plain">Weights constants summary:
+</span><span class="z-text z-plain">   n   nn S0      S1       S2
+</span><span class="z-text z-plain">W 85 7225 85 37.2761 347.6683
+</span></code></pre>
+<div class="aside">
+<p>The <code>listw</code> object from spdep is the representation of the spatial
+weights matrix.</p>
+</div>
+<p>The spatial weights matrix is a <strong>sparse matrix</strong>. For every location in
+our data set there is a row and a column—<code>n x n</code> matrix. A non-zero
+value in a row indicates a neighbor. The connections between locations
+(or the <strong>spatial weights matrix</strong> (SWM)) can be viewed as a network.</p>
+<details class="code-fold">
+<summary>Code</summary>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">plot</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>nb<span class="z-punctuation z-separator z-arguments z-r">,</span> guerry<span class="z-keyword z-accessor z-dollar z-r">$</span>geometry<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+</details>
+<p><img src="https://josiah.rs/posts/gnn-for-sds/index_files/figure-commonmark/unnamed-chunk-5-1.png" alt="" /></p>
+<p>As you can see a spatial weight matrix <strong>is a graph</strong>!</p>
+<div class="aside">
+<p>To be exceptionally pedantic (as this whole post is) a SWM is a graph
+<em>G</em> = (<em>V</em>, <em>E</em>) where each node, <em>v</em><sub><em>i</em></sub>, is a location in a
+set of nodes (<em>i</em> = 1, ..., <em>n</em>). The edges in the graph
+<em>e</em><sub><em>i**j</em></sub> = (<em>v</em><sub><em>i</em></sub>, <em>v</em><sub><em>j</em></sub>, <em>w</em><sub><em>i**j</em></sub>)
+are the spatial weights between neighbors.</p>
+</div>
+<p>Okay, moving on.</p>
+<h2 id="spatial-lags-and-message-passing">Spatial Lags and Message Passing</h2>
+<p>The crux of spatial econometrics is the spatial lag. For all intents and
+purposes, the spatial lag is “just” an average of a variable <em>X</em> over a
+neighborhood.</p>
+<div class="alert-note">
+<p>See my <a href="https://www.youtube.com/watch?v=abrQBSdTk7E">YouTube video</a> on
+this in more depth.</p>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">library</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>dplyr<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">library</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>sfdep<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">library</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>ggplot2<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">library</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>patchwork<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">df <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> guerry_nb <span class="z-keyword z-operator z-logical z-r">|</span><span class="z-keyword z-operator z-logical z-r">&gt;</span> 
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">mutate</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-variable z-parameter z-r">crime_lag</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">st_lag</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>crime_pers<span class="z-punctuation z-separator z-arguments z-r">,</span> nb<span class="z-punctuation z-separator z-arguments z-r">,</span> wt<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">obs <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">ggplot</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>df<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-arithmetic z-r">+</span>
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">geom_sf</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">aes</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-variable z-parameter z-r">fill</span> <span class="z-keyword z-operator z-assignment z-r">=</span> crime_pers<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-arithmetic z-r">+</span>
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">scale_fill_viridis_c</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-arithmetic z-r">+</span>
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">theme_void</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-arithmetic z-r">+</span>
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">theme</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-variable z-parameter z-r">legend.position</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>none<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-arithmetic z-r">+</span>
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">labs</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-variable z-parameter z-r">title</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>Observed<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">lagged <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">ggplot</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>df<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-arithmetic z-r">+</span>
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">geom_sf</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">aes</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-variable z-parameter z-r">fill</span> <span class="z-keyword z-operator z-assignment z-r">=</span> crime_lag<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-arithmetic z-r">+</span>
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">scale_fill_viridis_c</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-arithmetic z-r">+</span>
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">theme_void</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-arithmetic z-r">+</span>
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">theme</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-variable z-parameter z-r">legend.position</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>none<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-arithmetic z-r">+</span>
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">labs</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-variable z-parameter z-r">title</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>Spatial Lag<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">obs <span class="z-keyword z-operator z-logical z-r">|</span> lagged
+</span></code></pre>
+</details>
+<p><img src="https://josiah.rs/posts/gnn-for-sds/index_files/figure-commonmark/unnamed-chunk-6-1.png" alt="" /></p>
+<div class="alert-important">
+<h2 id="point-down-don-t-miss-this">👇🏽 Don’t miss this</h2>
+<p>👉🏼 The spatial lag is a way to <strong>aggregate information</strong> about a
+location’s neighborhood. 👈🏼</p>
+</div>
+<p>GNNs are based on the concept of <strong>message passing</strong>. Message passing is
+how we propagate information from a node’s neighbors (edge connections)
+to the node itself.</p>
+<details class="code-fold">
+<summary>Code</summary>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> Create a simple 4-node network: central node with 3 neighbors
+</span></span><span class="z-source z-r">edges <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">matrix</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">c</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-constant z-numeric z-float z-decimal z-r">2</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-constant z-numeric z-float z-decimal z-r">1</span><span class="z-punctuation z-separator z-arguments z-r">,</span>  <span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> node 2 -&gt; central node
+</span></span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-constant z-numeric z-float z-decimal z-r">3</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-constant z-numeric z-float z-decimal z-r">1</span><span class="z-punctuation z-separator z-arguments z-r">,</span>  <span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> node 3 -&gt; central node
+</span></span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-constant z-numeric z-float z-decimal z-r">4</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-constant z-numeric z-float z-decimal z-r">1</span>   <span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> node 4 -&gt; central node
+</span></span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">ncol</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-numeric z-float z-decimal z-r">2</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">byrow</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-language z-r">TRUE</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">g <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">graph_from_edgelist</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>edges<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">directed</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-language z-r">TRUE</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r"><span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> Assign values to each node
+</span></span><span class="z-source z-r">node_values <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">c</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-constant z-numeric z-float z-decimal z-r">0<span class="z-punctuation z-separator z-decimal z-r">.</span>2</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-constant z-numeric z-float z-decimal z-r">0<span class="z-punctuation z-separator z-decimal z-r">.</span>8</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-constant z-numeric z-float z-decimal z-r">0<span class="z-punctuation z-separator z-decimal z-r">.</span>5</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-constant z-numeric z-float z-decimal z-r">0<span class="z-punctuation z-separator z-decimal z-r">.</span>9</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r"><span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> Create layout: central node in middle, others in circle
+</span></span><span class="z-source z-r">layout <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">matrix</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">c</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-constant z-numeric z-float z-decimal z-r">0</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-constant z-numeric z-float z-decimal z-r">0</span><span class="z-punctuation z-separator z-arguments z-r">,</span>           <span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> central node
+</span></span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-keyword z-operator z-arithmetic z-r">-</span><span class="z-constant z-numeric z-float z-decimal z-r">1</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-constant z-numeric z-float z-decimal z-r">1</span><span class="z-punctuation z-separator z-arguments z-r">,</span>          <span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> node 2
+</span></span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-keyword z-operator z-arithmetic z-r">-</span><span class="z-constant z-numeric z-float z-decimal z-r">1</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-keyword z-operator z-arithmetic z-r">-</span><span class="z-constant z-numeric z-float z-decimal z-r">1</span><span class="z-punctuation z-separator z-arguments z-r">,</span>         <span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> node 3
+</span></span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-constant z-numeric z-float z-decimal z-r">1</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-constant z-numeric z-float z-decimal z-r">0</span>            <span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> node 4
+</span></span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">ncol</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-numeric z-float z-decimal z-r">2</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">byrow</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-language z-r">TRUE</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r"><span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> Plot
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">plot</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>g<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">vertex.size</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-numeric z-float z-decimal z-r">30</span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">vertex.color</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">rgb</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>node_values<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-constant z-numeric z-float z-decimal z-r">0</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-constant z-numeric z-float z-decimal z-r">1</span> <span class="z-keyword z-operator z-arithmetic z-r">-</span> node_values<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">vertex.label</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">paste0</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>x<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-constant z-numeric z-float z-decimal z-r">1</span><span class="z-keyword z-other z-r">:</span><span class="z-constant z-numeric z-float z-decimal z-r">4</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">vertex.label.cex</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-numeric z-float z-decimal z-r">1<span class="z-punctuation z-separator z-decimal z-r">.</span>2</span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">vertex.label.font</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-numeric z-float z-decimal z-r">2</span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">vertex.label.color</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>white<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">edge.width</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-numeric z-float z-decimal z-r">2</span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">edge.arrow.size</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-numeric z-float z-decimal z-r">1</span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">edge.color</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>gray50<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">layout</span> <span class="z-keyword z-operator z-assignment z-r">=</span> layout<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+</details>
+<p><img src="https://josiah.rs/posts/gnn-for-sds/index_files/figure-commonmark/unnamed-chunk-7-1.png" alt="" /></p>
+<p>In this graph, we have nodes x1 through x4. The nodes x2, x3, and x4 are
+“passing” their message to the focal node. These node values have to be
+summarized in some way. This is typically called an <strong>aggregation
+function</strong>. The most common one? The average!</p>
+<h3 id="the-takeaway">The takeaway</h3>
+<p>The spatial lag operator <strong>is message passing</strong>! This means that most of
+our spatial econometric models—spatial lag and spatial error models and
+many others are actually utilizing graph message passing in some way.</p>
+<h2 id="graph-convolution-networks">Graph Convolution Networks</h2>
+<p>The most common type of GNN is the <strong>Graph Convolution Network</strong> (GCN).</p>
+<div class="aside">
+<p>The term “Convolution” is often used for deep learning models that
+perform image detection—typically a <strong>Convolution Neural Network</strong>.
+These apply a “filter” over each pixel in an image and typically take
+the weighted sum (or average) of the neighboring pixels to summarize
+nearby pixels.</p>
+<p>This is literally the same thing! Except pixels have a fixed grid
+whereas we’re generalizing message passing and spatial lags to <em>any</em>
+network with a node and neighbors.</p>
+</div>
+<p>The GCN is defined from a famous paper <a href="https://arxiv.org/abs/1609.02907">Semi-Supervised Classification
+with Graph Convolutional Networks</a> as:</p>
+<p>$$
+\mathbf{H}^{(k)} = \sigma\left(\tilde{\mathbf{A}}\mathbf{H}^{(k-1)}\mathbf{W}^{(k)}\right)
+$$</p>
+<p>The single layer version of this can be written as:</p>
+<p>$$
+\mathbf{H} = \sigma\left(\tilde{\mathbf{A}} \mathbf{X} \mathbf{W}\right)
+$$</p>
+<p>This is actually a lot less scary once you think of everything as a
+spatial lag and locations on a map. Let’s start with <em>Ã</em>.</p>
+<h3 id="the-adjacency-matrix">The adjacency matrix</h3>
+<p>$$
+\tilde{\mathbf{A}} = (\mathbf{D} + \mathbf{I})^{-\frac{1}{2}}(\mathbf{I} + \mathbf{A})(\mathbf{D} + \mathbf{I})^{-\frac{1}{2}}
+$$</p>
+<p>This equation is saying that we have an adjacency matrix <em>A</em> which is
+“normalized” (scaled by) the <strong>degree matrix</strong> <em>D</em>. The degree matrix
+counts the number of neighbors per location.</p>
+<p>The matrix D is equivalent to <code>spdep::card(nb)</code>.</p>
+<p>The biggest difference here between spatial econometrics and the GCN is
+that the adjacency matrix <em>A</em> must have “self-loops.” The <em>I</em> + <em>A</em> is
+equivalent to <code>spdep::include.self()</code>. This ensures that the
+neighborhood includes the observed location.</p>
+<div class="aside">
+<p><em>I</em> is called the “identity matrix.” It’s literally just the diagonal of
+a matrix set to 1.</p>
+</div>
+<p>The point of this matrix is to ensure that when we multiply values
+together the scale is roughly maintained and that the contribution from
+neighbors <strong>and</strong> the focal node (location) are roughly balanced.</p>
+<h3 id="the-weights-matrix-w">The weights matrix <em>W</em></h3>
+<p>The strength of neural networks is their ability to learn
+representations of our variables—typically using a higher dimension
+representation. For example, taking 3 variables and mapping them onto,
+say, 3 “hidden” dimension would create a total of 9 values of <em>W</em> that
+would be learned on. These embeddings can capture more patterns than
+might be possible from the values themselves.</p>
+<p><img src="https://josiah.rs/posts/gnn-for-sds/images/paste-3.png" alt="" /></p>
+<div class="alert-note">
+<p>The rows of <em>W</em> correspond to the input variables. The columns indicate
+the “hidden dimensions.” Multiplying by the <em>W</em> creates “node
+embeddings.” The more hidden dimensions the more embedding variables
+there are.</p>
+</div>
+<p>The matrix <em>W</em> is <strong>learnable</strong> which means that the network adjusts the
+values to best predict the target variable <em>Y</em>. The <em>W</em> is akin to the
+<em>β</em> coefficients of a regression model.</p>
+<h2 id="single-layer-gcn-is-just-regression">Single layer GCN is just regression</h2>
+<p>In a regression we have a <em>β</em> for each variable in our model. If we have
+3 variables in our <em>X</em> matrix (the predictor variables) and we specify
+that our single layer model only have 1 hidden dimension then the <em>W</em>
+only has 3 values—one per variable. This is essentially a learned
+version of the <em>β</em>!</p>
+<p><img src="https://josiah.rs/posts/gnn-for-sds/images/paste-4.png" alt="" /></p>
+<p>In this example we only have 1 hidden dimension which means we only have
+1 weight per variable—akin to the actual <em>β</em> of a linear regression.
+Now, this is actually ignoring the message passing aspect of this. To be
+a GCN we need to calculate the spatial lag of each X before we multiply
+by the learned weights. The actual GCN looks like</p>
+<p><img src="https://josiah.rs/posts/gnn-for-sds/images/paste-5.png" alt="" /></p>
+<p>For the spatial econometricians in the house—this might look like a
+spatially lagged X model without the original X matrix.</p>
+<div class="aside">
+<p>See <a href="https://r-spatial.org/book/17-Econometrics.html">Spatial Data Science ch 17 on econometric
+models</a> for a fairly
+terse discussion on these models by Bivand and Pebesma.</p>
+</div>
+<p>Let’s first create a spatially lagged X model by hand:</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> Create neighborhood structure with self-loops
+</span></span><span class="z-source z-r">nb <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">include.self</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>guerry_nb<span class="z-keyword z-accessor z-dollar z-r">$</span>nb<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">lw <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> spdep<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">nb2listw</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>nb<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">style</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>W<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r"><span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> Prepare feature matrix
+</span></span><span class="z-source z-r">x <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> guerry <span class="z-keyword z-operator z-logical z-r">|</span><span class="z-keyword z-operator z-logical z-r">&gt;</span>
+</span><span class="z-source z-r">  sf<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">st_drop_geometry</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-logical z-r">|</span><span class="z-keyword z-operator z-logical z-r">&gt;</span>
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">select</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>commerce<span class="z-punctuation z-separator z-arguments z-r">,</span> crime_pers<span class="z-punctuation z-separator z-arguments z-r">,</span> donations<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-logical z-r">|</span><span class="z-keyword z-operator z-logical z-r">&gt;</span>
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">scale</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r"><span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> calculate spatial lags for each variable
+</span></span><span class="z-source z-r">sp_lags <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">lag.listw</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>lw<span class="z-punctuation z-separator z-arguments z-r">,</span> x<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r"><span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> define y variable
+</span></span><span class="z-source z-r">y <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> guerry<span class="z-keyword z-accessor z-dollar z-r">$</span>instruction
+</span><span class="z-source z-r">
+</span><span class="z-source z-r"><span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> fit slx model
+</span></span><span class="z-source z-r">slx_mod <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">lm</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>y <span class="z-keyword z-other z-r">~</span> sp_lags<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">summary</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>slx_mod<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">Call:
+</span><span class="z-text z-plain">lm(formula = y ~ sp_lags)
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Residuals:
+</span><span class="z-text z-plain">   Min     1Q Median     3Q    Max 
+</span><span class="z-text z-plain">-45.22 -11.60   0.38  11.55  35.09 
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Coefficients:
+</span><span class="z-text z-plain">            Estimate Std. Error t value Pr(&gt;|t|)    
+</span><span class="z-text z-plain">(Intercept) 43.64726    1.93599  22.545  &lt; 2e-16 ***
+</span><span class="z-text z-plain">sp_lags1    24.27125    2.92102   8.309 1.84e-12 ***
+</span><span class="z-text z-plain">sp_lags2    -1.06314    3.23981  -0.328    0.744    
+</span><span class="z-text z-plain">sp_lags3     0.09644    3.84151   0.025    0.980    
+</span><span class="z-text z-plain">---
+</span><span class="z-text z-plain">Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Residual standard error: 17.75 on 81 degrees of freedom
+</span><span class="z-text z-plain">Multiple R-squared:  0.5086,    Adjusted R-squared:  0.4904 
+</span><span class="z-text z-plain">F-statistic: 27.95 on 3 and 81 DF,  p-value: 1.663e-12
+</span></code></pre>
+<p>If we treat the regression coefficients as our <em>W</em> matrix in a GCN layer
+we can get the <em>exact</em> same values from a GCN layer!</p>
+<p>Here we’re using my
+<a href="https://github.com/josiahparry/torchgnn"><code>{torchgnn}</code></a> package to
+create a <code>layer_gcn()</code>.</p>
+<div class="aside">
+<p><code>{torchgnn}</code> is not yet on CRAN. You can install it with
+<code>pak::pak("josiahparry/torchgnn")</code>.</p>
+</div>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">library</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>torch<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">library</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>torchgnn<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r"><span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> Create sparse adjacency matrix for GCN
+</span></span><span class="z-source z-r">adj <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">adj_from_edgelist</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">rep.int</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">seq_along</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>nb<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">lengths</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>nb<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">unlist</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>nb<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">unlist</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>lw<span class="z-keyword z-accessor z-dollar z-r">$</span>weights<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> 
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> already handled by spdep
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">symmetric</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-language z-r">FALSE</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-keyword z-accessor z-dollar z-r">$</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">coalesce</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r"><span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> convert X to a tensor for torch
+</span></span><span class="z-source z-r">X <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">torch_tensor</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>x<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r"><span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> don&#39;t modify the adjacency matrix
+</span></span><span class="z-source z-r">layer <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">layer_gcn</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-constant z-numeric z-float z-decimal z-r">3</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-constant z-numeric z-float z-decimal z-r">1</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">normalize</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-language z-r">FALSE</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r"><span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> set the weights to the same as a the regression
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">with_no_grad</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  layer<span class="z-keyword z-accessor z-dollar z-r">$</span>weight<span class="z-keyword z-accessor z-dollar z-r">$</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">copy_</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">torch_tensor</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">matrix</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">coef</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>slx_mod<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-meta z-item-access z-r"><span class="z-punctuation z-section z-brackets z-single z-begin z-r">[</span></span><span class="z-meta z-item-access z-r"><span class="z-meta z-item-access z-arguments z-r"><span class="z-keyword z-operator z-arithmetic z-r">-</span><span class="z-constant z-numeric z-float z-decimal z-r">1</span></span></span><span class="z-meta z-item-access z-r"><span class="z-punctuation z-section z-brackets z-single z-end z-r">]</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">nrow</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-numeric z-float z-decimal z-r">3</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-braces z-end z-r">}</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r"><span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> set the bias to the intercept
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">with_no_grad</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  layer<span class="z-keyword z-accessor z-dollar z-r">$</span>bias<span class="z-keyword z-accessor z-dollar z-r">$</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">copy_</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">torch_tensor</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">coef</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>slx_mod<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-meta z-item-access z-r"><span class="z-punctuation z-section z-brackets z-single z-begin z-r">[</span></span><span class="z-meta z-item-access z-r"><span class="z-meta z-item-access z-arguments z-r"><span class="z-constant z-numeric z-float z-decimal z-r">1</span></span></span><span class="z-meta z-item-access z-r"><span class="z-punctuation z-section z-brackets z-single z-end z-r">]</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-braces z-end z-r">}</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<p>In the above code check we created a single GCN layer and manually set
+the bias (equivalent to an intercept term) and the weights. Typically
+these would be learned by a training loop. But for the sake of
+education, we’re setting them to be the equivalent to our linear
+regression.</p>
+<p>Next we apply the layer to the <em>X</em> and <em>A</em> matrices to get our <em>Ŷ</em>
+predictions.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">tibble<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">tibble</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">gcn_preds</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">as.numeric</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">layer</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>X<span class="z-punctuation z-separator z-arguments z-r">,</span> adj<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">slx_preds</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">unname</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>slx_mod<span class="z-keyword z-accessor z-dollar z-r">$</span>fitted.values<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain"># A tibble: 85 × 2
+</span><span class="z-text z-plain">   gcn_preds slx_preds
+</span><span class="z-text z-plain">       &lt;dbl&gt;     &lt;dbl&gt;
+</span><span class="z-text z-plain"> 1     47.9      47.9 
+</span><span class="z-text z-plain"> 2     18.1      18.1 
+</span><span class="z-text z-plain"> 3     64.9      64.9 
+</span><span class="z-text z-plain"> 4     46.5      46.5 
+</span><span class="z-text z-plain"> 5     52.0      52.0 
+</span><span class="z-text z-plain"> 6     49.4      49.4 
+</span><span class="z-text z-plain"> 7      6.78      6.78
+</span><span class="z-text z-plain"> 8     45.5      45.5 
+</span><span class="z-text z-plain"> 9     10.9      10.9 
+</span><span class="z-text z-plain">10     44.1      44.1 
+</span><span class="z-text z-plain"># ℹ 75 more rows
+</span></code></pre>
+<h2 id="fuller-gcn-models">Fuller GCN models</h2>
+<p>In the above we showed that the GCN layer is literally just a fancy
+regression model using the spatial lags of our input variables. However,
+we assumed that there was not any <a href="https://en.wikipedia.org/wiki/Activation_function">activation
+function</a>.</p>
+<p>For fuller examples we can fit a GCN with multiple hidden layers as well
+as an additional activation or loss functions. These GCN models can
+generalize well to classification or regression.</p>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <!-- Basecoat sidebar component -->
+        <script
+            src="https://josiah.rs/js/basecoat/sidebar.min.js"
+            defer
+        ></script>
+        <!-- Sidebar toggle for mobile -->
+        <script src="https://josiah.rs/js/sidebar-toggle.js" defer></script>
+        <!-- Custom tabs for panel-tabset -->
+        <script src="https://josiah.rs/js/tabs.js" defer></script>
+        <!-- Search functionality -->
+        <script src="https://josiah.rs/js/search.js" defer></script>
+        <script>
+            (() => {
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+
+                    // Toggle syntax highlighting themes via media attribute
+                    const darkSyntax = document.getElementById("syntax-dark");
+                    const lightSyntax = document.getElementById("syntax-light");
+                    if (darkSyntax && lightSyntax) {
+                        darkSyntax.media = dark ? "all" : "not all";
+                        lightSyntax.media = dark ? "not all" : "all";
+                    }
+
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        ></script>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"
+        ></script>
+        
+    </body>
+</html>

@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            What&#x27;s so special about `array`s? | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+
+        <!-- Determine theme before loading syntax highlighting -->
+        <script>
+            (() => {
+                const stored = localStorage.getItem("themeMode");
+                // Use stored preference if exists, otherwise always default to dark
+                const isDark = stored ? stored === "dark" : true;
+
+                if (isDark) {
+                    document.documentElement.classList.add("dark");
+                }
+            })();
+        </script>
+
+        <!-- Syntax highlighting themes -->
+        <link rel="stylesheet" href="https://josiah.rs/syntax-dark.css" id="syntax-dark" />
+        <link rel="stylesheet" href="https://josiah.rs/syntax-light.css" id="syntax-light" />
+
+        <!-- KaTeX for math rendering -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        />
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-semibold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4 relative">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-sm bg-muted/50 border border-border"
+                id="search-input"
+            />
+            <div
+                id="search-results"
+                class="hidden absolute top-full left-4 -mt-1 w-96 max-h-96 overflow-y-auto bg-background border border-border rounded-lg shadow-lg z-50 p-2"
+            ></div>
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-2 text-sm pl-3 transition-colors font-medium border-l-2 border-primary -ml-px bg-sidebar-accent"
+                    >
+                        Posts
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Socials -->
+            <div
+                class="mt-4 block py-2 transition-colors font-medium px-3 text-sm bg-sidebar-accent"
+            >
+                <h2
+                    class="text-sm font-medium tracking-tight mb-2 text-muted-foreground border-b border-muted-foreground/20 pb-1"
+                >
+                    Socials
+                </h2>
+                <ul class="space-y-1.5">
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <polygon
+                                points="160 128 112 96 112 160 160 128"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M24,128c0,29.91,3.07,47.45,5.41,56.47A16,16,0,0,0,39,195.42C72.52,208.35,128,208,128,208s55.48.35,89-12.58a16,16,0,0,0,9.63-10.95c2.34-9,5.41-26.56,5.41-56.47s-3.07-47.45-5.41-56.47a16,16,0,0,0-9.63-11C183.48,47.65,128,48,128,48s-55.48-.35-89,12.58a16,16,0,0,0-9.63,11C27.07,80.54,24,98.09,24,128Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://www.youtube.com/@josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >YouTube</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <rect
+                                x="32"
+                                y="32"
+                                width="192"
+                                height="192"
+                                rx="8"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="120"
+                                y1="112"
+                                x2="120"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="88"
+                                y1="112"
+                                x2="88"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M120,140a28,28,0,0,1,56,0v36"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <circle cx="88" cy="84" r="12" />
+                        </svg>
+                        <a
+                            href="https://www.linkedin.com/in/josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >LinkedIn</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M119.83,56A52,52,0,0,0,76,32a51.92,51.92,0,0,0-3.49,44.7A49.28,49.28,0,0,0,64,104v8a48,48,0,0,0,48,48h48a48,48,0,0,0,48-48v-8a49.28,49.28,0,0,0-8.51-27.3A51.92,51.92,0,0,0,196,32a52,52,0,0,0-43.83,24Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,232V192a32,32,0,0,1,32-32h0a32,32,0,0,1,32,32v40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,208H72a32,32,0,0,1-32-32A32,32,0,0,0,8,144"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="http://github.com/josiahparry/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >GitHub</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M160,224H72a32,32,0,0,1-32-32V72A32,32,0,0,1,72,40H184a32,32,0,0,1,32,32v72a32,32,0,0,1-32,32H40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M128,136V104a24,24,0,0,0-48,0v32"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M176,136V104a24,24,0,0,0-48,0"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://fosstodon.org/@josi"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Mastodon</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                            class="w-4 h-4"
+                            fill="currentColor"
+                        >
+                            <path
+                                d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.698-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948"
+                            />
+                        </svg>
+                        <a
+                            href="https://bsky.app/profile/josiahparry.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Bluesky</a
+                        >
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">What&#x27;s so special about `array`s?</h1>
+
+         
+        <div class="flex flex-wrap gap-2 mb-4">
+            
+            <a
+                href="/categories/r"
+                class="badge-secondary cursor pointer"
+                >r</a
+            >
+            
+        </div>
+         
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >June 11, 2023</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><p>I’m working on a new video about S3 objects in R and class inheritance /
+hierarchy. One of my favorite functions for exploring objecs and their
+structure is <code>unclass()</code>.</p>
+<p>The documentation states</p>
+<blockquote>
+<p><code>unclass</code> returns (a copy of) its argument with its class attribute
+removed. (It is not allowed for objects which cannot be copied, namely
+environments and external pointers.)</p>
+</blockquote>
+<div class="aside">
+<p>see <code>?unclass</code> and review <code>Details</code></p>
+</div>
+<p>So, <code>unclass()</code> <em>should</em> remove the class of any and all objects. For
+the sake clarity of this post I’m going to make a helper function.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function z-name z-r"><span class="z-entity z-name z-function z-r">class_unclass</span> </span><span class="z-meta z-function z-r"><span class="z-keyword z-operator z-assignment z-r">&lt;-</span> </span><span class="z-meta z-function z-r"><span class="z-storage z-type z-function z-r">function</span></span><span class="z-meta z-function z-parameters z-r"><span class="z-punctuation z-section z-parameters z-begin z-r">(</span><span class="z-variable z-parameter z-r">x</span><span class="z-punctuation z-section z-parameters z-end z-r">)</span></span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">class</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">unclass</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>x<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<p>This works for <code>factor</code>s which are just integer vectors which have the
+attribute <code>levels</code></p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">class_unclass</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">factor</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">[1] &quot;integer&quot;
+</span></code></pre>
+<p>and <code>data.frame</code>s are lists (also technically a vector just not atomic
+but instead recursive) with attributes <code>row.names</code>, and <code>names</code>.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">class_unclass</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">data.frame</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">[1] &quot;list&quot;
+</span></code></pre>
+<p>But when we get down to <code>matrix</code> another poser type (just like
+data.frame and factor pretending to be something they’re not actually),
+we get something different.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">class_unclass</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">matrix</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">[1] &quot;matrix&quot; &quot;array&quot; 
+</span></code></pre>
+<p>Well, why the heck is that? What about it makes it so special? Let’s
+explore this a bit more.</p>
+<p>The two things that make a matrix are the classes <code>c("matrix", "array")</code>
+and the <code>dim</code> attribute which specifies the dimensions. Matrixes are two
+dimensional arrays, by the way!</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">attributes</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">matrix</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">$dim
+</span><span class="z-text z-plain">[1] 1 1
+</span></code></pre>
+<p>What is weird is that you can make a matrix just by adding the <code>dim</code>
+attribute to a vector.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">m <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">structure</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-storage z-type z-r">integer</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-constant z-numeric z-float z-decimal z-r">1</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">dim</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">c</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-constant z-numeric z-float z-decimal z-r">1</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-constant z-numeric z-float z-decimal z-r">1</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">class_unclass</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>m<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">[1] &quot;matrix&quot; &quot;array&quot; 
+</span></code></pre>
+<p>We didn’t even specify the class. Why does this happen?</p>
+<p>And when we remove the dim attribute….</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">attr</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>m<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>dim<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-constant z-language z-r">NULL</span>
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">class_unclass</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>m<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">[1] &quot;integer&quot;
+</span></code></pre>
+<p>we get an integer vector. This differs from the behavior of other
+similar types. Recall that factors are <code>integer</code> vectors with an
+attribute of <code>levels</code> that is a character vector.</p>
+<p>So let’s try something here. Let’s create a factor from scratch.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">structure</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-storage z-type z-r">integer</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">levels</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-storage z-type z-r">character</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">class</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>factor<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">factor()
+</span><span class="z-text z-plain">Levels: 
+</span></code></pre>
+<p>Now, if the behavior is similar to <code>matrix</code> or <code>array</code> we would expect
+that by omitting the <code>class</code> attribute R should reconstruct it.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">structure</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-storage z-type z-r">integer</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">levels</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-storage z-type z-r">character</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">integer(0)
+</span><span class="z-text z-plain">attr(,&quot;levels&quot;)
+</span><span class="z-text z-plain">character(0)
+</span></code></pre>
+<p>Nope! Would you look at that!</p>
+<p><a href="https://github.com/yjunechoe"><strong>@yjunechoe</strong></a> pointed me to some
+excerpts from <a href="https://deepr.gagolewski.com/">Deep R Programming</a>, a
+book I wish I had read yesterday. It refers to these attributes as
+“<em>special attributes</em>”. The author, <a href="https://www.gagolewski.com/">Marek
+Gagolewski</a> (author of
+<a href="https://stringi.gagolewski.com/"><code>stringi</code></a>, by the way), makes note of
+this special behavior of matrix but leaves it at that.</p>
+<p>To me, this is a fundamental inconsistency in the language. Either all
+poser types (data.frame, matrix, factor, etc) should be automatically
+created if their special attributes are set on the appropriate type or
+not at all. What justification is there for <em>only</em> <code>matrix</code> having a
+special behavior in <code>unclass()</code>?</p>
+<p>To me, this warrants a bug report for <code>unclass()</code>. Based on the
+documentation, <code>unclass()</code> should <em>always</em> remove the class attribute
+from an object but it fails to do so for <code>arrays</code> and <code>matrix</code>es.</p>
+<h2 id="looking-deeper">Looking deeper!</h2>
+<p>With some further exploratory help of June we can see the internal
+representation of these objects.</p>
+<p>Let’s create an object with a <code>dim</code> attribute and a custom class.
+Suprisingly, the custom class is respected and <code>matrix</code> and <code>array</code>
+aren’t slapped on it.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">x <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">structure</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-storage z-type z-r">integer</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-constant z-numeric z-float z-decimal z-r">1</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">dim</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">c</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-constant z-numeric z-float z-decimal z-r">1</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-constant z-numeric z-float z-decimal z-r">1</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">class</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>meep<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">class</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>x<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">[1] &quot;meep&quot;
+</span></code></pre>
+<p>If we look at the internal representation using <code>.Internal(inspect(x))</code>
+we get to see some of the C goodies.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">.Internal</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">inspect</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>x<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">@1310a0d28 13 INTSXP g0c1 [OBJ,REF(2),ATT] (len=1, tl=0) 0
+</span><span class="z-text z-plain">ATTRIB:
+</span><span class="z-text z-plain">  @131097930 02 LISTSXP g0c0 [REF(1)] 
+</span><span class="z-text z-plain">    TAG: @156014080 01 SYMSXP g1c0 [MARK,REF(2750),LCK,gp=0x4000] &quot;dim&quot; (has value)
+</span><span class="z-text z-plain">    @1310a0cf0 13 INTSXP g0c1 [REF(65535)] (len=2, tl=0) 1,1
+</span><span class="z-text z-plain">    TAG: @1560141d0 01 SYMSXP g1c0 [MARK,REF(33684),LCK,gp=0x6000] &quot;class&quot; (has value)
+</span><span class="z-text z-plain">    @131092e08 16 STRSXP g0c1 [REF(65535)] (len=1, tl=0)
+</span><span class="z-text z-plain">      @1462b34a8 09 CHARSXP g0c1 [REF(2),gp=0x60] [ASCII] [cached] &quot;meep&quot;
+</span></code></pre>
+<p>Just look to the right hand side of these gibberish. See that the <code>dim</code>
+has a value of <code>1,1</code> and <code>class</code> has a value of <code>meep</code>. There is no
+matrix or array or nothing.</p>
+<p>Now we remove the <code>meep</code> class and check again.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">class_unclass</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>x<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">[1] &quot;matrix&quot; &quot;array&quot; 
+</span></code></pre>
+<p>Boom matrix and array. But if we look at the internals…</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">.Internal</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">inspect</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">unclass</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>x<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">@130620d60 13 INTSXP g0c1 [ATT] (len=1, tl=0) 0
+</span><span class="z-text z-plain">ATTRIB:
+</span><span class="z-text z-plain">  @1305255b0 02 LISTSXP g0c0 [REF(1)] 
+</span><span class="z-text z-plain">    TAG: @156014080 01 SYMSXP g1c0 [MARK,REF(2754),LCK,gp=0x4000] &quot;dim&quot; (has value)
+</span><span class="z-text z-plain">    @1310a0cf0 13 INTSXP g0c1 [REF(65535)] (len=2, tl=0) 1,1
+</span></code></pre>
+<p>THEY AREN’T THERE!!!!!!</p>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <!-- Basecoat sidebar component -->
+        <script
+            src="https://josiah.rs/js/basecoat/sidebar.min.js"
+            defer
+        ></script>
+        <!-- Sidebar toggle for mobile -->
+        <script src="https://josiah.rs/js/sidebar-toggle.js" defer></script>
+        <!-- Custom tabs for panel-tabset -->
+        <script src="https://josiah.rs/js/tabs.js" defer></script>
+        <!-- Search functionality -->
+        <script src="https://josiah.rs/js/search.js" defer></script>
+        <script>
+            (() => {
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+
+                    // Toggle syntax highlighting themes via media attribute
+                    const darkSyntax = document.getElementById("syntax-dark");
+                    const lightSyntax = document.getElementById("syntax-light");
+                    if (darkSyntax && lightSyntax) {
+                        darkSyntax.media = dark ? "all" : "not all";
+                        lightSyntax.media = dark ? "not all" : "all";
+                    }
+
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        ></script>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"
+        ></script>
+        
+    </body>
+</html>

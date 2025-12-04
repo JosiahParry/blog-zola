@@ -1,0 +1,870 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            Feeling rusty: counting characters | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+
+        <!-- Determine theme before loading syntax highlighting -->
+        <script>
+            (() => {
+                const stored = localStorage.getItem("themeMode");
+                // Use stored preference if exists, otherwise always default to dark
+                const isDark = stored ? stored === "dark" : true;
+
+                if (isDark) {
+                    document.documentElement.classList.add("dark");
+                }
+            })();
+        </script>
+
+        <!-- Syntax highlighting themes -->
+        <link rel="stylesheet" href="https://josiah.rs/syntax-dark.css" id="syntax-dark" />
+        <link rel="stylesheet" href="https://josiah.rs/syntax-light.css" id="syntax-light" />
+
+        <!-- KaTeX for math rendering -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        />
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-semibold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4 relative">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-sm bg-muted/50 border border-border"
+                id="search-input"
+            />
+            <div
+                id="search-results"
+                class="hidden absolute top-full left-4 -mt-1 w-96 max-h-96 overflow-y-auto bg-background border border-border rounded-lg shadow-lg z-50 p-2"
+            ></div>
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-2 text-sm pl-3 transition-colors font-medium border-l-2 border-primary -ml-px bg-sidebar-accent"
+                    >
+                        Posts
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Socials -->
+            <div
+                class="mt-4 block py-2 transition-colors font-medium px-3 text-sm bg-sidebar-accent"
+            >
+                <h2
+                    class="text-sm font-medium tracking-tight mb-2 text-muted-foreground border-b border-muted-foreground/20 pb-1"
+                >
+                    Socials
+                </h2>
+                <ul class="space-y-1.5">
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <polygon
+                                points="160 128 112 96 112 160 160 128"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M24,128c0,29.91,3.07,47.45,5.41,56.47A16,16,0,0,0,39,195.42C72.52,208.35,128,208,128,208s55.48.35,89-12.58a16,16,0,0,0,9.63-10.95c2.34-9,5.41-26.56,5.41-56.47s-3.07-47.45-5.41-56.47a16,16,0,0,0-9.63-11C183.48,47.65,128,48,128,48s-55.48-.35-89,12.58a16,16,0,0,0-9.63,11C27.07,80.54,24,98.09,24,128Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://www.youtube.com/@josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >YouTube</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <rect
+                                x="32"
+                                y="32"
+                                width="192"
+                                height="192"
+                                rx="8"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="120"
+                                y1="112"
+                                x2="120"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="88"
+                                y1="112"
+                                x2="88"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M120,140a28,28,0,0,1,56,0v36"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <circle cx="88" cy="84" r="12" />
+                        </svg>
+                        <a
+                            href="https://www.linkedin.com/in/josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >LinkedIn</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M119.83,56A52,52,0,0,0,76,32a51.92,51.92,0,0,0-3.49,44.7A49.28,49.28,0,0,0,64,104v8a48,48,0,0,0,48,48h48a48,48,0,0,0,48-48v-8a49.28,49.28,0,0,0-8.51-27.3A51.92,51.92,0,0,0,196,32a52,52,0,0,0-43.83,24Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,232V192a32,32,0,0,1,32-32h0a32,32,0,0,1,32,32v40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,208H72a32,32,0,0,1-32-32A32,32,0,0,0,8,144"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="http://github.com/josiahparry/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >GitHub</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M160,224H72a32,32,0,0,1-32-32V72A32,32,0,0,1,72,40H184a32,32,0,0,1,32,32v72a32,32,0,0,1-32,32H40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M128,136V104a24,24,0,0,0-48,0v32"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M176,136V104a24,24,0,0,0-48,0"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://fosstodon.org/@josi"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Mastodon</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                            class="w-4 h-4"
+                            fill="currentColor"
+                        >
+                            <path
+                                d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.698-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948"
+                            />
+                        </svg>
+                        <a
+                            href="https://bsky.app/profile/josiahparry.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Bluesky</a
+                        >
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">Feeling rusty: counting characters</h1>
+
+         
+        <div class="flex flex-wrap gap-2 mb-4">
+            
+            <a
+                href="/categories/rust"
+                class="badge-secondary cursor pointer"
+                >rust</a
+            >
+            
+            <a
+                href="/categories/r"
+                class="badge-secondary cursor pointer"
+                >r</a
+            >
+            
+        </div>
+         
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >April 13, 2023</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><p>I’m working on a new video for you all on GeoHashes. As I keep working
+on my slides and script I keep finding new things I want to explore or
+that I need to write. Recently, that was to compare multiple geohashes
+to a known geohash. The goal of that is to count how many of the first
+characters matched a reference. If there are matching leading characters
+between a geohashes that means that they are in the same geohash at some
+level of precision. Knowing that number of shared characters tells us at
+what level of precision they coexist. The challenge is that there isn’t
+any easy way to do that in base R or packages I could find. So, what do
+we do when we can’t find something to do a task for us? We make it.</p>
+<p>For these small tasks that require a lot of iteration and counting, I’ve
+been leaning on Rust a lot more. I find it actually <em>easier</em> for the
+more computer sciency type tasks.</p>
+<p>Here’s how I solved it.</p>
+<p>Define two geohashes to compare:</p>
+<pre data-lang="rust" class="language-rust z-code"><code class="language-rust" data-lang="rust"><span class="z-source z-rust"><span class="z-storage z-type z-rust">let</span> x <span class="z-keyword z-operator z-assignment z-rust">=</span> <span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>drt2yyy1cxwy<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span><span class="z-source z-rust"><span class="z-storage z-type z-rust">let</span> y <span class="z-keyword z-operator z-assignment z-rust">=</span> <span class="z-string z-quoted z-double z-rust"><span class="z-punctuation z-definition z-string z-begin z-rust">&quot;</span>drt2yywg71qc<span class="z-punctuation z-definition z-string z-end z-rust">&quot;</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></code></pre>
+<p>Next we want to iterate over each of these string slices (represented as
+<code>&amp;str</code>). Typically we’d use the <code>.iter()</code> or <code>.into_iter()</code> methods to
+iterate over objects but these are slices and not a vector or array.</p>
+<div class="aside">
+<p><code>.into_iter()</code> consumes the object you’re iterating over whereas
+<code>.iter()</code> iterates over it without consuming. The former provides
+“owned” objects at each iteration while the latter provides references”</p>
+</div>
+<p>We iterate through the characters of a slice using <code>.chars()</code>. We’ll
+want to iterate through both of them at the same time. Then, for each
+iteration, we check to see if they’re the same.</p>
+<p>This will instantiate an iterator over each of the strings where each
+element is a <code>char</code></p>
+<pre data-lang="rust" class="language-rust z-code"><code class="language-rust" data-lang="rust"><span class="z-source z-rust">  x<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">chars</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span><span class="z-source z-rust">  y<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">chars</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span></code></pre>
+<div>
+<blockquote>
+<p><strong>Important</strong></p>
+<p>This will not compile, it’s for illustration</p>
+</blockquote>
+</div>
+<p>These iterators will only be able to be iterated over one at a time
+using <code>.map()</code> and the like. We can combine them into one iterator using
+the <code>.zip()</code> method which <em>zips</em> them together into one iterator.</p>
+<pre data-lang="rust" class="language-rust z-code"><code class="language-rust" data-lang="rust"><span class="z-source z-rust">x<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">chars</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">zip</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>y<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">chars</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span></code></pre>
+<p>This is good! Now we have a single iterator to work through. Each
+element in the resultant iterator will be a tuple with the first element
+<code>.0</code> being the first character of <code>x</code> and <code>.1</code> being the first character
+of <code>y</code>.</p>
+<div class="aside">
+<p>Tuple’s look like <code>let z = (x, y);</code> and are accessed by position like
+<code>z.0</code> and <code>z.1</code>.</p>
+</div>
+<p>The approach I took here is to use the <code>.take_while()</code> method which
+takes a closure that returns a <code>bool</code> (<code>true</code> or <code>false</code>). It’ll return
+another iterator that contains only the elements where that statement
+was true.</p>
+<pre data-lang="rust" class="language-rust z-code"><code class="language-rust" data-lang="rust"><span class="z-source z-rust">x<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">chars</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">zip</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>y<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">chars</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span><span class="z-source z-rust">    <span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">take_while</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-meta z-function z-closure z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-punctuation z-section z-parameters z-begin z-rust">|</span></span></span><span class="z-meta z-function z-closure z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-variable z-parameter z-rust">a</span><span class="z-punctuation z-section z-parameters z-end z-rust">|</span></span> </span><span class="z-meta z-function z-closure z-rust">a<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-constant z-numeric z-integer z-decimal z-rust">0</span> <span class="z-keyword z-operator z-comparison z-rust">==</span> a<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-constant z-numeric z-integer z-decimal z-rust">1</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></code></pre>
+<div class="aside">
+<p>A closure is like an anonymous function. It’s arguments are defined
+between <code>| |</code> and the evaluated expression is to the right of it.</p>
+</div>
+<p>Here, the closure has the argument <code>|a|</code> which is the tuple from <code>x</code> and
+<code>y</code>. It checks to see if the characters are equal. The resultant
+iterator now only has elements for matching characters. We don’t really
+need to iterate over it, but rather we just need to count how many items
+are in the iterator.</p>
+<p>We can use the <code>.count()</code> method for that. Shouts out to the Rust
+discord for helping me with this one.</p>
+<div class="aside">
+<p>Previously I used a <code>fold()</code> method that looked like
+<code>.fold(0, |acc, _| acc + 1)</code> which worked but was less “elegant”</p>
+</div>
+<pre data-lang="rust" class="language-rust z-code"><code class="language-rust" data-lang="rust"><span class="z-source z-rust"><span class="z-storage z-type z-rust">let</span> res <span class="z-keyword z-operator z-assignment z-rust">=</span> x<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">chars</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">zip</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>y<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">chars</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span><span class="z-source z-rust">    <span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">take_while</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-meta z-function z-closure z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-punctuation z-section z-parameters z-begin z-rust">|</span></span></span><span class="z-meta z-function z-closure z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-variable z-parameter z-rust">a</span><span class="z-punctuation z-section z-parameters z-end z-rust">|</span></span> </span><span class="z-meta z-function z-closure z-rust">a<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-constant z-numeric z-integer z-decimal z-rust">0</span> <span class="z-keyword z-operator z-comparison z-rust">==</span> a<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-constant z-numeric z-integer z-decimal z-rust">1</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span><span class="z-source z-rust">    <span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">count</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></code></pre>
+<p>Let’s wrap this into a function:</p>
+<pre data-lang="rust" class="language-rust z-code"><code class="language-rust" data-lang="rust"><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-function z-rust"><span class="z-storage z-type z-function z-rust">fn</span> </span><span class="z-entity z-name z-function z-rust">count_seq_chars</span></span><span class="z-meta z-function z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-punctuation z-section z-parameters z-begin z-rust">(</span><span class="z-variable z-parameter z-rust">x</span><span class="z-punctuation z-separator z-rust">:</span> <span class="z-keyword z-operator z-rust">&amp;</span><span class="z-storage z-type z-rust">str</span>, <span class="z-variable z-parameter z-rust">y</span><span class="z-punctuation z-separator z-rust">:</span> <span class="z-keyword z-operator z-rust">&amp;</span><span class="z-storage z-type z-rust">str</span></span><span class="z-meta z-function z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-punctuation z-section z-parameters z-end z-rust">)</span></span></span></span><span class="z-meta z-function z-rust"> <span class="z-meta z-function z-return-type z-rust"><span class="z-punctuation z-separator z-rust">-&gt;</span> <span class="z-storage z-type z-rust">usize</span></span> </span><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">  x<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">chars</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">zip</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>y<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">chars</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">      <span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">take_while</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-meta z-function z-closure z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-punctuation z-section z-parameters z-begin z-rust">|</span></span></span><span class="z-meta z-function z-closure z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-variable z-parameter z-rust">a</span><span class="z-punctuation z-section z-parameters z-end z-rust">|</span></span> </span><span class="z-meta z-function z-closure z-rust">a<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-constant z-numeric z-integer z-decimal z-rust">0</span> <span class="z-keyword z-operator z-comparison z-rust">==</span> a<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-constant z-numeric z-integer z-decimal z-rust">1</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">      <span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">count</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"></span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span></span>
+</span></code></pre>
+<p>We can make it available in R using
+<a href="https://extendr.github.io/rextendr/reference/rust_source.html"><code>rextendr::rust_function()</code></a>.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">rextendr<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">rust_function</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">fn count_seq_chars(x: &amp;str, y: &amp;str) -&gt; usize {
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">  x.chars().zip(y.chars())
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">      .take_while(|a| a.0 == a.1)
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">      .count()
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">}<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">count_seq_chars</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>drt2yyy1cxwy<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>drt2yywg71qc<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">[1] 6
+</span></code></pre>
+<p>But this isn’t vectorized yet. It only works on two scalars. We can
+improve it by changing the <code>x</code> argument to take a vector of strings
+<code>Vec&lt;String&gt;</code>.</p>
+<div class="aside">
+<p>We have to use <code>Vec&lt;String&gt;</code> instead of <code>Vec&lt;&amp;str&gt;</code> because <code>rextendr</code>
+does not know how to take a vector of string slices.</p>
+</div>
+<p>Essentially, what we do next is take this vector of strings, iterate
+over it, convert the string to a <code>&amp;str</code> then just do what we did before!</p>
+<p>We use <code>.map()</code> to apply an expression over each element of <code>x</code>. The
+closure takes a single argument <code>xi</code> which represents the ith element of
+<code>x</code>. We convert it to a slice, then iterate over it’s characters and the
+rest should be similar in there!</p>
+<p>Lastly, we collect the resultant <code>usize</code> objects into a vector of them
+<code>Vec&lt;usize&gt;</code>.</p>
+<pre data-lang="rust" class="language-rust z-code"><code class="language-rust" data-lang="rust"><span class="z-source z-rust">  <span class="z-meta z-function z-rust"><span class="z-meta z-function z-rust"><span class="z-storage z-type z-function z-rust">fn</span> </span><span class="z-entity z-name z-function z-rust">count_seq_chars_to_ref</span></span><span class="z-meta z-function z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-punctuation z-section z-parameters z-begin z-rust">(</span><span class="z-variable z-parameter z-rust">x</span><span class="z-punctuation z-separator z-rust">:</span> <span class="z-meta z-generic z-rust"><span class="z-support z-type z-rust">Vec</span><span class="z-punctuation z-definition z-generic z-begin z-rust">&lt;</span><span class="z-support z-type z-rust">String</span><span class="z-punctuation z-definition z-generic z-end z-rust">&gt;</span></span>, <span class="z-variable z-parameter z-rust">y</span><span class="z-punctuation z-separator z-rust">:</span> <span class="z-keyword z-operator z-rust">&amp;</span><span class="z-storage z-type z-rust">str</span></span><span class="z-meta z-function z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-punctuation z-section z-parameters z-end z-rust">)</span></span></span></span><span class="z-meta z-function z-rust"> <span class="z-meta z-function z-return-type z-rust"><span class="z-punctuation z-separator z-rust">-&gt;</span> <span class="z-meta z-generic z-rust"><span class="z-support z-type z-rust">Vec</span><span class="z-punctuation z-definition z-generic z-begin z-rust">&lt;</span><span class="z-storage z-type z-rust">usize</span><span class="z-punctuation z-definition z-generic z-end z-rust">&gt;</span></span></span> </span><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">    x<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">into_iter</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">        <span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">map</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-meta z-function z-closure z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-punctuation z-section z-parameters z-begin z-rust">|</span></span></span><span class="z-meta z-function z-closure z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-variable z-parameter z-rust">xi</span><span class="z-punctuation z-section z-parameters z-end z-rust">|</span></span> 
+</span></span></span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-group z-rust"><span class="z-meta z-function z-closure z-rust">            </span><span class="z-meta z-function z-closure z-rust">xi<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">as_str</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">chars</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">zip</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>y<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">chars</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span></span>
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-group z-rust">            <span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">take_while</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span><span class="z-meta z-function z-closure z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-punctuation z-section z-parameters z-begin z-rust">|</span></span></span><span class="z-meta z-function z-closure z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-variable z-parameter z-rust">a</span><span class="z-punctuation z-section z-parameters z-end z-rust">|</span></span> </span><span class="z-meta z-function z-closure z-rust">a<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-constant z-numeric z-integer z-decimal z-rust">0</span> <span class="z-keyword z-operator z-comparison z-rust">==</span> a<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-constant z-numeric z-integer z-decimal z-rust">1</span></span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-group z-rust">            <span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">count</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-meta z-group z-rust">        </span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">        <span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">collect</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">  </span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span></span>
+</span></code></pre>
+<div class="aside">
+<p>Note that the function definition has <code>-&gt; Vec&lt;usize&gt;</code> this defines what
+the ouput object type will be. Something definitely unfamiliar for
+Rusers!</p>
+</div>
+<p>Again, we can use <code>rextendr</code> to wrap this into a single R function that
+we can use.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">rextendr<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">rust_function</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">  fn count_seq_chars_to_ref(x: Vec&lt;String&gt;, y: &amp;str) -&gt; Vec&lt;usize&gt; {
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">    x.into_iter()
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">        .map(|xi| 
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">            xi.as_str().chars().zip(y.chars())
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">            .take_while(|a| a.0 == a.1)
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">            .count()
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">        )
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">        .collect()
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">  }
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">count_seq_chars_to_ref</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>drt2yyy1cxwy<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>drt2yywg71qc<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">[1] 6
+</span></code></pre>
+<p>Let’s test this and see how it works with a larger dataset of 100,000
+strings. We create a bunch of sample strings that sample a-e and 1-5,
+are sorted, then pasted together. We then can compare them to the
+reference string <code>"abcd123"</code>.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">sample_strings <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">replicate</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-constant z-numeric z-float z-decimal z-r">100000</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">paste0</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">paste0</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">sort</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">sample</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-support z-constant z-misc z-r">letters</span><span class="z-meta z-item-access z-r"><span class="z-punctuation z-section z-brackets z-single z-begin z-r">[</span></span><span class="z-meta z-item-access z-r"><span class="z-meta z-item-access z-arguments z-r"><span class="z-constant z-numeric z-float z-decimal z-r">1</span><span class="z-keyword z-other z-r">:</span><span class="z-constant z-numeric z-float z-decimal z-r">5</span></span></span><span class="z-meta z-item-access z-r"><span class="z-punctuation z-section z-brackets z-single z-end z-r">]</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-constant z-numeric z-float z-decimal z-r">4</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">collapse</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span><span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">paste0</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">sample</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-constant z-numeric z-float z-decimal z-r">1</span><span class="z-keyword z-other z-r">:</span><span class="z-constant z-numeric z-float z-decimal z-r">5</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-constant z-numeric z-float z-decimal z-r">3</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">collapse</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span><span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">collapse</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span><span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span>
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">head</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>sample_strings<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">[1] &quot;acde254&quot; &quot;bcde324&quot; &quot;abce152&quot; &quot;abde231&quot; &quot;abde543&quot; &quot;abcd253&quot;
+</span></code></pre>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">count_seq_chars_to_ref</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">head</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>sample_strings<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>abcd123<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">[1] 1 0 3 2 2 4
+</span></code></pre>
+<p><a href="https://www.pmassicotte.com/">Philippe Massicotte</a> was kind enough to
+provide an R only example in a reply to a tweet of mine. We can compare
+the speed of the two implementations. A pure Rust implementation and an
+R native implementation.</p>
+<p>{{&lt; tweet philmassicotte 1646191363728240642 &gt;}}</p>
+<p>Here we wrap his implementation into a function <code>count_seq_lapply()</code>.
+I’ve modified this implementation to handle the scenario where the first
+element is not true so we don’t get a run length of <code>FALSE</code> elements.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function z-name z-r"><span class="z-entity z-name z-function z-r">count_seq_lapply</span> </span><span class="z-meta z-function z-r"><span class="z-keyword z-operator z-assignment z-r">&lt;-</span> </span><span class="z-meta z-function z-r"><span class="z-storage z-type z-function z-r">function</span></span><span class="z-meta z-function z-parameters z-r"><span class="z-punctuation z-section z-parameters z-begin z-r">(</span><span class="z-variable z-parameter z-r">x</span><span class="z-punctuation z-separator z-parameters z-r">,</span> <span class="z-variable z-parameter z-r">ref</span><span class="z-punctuation z-section z-parameters z-end z-r">)</span></span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span><span class="z-source z-r">  res <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">lapply</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>x<span class="z-punctuation z-separator z-arguments z-r">,</span> \<span class="z-punctuation z-section z-parens z-begin z-r">(</span>x<span class="z-punctuation z-section z-parens z-end z-r">)</span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    a <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">unlist</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">strsplit</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>x<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span><span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    x <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">unlist</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">strsplit</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>ref<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span><span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    comparison <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> a <span class="z-keyword z-operator z-logical z-r">==</span> x
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-keyword z-control z-conditional z-if z-r">if</span> <span class="z-punctuation z-section z-parens z-begin z-r">(</span><span class="z-keyword z-operator z-logical z-r">!</span>comparison<span class="z-meta z-item-access z-r"><span class="z-punctuation z-section z-brackets z-single z-begin z-r">[</span></span><span class="z-meta z-item-access z-r"><span class="z-meta z-item-access z-arguments z-r"><span class="z-constant z-numeric z-float z-decimal z-r">1</span></span></span><span class="z-meta z-item-access z-r"><span class="z-punctuation z-section z-brackets z-single z-end z-r">]</span></span><span class="z-punctuation z-section z-parens z-end z-r">)</span> <span class="z-keyword z-control z-flow z-return z-r">return</span><span class="z-punctuation z-section z-parens z-begin z-r">(</span><span class="z-constant z-numeric z-float z-decimal z-r">0</span><span class="z-punctuation z-section z-parens z-end z-r">)</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">rle</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>comparison<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-keyword z-accessor z-dollar z-r">$</span>lengths<span class="z-meta z-item-access z-r"><span class="z-punctuation z-section z-brackets z-single z-begin z-r">[</span></span><span class="z-meta z-item-access z-r"><span class="z-meta z-item-access z-arguments z-r"><span class="z-constant z-numeric z-float z-decimal z-r">1</span></span></span><span class="z-meta z-item-access z-r"><span class="z-punctuation z-section z-brackets z-single z-end z-r">]</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-punctuation z-section z-braces z-end z-r">}</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">  
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">unlist</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>res<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r"><span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">count_seq_lapply</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">head</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>sample_strings<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>abcd123<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">[1] 1 0 3 2 2 4
+</span></code></pre>
+<p>As you can see his works just as well and frankly, better. That’s
+because he inherits the NA handling of the base R functions he is using.
+If any NA are introduced into a pure Rust implementation without using
+<a href="https://extendr.github.io/extendr/extendr_api/">extendr</a> types and
+proper handling you’ll get a <code>panic!</code> which will cause the R function to
+error.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">bench<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">mark</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">lapply</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">count_seq_lapply</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>sample_strings<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>abcd123<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> 
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">rust</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">count_seq_chars_to_ref</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>sample_strings<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>abcd123<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">Warning: Some expressions had a GC in every iteration; so filtering is
+</span><span class="z-text z-plain">disabled.
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain"># A tibble: 2 × 6
+</span><span class="z-text z-plain">  expression      min   median `itr/sec` mem_alloc `gc/sec`
+</span><span class="z-text z-plain">  &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
+</span><span class="z-text z-plain">1 lapply        1.17s    1.17s     0.853    1.57MB     47.8
+</span><span class="z-text z-plain">2 rust        53.72ms  53.92ms    18.5     781.3KB      0  
+</span></code></pre>
+<p>The R implementation is still super fast. It’s just that Rust is also
+super super fast!</p>
+<hr />
+<h2 id="addendum-chatgpt-rules-apparently">Addendum: ChatGPT rules apparently</h2>
+<p>So I asked Chat GPT to rewrite my above function but using C++ and the
+results are absolutely startling!</p>
+<pre data-lang="cpp" class="language-cpp z-code"><code class="language-cpp" data-lang="cpp"><span class="z-source z-c++">std<span class="z-punctuation z-accessor z-double-colon z-c++">::</span>vector<span class="z-punctuation z-section z-generic z-begin z-c++">&lt;</span><span class="z-support z-type z-sys-types z-c">size_t</span><span class="z-punctuation z-section z-generic z-end z-c++">&gt;</span> <span class="z-meta z-function z-c++"><span class="z-meta z-toc-list z-full-identifier z-c++"><span class="z-entity z-name z-function z-c++">count_seq_chars_to_ref_cpp</span></span></span><span class="z-meta z-function z-parameters z-c++"><span class="z-meta z-group z-c++"><span class="z-punctuation z-section z-group z-begin z-c++">(</span></span></span><span class="z-meta z-function z-parameters z-c++"><span class="z-meta z-group z-c++">std<span class="z-punctuation z-accessor z-double-colon z-c++">::</span>vector<span class="z-punctuation z-section z-generic z-begin z-c++">&lt;</span>std<span class="z-punctuation z-accessor z-double-colon z-c++">::</span>string<span class="z-punctuation z-section z-generic z-end z-c++">&gt;</span> <span class="z-variable z-parameter z-c++">x</span><span class="z-punctuation z-separator z-c++">,</span> <span class="z-storage z-modifier z-c++">const</span> std<span class="z-punctuation z-accessor z-double-colon z-c++">::</span>string<span class="z-keyword z-operator z-c">&amp;</span> <span class="z-variable z-parameter z-c++">y</span><span class="z-punctuation z-section z-group z-end z-c++">)</span></span></span><span class="z-meta z-function z-c++"> </span><span class="z-meta z-function z-c++"><span class="z-meta z-block z-c++"><span class="z-punctuation z-section z-block z-begin z-c++">{</span></span></span><span class="z-meta z-function z-c++"><span class="z-meta z-block z-c++">
+</span></span></span><span class="z-source z-c++"><span class="z-meta z-function z-c++"><span class="z-meta z-block z-c++">  std<span class="z-punctuation z-accessor z-double-colon z-c++">::</span>vector<span class="z-punctuation z-section z-generic z-begin z-c++">&lt;</span><span class="z-support z-type z-sys-types z-c">size_t</span><span class="z-punctuation z-section z-generic z-end z-c++">&gt;</span> result<span class="z-punctuation z-terminator z-c++">;</span>
+</span></span></span><span class="z-source z-c++"><span class="z-meta z-function z-c++"><span class="z-meta z-block z-c++">  <span class="z-keyword z-control z-c++">for</span> <span class="z-meta z-group z-c++"><span class="z-punctuation z-section z-group z-begin z-c++">(</span><span class="z-storage z-modifier z-c++">const</span> <span class="z-storage z-type z-c">auto</span><span class="z-keyword z-operator z-c">&amp;</span> xi <span class="z-keyword z-operator z-ternary z-c">:</span> x<span class="z-punctuation z-section z-group z-end z-c++">)</span></span> <span class="z-meta z-block z-c++"><span class="z-punctuation z-section z-block z-begin z-c++">{</span>
+</span></span></span></span><span class="z-source z-c++"><span class="z-meta z-function z-c++"><span class="z-meta z-block z-c++"><span class="z-meta z-block z-c++">    <span class="z-support z-type z-sys-types z-c">size_t</span> count <span class="z-keyword z-operator z-assignment z-c">=</span> <span class="z-constant z-numeric z-integer z-decimal z-c++">0</span><span class="z-punctuation z-terminator z-c++">;</span>
+</span></span></span></span><span class="z-source z-c++"><span class="z-meta z-function z-c++"><span class="z-meta z-block z-c++"><span class="z-meta z-block z-c++">    <span class="z-storage z-type z-c">auto</span> it_x <span class="z-keyword z-operator z-assignment z-c">=</span> xi<span class="z-punctuation z-accessor z-dot z-c++">.</span><span class="z-meta z-method-call z-c++"><span class="z-variable z-function z-member z-c++">begin</span><span class="z-meta z-group z-c++"><span class="z-punctuation z-section z-group z-begin z-c++">(</span></span></span><span class="z-meta z-method-call z-c++"></span><span class="z-meta z-method-call z-c++"><span class="z-meta z-group z-c++"><span class="z-punctuation z-section z-group z-end z-c++">)</span></span></span><span class="z-punctuation z-terminator z-c++">;</span>
+</span></span></span></span><span class="z-source z-c++"><span class="z-meta z-function z-c++"><span class="z-meta z-block z-c++"><span class="z-meta z-block z-c++">    <span class="z-storage z-type z-c">auto</span> it_y <span class="z-keyword z-operator z-assignment z-c">=</span> y<span class="z-punctuation z-accessor z-dot z-c++">.</span><span class="z-meta z-method-call z-c++"><span class="z-variable z-function z-member z-c++">begin</span><span class="z-meta z-group z-c++"><span class="z-punctuation z-section z-group z-begin z-c++">(</span></span></span><span class="z-meta z-method-call z-c++"></span><span class="z-meta z-method-call z-c++"><span class="z-meta z-group z-c++"><span class="z-punctuation z-section z-group z-end z-c++">)</span></span></span><span class="z-punctuation z-terminator z-c++">;</span>
+</span></span></span></span><span class="z-source z-c++"><span class="z-meta z-function z-c++"><span class="z-meta z-block z-c++"><span class="z-meta z-block z-c++">    <span class="z-keyword z-control z-c++">while</span> <span class="z-meta z-group z-c++"><span class="z-punctuation z-section z-group z-begin z-c++">(</span>it_x <span class="z-keyword z-operator z-comparison z-c">!=</span> xi<span class="z-punctuation z-accessor z-dot z-c++">.</span><span class="z-meta z-method-call z-c++"><span class="z-variable z-function z-member z-c++">end</span><span class="z-meta z-group z-c++"><span class="z-punctuation z-section z-group z-begin z-c++">(</span></span></span><span class="z-meta z-method-call z-c++"></span><span class="z-meta z-method-call z-c++"><span class="z-meta z-group z-c++"><span class="z-punctuation z-section z-group z-end z-c++">)</span></span></span> <span class="z-keyword z-operator z-arithmetic z-c">&amp;&amp;</span> it_y <span class="z-keyword z-operator z-comparison z-c">!=</span> y<span class="z-punctuation z-accessor z-dot z-c++">.</span><span class="z-meta z-method-call z-c++"><span class="z-variable z-function z-member z-c++">end</span><span class="z-meta z-group z-c++"><span class="z-punctuation z-section z-group z-begin z-c++">(</span></span></span><span class="z-meta z-method-call z-c++"></span><span class="z-meta z-method-call z-c++"><span class="z-meta z-group z-c++"><span class="z-punctuation z-section z-group z-end z-c++">)</span></span></span> <span class="z-keyword z-operator z-arithmetic z-c">&amp;&amp;</span> <span class="z-keyword z-operator z-c">*</span>it_x <span class="z-keyword z-operator z-comparison z-c">==</span> <span class="z-keyword z-operator z-c">*</span>it_y<span class="z-punctuation z-section z-group z-end z-c++">)</span></span> <span class="z-meta z-block z-c++"><span class="z-punctuation z-section z-block z-begin z-c++">{</span>
+</span></span></span></span></span><span class="z-source z-c++"><span class="z-meta z-function z-c++"><span class="z-meta z-block z-c++"><span class="z-meta z-block z-c++"><span class="z-meta z-block z-c++">      <span class="z-keyword z-operator z-arithmetic z-c">++</span>count<span class="z-punctuation z-terminator z-c++">;</span>
+</span></span></span></span></span><span class="z-source z-c++"><span class="z-meta z-function z-c++"><span class="z-meta z-block z-c++"><span class="z-meta z-block z-c++"><span class="z-meta z-block z-c++">      <span class="z-keyword z-operator z-arithmetic z-c">++</span>it_x<span class="z-punctuation z-terminator z-c++">;</span>
+</span></span></span></span></span><span class="z-source z-c++"><span class="z-meta z-function z-c++"><span class="z-meta z-block z-c++"><span class="z-meta z-block z-c++"><span class="z-meta z-block z-c++">      <span class="z-keyword z-operator z-arithmetic z-c">++</span>it_y<span class="z-punctuation z-terminator z-c++">;</span>
+</span></span></span></span></span><span class="z-source z-c++"><span class="z-meta z-function z-c++"><span class="z-meta z-block z-c++"><span class="z-meta z-block z-c++"><span class="z-meta z-block z-c++">    <span class="z-punctuation z-section z-block z-end z-c++">}</span></span>
+</span></span></span></span><span class="z-source z-c++"><span class="z-meta z-function z-c++"><span class="z-meta z-block z-c++"><span class="z-meta z-block z-c++">    result<span class="z-punctuation z-accessor z-dot z-c++">.</span><span class="z-meta z-method-call z-c++"><span class="z-variable z-function z-member z-c++">push_back</span><span class="z-meta z-group z-c++"><span class="z-punctuation z-section z-group z-begin z-c++">(</span></span></span><span class="z-meta z-method-call z-c++"><span class="z-meta z-group z-c++">count</span></span><span class="z-meta z-method-call z-c++"><span class="z-meta z-group z-c++"><span class="z-punctuation z-section z-group z-end z-c++">)</span></span></span><span class="z-punctuation z-terminator z-c++">;</span>
+</span></span></span></span><span class="z-source z-c++"><span class="z-meta z-function z-c++"><span class="z-meta z-block z-c++"><span class="z-meta z-block z-c++">  <span class="z-punctuation z-section z-block z-end z-c++">}</span></span>
+</span></span></span><span class="z-source z-c++"><span class="z-meta z-function z-c++"><span class="z-meta z-block z-c++">  <span class="z-keyword z-control z-flow z-return z-c++">return</span> result<span class="z-punctuation z-terminator z-c++">;</span>
+</span></span></span><span class="z-source z-c++"><span class="z-meta z-function z-c++"><span class="z-meta z-block z-c++"></span></span><span class="z-meta z-function z-c++"><span class="z-meta z-block z-c++"><span class="z-punctuation z-section z-block z-end z-c++">}</span></span></span>
+</span></code></pre>
+<p>This is the code it wrote after only one prompt. I didn’t correct it. It
+worked right off the rip. I did, however, provide ChatGPT with my above
+rust code.</p>
+<p>Let’s bench mark this.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">Rcpp<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">cppFunction</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>std::vector&lt;size_t&gt; count_seq_chars_to_ref_cpp(std::vector&lt;std::string&gt; x, const std::string&amp; y) {
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">  std::vector&lt;size_t&gt; result;
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">  for (const auto&amp; xi : x) {
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">    size_t count = 0;
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">    auto it_x = xi.begin();
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">    auto it_y = y.begin();
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">    while (it_x != xi.end() &amp;&amp; it_y != y.end() &amp;&amp; *it_x == *it_y) {
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">      ++count;
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">      ++it_x;
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">      ++it_y;
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">    }
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">    result.push_back(count);
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">  }
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">  return result;
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">}<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">bench<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">mark</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">GPT_cpp</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">count_seq_chars_to_ref_cpp</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>sample_strings<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>abcd123<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">rust</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">count_seq_chars_to_ref</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>sample_strings<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>abcd123<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain"># A tibble: 2 × 6
+</span><span class="z-text z-plain">  expression      min   median `itr/sec` mem_alloc `gc/sec`
+</span><span class="z-text z-plain">  &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
+</span><span class="z-text z-plain">1 GPT_cpp      2.48ms   2.66ms     375.      781KB     4.58
+</span><span class="z-text z-plain">2 rust        53.46ms  53.84ms      18.5     781KB     2.06
+</span></code></pre>
+<p>Absolutely friggin’ bonkers!! If I was better at concurrency and
+threading I’d try to compare that but alas. I’m stopping here :)</p>
+<h2 id="double-addendum">Double addendum….</h2>
+<p>Okay, after consulting the gods in the extendr discord they pointed to a
+number of ways in which this can be improved and made faster.</p>
+<p>First off, <code>rust_function()</code> compiled using the <code>dev</code> profile first.
+This is used for debugging. If we set <code>profile = "release"</code> we compile
+the function for release performance. H/t to
+<a href="https://github.com/ilia">@iliak</a>.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">rextendr<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">rust_function</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">  fn count_seq_chars_to_ref(x: Vec&lt;String&gt;, y: &amp;str) -&gt; Vec&lt;usize&gt; {
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">    x.into_iter()
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">        .map(|xi| 
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">            xi.as_str().chars().zip(y.chars())
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">            .take_while(|a| a.0 == a.1)
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">            .count()
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">        )
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">        .collect()
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">  }
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-variable z-parameter z-r">profile</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>release<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">ℹ build directory: &#39;/private/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T/RtmprOzrsM/file856732f6f8f&#39;
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">✔ Writing &#39;/private/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T/RtmprOzrsM/file856732f6f8f/target/extendr_wrappers.R&#39;
+</span></code></pre>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">bench<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">mark</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">GPT_cpp</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">count_seq_chars_to_ref_cpp</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>sample_strings<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>abcd123<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">rust</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">count_seq_chars_to_ref</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>sample_strings<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>abcd123<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain"># A tibble: 2 × 6
+</span><span class="z-text z-plain">  expression      min   median `itr/sec` mem_alloc `gc/sec`
+</span><span class="z-text z-plain">  &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
+</span><span class="z-text z-plain">1 GPT_cpp      2.49ms    2.7ms     363.      781KB     6.19
+</span><span class="z-text z-plain">2 rust         8.67ms   9.36ms      98.1     781KB     2.04
+</span></code></pre>
+<p>This brings the run time down a whole lot. The next enhancement pointed
+out is that both <code>Vec&lt;String&gt;</code> and <code>Vec&lt;usize&gt;</code> use copies. Instead, I
+should be using <code>extendr</code> objects <code>Strings</code> and <code>Integers</code>. Here I:</p>
+<ul>
+<li>change the <code>x</code> to <code>Strings</code></li>
+<li>cast usize to i32 using <code>.count() as i32</code> (h/t
+<a href="https://github.com/multimeric">@multimeric</a>)</li>
+<li>use <code>collect_robj()</code> instead of <code>collect()</code> so that it turns into an
+<code>Robj</code> (R object)</li>
+</ul>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">rextendr<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">rust_function</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>    fn count_seq_chars_to_ref(x: Strings, y: &amp;str) -&gt; Robj {
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">     x.into_iter()
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">        .map(|xi| 
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">          xi.as_str().chars().zip(y.chars())
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">            .take_while(|a| a.0 == a.1)
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">            .count() as i32
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">        )
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">        .collect_robj()
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">        
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">  }<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-variable z-parameter z-r">profile</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>release<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">ℹ build directory: &#39;/private/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T/RtmprOzrsM/file856732f6f8f&#39;
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">✔ Writing &#39;/private/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T/RtmprOzrsM/file856732f6f8f/target/extendr_wrappers.R&#39;
+</span></code></pre>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">bench<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">mark</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">GPT_cpp</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">count_seq_chars_to_ref_cpp</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>sample_strings<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>abcd123<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">rust</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">count_seq_chars_to_ref</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>sample_strings<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>abcd123<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain"># A tibble: 2 × 6
+</span><span class="z-text z-plain">  expression      min   median `itr/sec` mem_alloc `gc/sec`
+</span><span class="z-text z-plain">  &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
+</span><span class="z-text z-plain">1 GPT_cpp      2.49ms   2.69ms      356.     781KB     6.18
+</span><span class="z-text z-plain">2 rust         1.72ms   1.76ms      563.     391KB     4.49
+</span></code></pre>
+<p>Now rust is faster.</p>
+<p>Further, shout out to <a href="https://github.com/CGMossa">@cgmossa</a> for this
+last implementation that shaves off some more time by using <code>Integers</code>
+specifically.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">rextendr<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">rust_function</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">  fn count_seq_chars_to_ref(x: Strings, y: &amp;str) -&gt; Integers {
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">      x.iter()
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">          .map(|xi| xi.chars().zip(y.chars()).take_while(|a| a.0 == a.1).count())
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">          .map(|x| Rint::from(x as i32))
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">          .collect()
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r">  }
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-variable z-parameter z-r">profile</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>release<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">ℹ build directory: &#39;/private/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T/RtmprOzrsM/file856732f6f8f&#39;
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">✔ Writing &#39;/private/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T/RtmprOzrsM/file856732f6f8f/target/extendr_wrappers.R&#39;
+</span></code></pre>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">bench<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">mark</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">GPT_cpp</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">count_seq_chars_to_ref_cpp</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>sample_strings<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>abcd123<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">rust</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">count_seq_chars_to_ref</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>sample_strings<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>abcd123<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain"># A tibble: 2 × 6
+</span><span class="z-text z-plain">  expression      min   median `itr/sec` mem_alloc `gc/sec`
+</span><span class="z-text z-plain">  &lt;bch:expr&gt; &lt;bch:tm&gt; &lt;bch:tm&gt;     &lt;dbl&gt; &lt;bch:byt&gt;    &lt;dbl&gt;
+</span><span class="z-text z-plain">1 GPT_cpp       2.5ms   2.68ms      368.     781KB     6.20
+</span><span class="z-text z-plain">2 rust         1.75ms   1.79ms      556.     391KB     6.18
+</span></code></pre>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <!-- Basecoat sidebar component -->
+        <script
+            src="https://josiah.rs/js/basecoat/sidebar.min.js"
+            defer
+        ></script>
+        <!-- Sidebar toggle for mobile -->
+        <script src="https://josiah.rs/js/sidebar-toggle.js" defer></script>
+        <!-- Custom tabs for panel-tabset -->
+        <script src="https://josiah.rs/js/tabs.js" defer></script>
+        <!-- Search functionality -->
+        <script src="https://josiah.rs/js/search.js" defer></script>
+        <script>
+            (() => {
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+
+                    // Toggle syntax highlighting themes via media attribute
+                    const darkSyntax = document.getElementById("syntax-dark");
+                    const lightSyntax = document.getElementById("syntax-light");
+                    if (darkSyntax && lightSyntax) {
+                        darkSyntax.media = dark ? "all" : "not all";
+                        lightSyntax.media = dark ? "not all" : "all";
+                    }
+
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        ></script>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"
+        ></script>
+        
+    </body>
+</html>

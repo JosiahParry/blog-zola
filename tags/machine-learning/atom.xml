@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Josiah Parry - machine learning</title>
+    <link rel="self" type="application/atom+xml" href="https://josiah.rs/tags/machine-learning/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://josiah.rs"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2018-12-01T00:00:00+00:00</updated>
+    <id>https://josiah.rs/tags/machine-learning/atom.xml</id>
+    <entry xml:lang="en">
+        <title>xgboost feature importance</title>
+        <published>2018-12-01T00:00:00+00:00</published>
+        <updated>2018-12-01T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/xgb-feature-importance/"/>
+        <id>https://josiah.rs/posts/xgb-feature-importance/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/xgb-feature-importance/">&lt;p&gt;This post will go over extracting feature (variable) importance and creating a function for creating a ggplot object for it. I will draw on the simplicity of Chris Albon&#x27;s post. For steps to do the following in Python, I recommend his &lt;a href=&quot;https:&#x2F;&#x2F;chrisalbon.com&#x2F;machine_learning&#x2F;trees_and_forests&#x2F;feature_importance&#x2F;&quot;&gt;post&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;img alt=&quot;Feature Importance by Chris Albon&quot; src=&quot;https:&#x2F;&#x2F;chrisalbon.com&#x2F;images&#x2F;machine_learning_flashcards&#x2F;Feature_Importance_print.png&quot;&#x2F;&gt;
+&lt;p&gt;If you&#x27;ve ever created a decision tree, you&#x27;ve probably looked at measures of feature importance. In the above flashcard, impurity refers to how many times a feature was use and lead to a misclassification. Here, we&#x27;re looking at the importance of a feature, so how much it helped in the classification or prediction of an outcome.&lt;&#x2F;p&gt;
+&lt;p&gt;This example will draw on the build in data &lt;code&gt;Sonar&lt;&#x2F;code&gt; from the &lt;code&gt;mlbench&lt;&#x2F;code&gt; package.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;prepping-the-environment&quot;&gt;Prepping the Environment&lt;&#x2F;h3&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;kr&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;base&#x2F;library.html&#x27;&gt;library&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;github.com&#x2F;topepo&#x2F;caret&#x2F;&#x27;&gt;caret&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+&lt;span class=&#x27;kr&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;base&#x2F;library.html&#x27;&gt;library&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;github.com&#x2F;dmlc&#x2F;xgboost&#x27;&gt;xgboost&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+&lt;span class=&#x27;kr&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;base&#x2F;library.html&#x27;&gt;library&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;tidyverse.tidyverse.org&#x27;&gt;tidyverse&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;h3 id=&quot;loading-the-data&quot;&gt;Loading the data&lt;&#x2F;h3&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;utils&#x2F;data.html&#x27;&gt;data&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;s&#x27;&gt;&quot;Sonar&quot;&lt;&#x2F;span&gt;, package &lt;span class=&#x27;o&#x27;&gt;=&lt;&#x2F;span&gt; &lt;span class=&#x27;s&#x27;&gt;&quot;mlbench&quot;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;h3 id=&quot;train-the-decision-tree&quot;&gt;Train the decision tree&lt;&#x2F;h3&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;nv&#x27;&gt;xgb_fit&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;pkg&#x2F;caret&#x2F;man&#x2F;train.html&#x27;&gt;train&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;Class&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;~&lt;&#x2F;span&gt; &lt;span class=&#x27;nv&#x27;&gt;.&lt;&#x2F;span&gt;,
+                 data &lt;span class=&#x27;o&#x27;&gt;=&lt;&#x2F;span&gt; &lt;span class=&#x27;nv&#x27;&gt;Sonar&lt;&#x2F;span&gt;,
+                 method &lt;span class=&#x27;o&#x27;&gt;=&lt;&#x2F;span&gt; &lt;span class=&#x27;s&#x27;&gt;&quot;xgbLinear&quot;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;nv&#x27;&gt;xgb_fit&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; eXtreme Gradient Boosting &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; 208 samples&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;  60 predictor&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   2 classes: &#x27;M&#x27;, &#x27;R&#x27; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; No pre-processing&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; Resampling: Bootstrapped (25 reps) &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; Summary of sample sizes: 208, 208, 208, 208, 208, 208, ... &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; Resampling results across tuning parameters:&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   lambda  alpha  nrounds  Accuracy   Kappa    &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   0e+00   0e+00   50      0.7954411  0.5856736&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   0e+00   0e+00  100      0.7955067  0.5859968&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   0e+00   0e+00  150      0.7955067  0.5859968&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   0e+00   1e-04   50      0.7931161  0.5807902&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   0e+00   1e-04  100      0.7896880  0.5736899&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   0e+00   1e-04  150      0.7896880  0.5736899&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   0e+00   1e-01   50      0.7974045  0.5899654&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   0e+00   1e-01  100      0.8007978  0.5965433&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   0e+00   1e-01  150      0.8018652  0.5987027&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   1e-04   0e+00   50      0.7936100  0.5817500&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   1e-04   0e+00  100      0.7902008  0.5746993&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   1e-04   0e+00  150      0.7902008  0.5746993&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   1e-04   1e-04   50      0.7916874  0.5777943&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   1e-04   1e-04  100      0.7883283  0.5708511&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   1e-04   1e-04  150      0.7883283  0.5708511&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   1e-04   1e-01   50      0.7974045  0.5899654&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   1e-04   1e-01  100      0.8007978  0.5965433&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   1e-04   1e-01  150      0.8018652  0.5987027&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   1e-01   0e+00   50      0.7937810  0.5824365&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   1e-01   0e+00  100      0.7958099  0.5863334&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   1e-01   0e+00  150      0.7958099  0.5863334&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   1e-01   1e-04   50      0.7953707  0.5854209&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   1e-01   1e-04  100      0.7963228  0.5873658&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   1e-01   1e-04  150      0.7963228  0.5873658&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   1e-01   1e-01   50      0.7987849  0.5923712&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   1e-01   1e-01  100      0.8034709  0.6018293&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   1e-01   1e-01  150      0.8049729  0.6047501&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; Tuning parameter &#x27;eta&#x27; was held constant at a value of 0.3&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; Accuracy was used to select the optimal model using the largest value.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; The final values used for the model were nrounds = 150, lambda = 0.1, alpha = 0.1&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;  and eta = 0.3.&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;h3 id=&quot;extract-feature-importance&quot;&gt;Extract feature importance&lt;&#x2F;h3&gt;
+&lt;p&gt;Since we are using the &lt;code&gt;caret&lt;&#x2F;code&gt; package we can use the built in function to extract feature importance, or the function from the &lt;code&gt;xgboost&lt;&#x2F;code&gt; package. We will do both.&lt;&#x2F;p&gt;
+&lt;h4 id=&quot;caret-feature-importance&quot;&gt;&lt;code&gt;caret&lt;&#x2F;code&gt; feature importance&lt;&#x2F;h4&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;nv&#x27;&gt;caret_imp&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;pkg&#x2F;caret&#x2F;man&#x2F;varImp.html&#x27;&gt;varImp&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;xgb_fit&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; Warning in value[[3L]](cond): The model had been generated by XGBoost version 1.0.0 or earlier and was loaded from a RDS file. We strongly ADVISE AGAINST using saveRDS() function, to ensure that your model can be read in current and upcoming XGBoost releases. Please use xgb.save() instead to preserve models for the long term. For more details and explanation, see https:&#x2F;&#x2F;xgboost.readthedocs.io&#x2F;en&#x2F;latest&#x2F;tutorials&#x2F;saving_model.html&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; [16:44:09] WARNING: amalgamation&#x2F;..&#x2F;src&#x2F;learner.cc:940: Loading model from XGBoost &amp;lt; 1.0.0, consider saving it again for improved compatibility&lt;&#x2F;span&gt;
+&lt;span class=&#x27;nv&#x27;&gt;caret_imp&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; xgbLinear variable importance&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   only 20 most important variables shown (out of 60)&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;     Overall&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; V11 100.000&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; V45  26.941&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; V16  24.354&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; V21  21.665&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; V51  18.798&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; V4   18.140&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; V48  14.366&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; V9   12.607&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; V31  12.489&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; V27  12.347&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; V15  11.269&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; V34   9.125&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; V37   8.805&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; V20   8.792&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; V52   8.114&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; V28   7.162&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; V32   5.897&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; V55   4.584&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; V17   4.490&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; V49   4.129&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;h4 id=&quot;xgboost-feature-importance&quot;&gt;&lt;code&gt;xgboost&lt;&#x2F;code&gt; feature importance&lt;&#x2F;h4&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;nv&#x27;&gt;xgb_imp&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;pkg&#x2F;xgboost&#x2F;man&#x2F;xgb.importance.html&#x27;&gt;xgb.importance&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;feature_names &lt;span class=&#x27;o&#x27;&gt;=&lt;&#x2F;span&gt; &lt;span class=&#x27;nv&#x27;&gt;xgb_fit&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;$&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;finalModel&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;$&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;feature_names&lt;&#x2F;span&gt;,
+               model &lt;span class=&#x27;o&#x27;&gt;=&lt;&#x2F;span&gt; &lt;span class=&#x27;nv&#x27;&gt;xgb_fit&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;$&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;finalModel&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+
+&lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;utils&#x2F;head.html&#x27;&gt;head&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;xgb_imp&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;    Feature       Gain      Cover  Frequency&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; 1:     V11 0.25619825 0.12851518 0.03283582&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; 2:     V45 0.06902206 0.04458378 0.03582090&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; 3:     V16 0.06239349 0.04163116 0.01492537&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; 4:     V21 0.05550596 0.03471532 0.02686567&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; 5:     V51 0.04816044 0.04527491 0.05373134&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; 6:      V4 0.04647539 0.03484924 0.03880597&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;h3 id=&quot;plotting-feature-importance&quot;&gt;Plotting feature importance&lt;&#x2F;h3&gt;
+&lt;h4 id=&quot;caret&quot;&gt;caret&lt;&#x2F;h4&gt;
+&lt;p&gt;You have a few options when it comes to plotting feature importance. You can call plot on the saved object from caret as follows:&lt;&#x2F;p&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;r-spatial.github.io&#x2F;sf&#x2F;reference&#x2F;plot.html&#x27;&gt;plot&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;caret_imp&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;img src=&quot;figs&#x2F;unnamed-chunk-8-1.png&quot; width=&quot;700px&quot; style=&quot;display: block; margin: auto;&quot; &#x2F;&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;ggplot2.tidyverse.org&#x2F;reference&#x2F;ggplot.html&#x27;&gt;ggplot&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;caret_imp&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;+&lt;&#x2F;span&gt;
+  &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;ggplot2.tidyverse.org&#x2F;reference&#x2F;ggtheme.html&#x27;&gt;theme_minimal&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;img src=&quot;figs&#x2F;unnamed-chunk-9-1.png&quot; width=&quot;700px&quot; style=&quot;display: block; margin: auto;&quot; &#x2F;&gt;
+&lt;&#x2F;div&gt;
+&lt;h4 id=&quot;xgboost&quot;&gt;&lt;code&gt;xgboost&lt;&#x2F;code&gt;&lt;&#x2F;h4&gt;
+&lt;p&gt;You can use the plot functionality from &lt;code&gt;xgboost&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;pkg&#x2F;xgboost&#x2F;man&#x2F;xgb.plot.importance.html&#x27;&gt;xgb.plot.importance&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;xgb_imp&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;img src=&quot;figs&#x2F;unnamed-chunk-10-1.png&quot; width=&quot;700px&quot; style=&quot;display: block; margin: auto;&quot; &#x2F;&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;Or use their ggplot feature&lt;&#x2F;p&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;pkg&#x2F;xgboost&#x2F;man&#x2F;xgb.plot.importance.html&#x27;&gt;xgb.ggplot.importance&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;xgb_imp&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+</content>
+        
+    </entry>
+</feed>

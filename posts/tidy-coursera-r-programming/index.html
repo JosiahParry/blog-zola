@@ -1,0 +1,768 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            Coursera R-Programming: Week 2 Problems | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+
+        <!-- Determine theme before loading syntax highlighting -->
+        <script>
+            (() => {
+                const stored = localStorage.getItem("themeMode");
+                // Use stored preference if exists, otherwise always default to dark
+                const isDark = stored ? stored === "dark" : true;
+
+                if (isDark) {
+                    document.documentElement.classList.add("dark");
+                }
+            })();
+        </script>
+
+        <!-- Syntax highlighting themes -->
+        <link rel="stylesheet" href="https://josiah.rs/syntax-dark.css" id="syntax-dark" />
+        <link rel="stylesheet" href="https://josiah.rs/syntax-light.css" id="syntax-light" />
+
+        <!-- KaTeX for math rendering -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        />
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-semibold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4 relative">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-sm bg-muted/50 border border-border"
+                id="search-input"
+            />
+            <div
+                id="search-results"
+                class="hidden absolute top-full left-4 -mt-1 w-96 max-h-96 overflow-y-auto bg-background border border-border rounded-lg shadow-lg z-50 p-2"
+            ></div>
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-2 text-sm pl-3 transition-colors font-medium border-l-2 border-primary -ml-px bg-sidebar-accent"
+                    >
+                        Posts
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Socials -->
+            <div
+                class="mt-4 block py-2 transition-colors font-medium px-3 text-sm bg-sidebar-accent"
+            >
+                <h2
+                    class="text-sm font-medium tracking-tight mb-2 text-muted-foreground border-b border-muted-foreground/20 pb-1"
+                >
+                    Socials
+                </h2>
+                <ul class="space-y-1.5">
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <polygon
+                                points="160 128 112 96 112 160 160 128"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M24,128c0,29.91,3.07,47.45,5.41,56.47A16,16,0,0,0,39,195.42C72.52,208.35,128,208,128,208s55.48.35,89-12.58a16,16,0,0,0,9.63-10.95c2.34-9,5.41-26.56,5.41-56.47s-3.07-47.45-5.41-56.47a16,16,0,0,0-9.63-11C183.48,47.65,128,48,128,48s-55.48-.35-89,12.58a16,16,0,0,0-9.63,11C27.07,80.54,24,98.09,24,128Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://www.youtube.com/@josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >YouTube</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <rect
+                                x="32"
+                                y="32"
+                                width="192"
+                                height="192"
+                                rx="8"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="120"
+                                y1="112"
+                                x2="120"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="88"
+                                y1="112"
+                                x2="88"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M120,140a28,28,0,0,1,56,0v36"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <circle cx="88" cy="84" r="12" />
+                        </svg>
+                        <a
+                            href="https://www.linkedin.com/in/josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >LinkedIn</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M119.83,56A52,52,0,0,0,76,32a51.92,51.92,0,0,0-3.49,44.7A49.28,49.28,0,0,0,64,104v8a48,48,0,0,0,48,48h48a48,48,0,0,0,48-48v-8a49.28,49.28,0,0,0-8.51-27.3A51.92,51.92,0,0,0,196,32a52,52,0,0,0-43.83,24Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,232V192a32,32,0,0,1,32-32h0a32,32,0,0,1,32,32v40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,208H72a32,32,0,0,1-32-32A32,32,0,0,0,8,144"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="http://github.com/josiahparry/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >GitHub</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M160,224H72a32,32,0,0,1-32-32V72A32,32,0,0,1,72,40H184a32,32,0,0,1,32,32v72a32,32,0,0,1-32,32H40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M128,136V104a24,24,0,0,0-48,0v32"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M176,136V104a24,24,0,0,0-48,0"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://fosstodon.org/@josi"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Mastodon</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                            class="w-4 h-4"
+                            fill="currentColor"
+                        >
+                            <path
+                                d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.698-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948"
+                            />
+                        </svg>
+                        <a
+                            href="https://bsky.app/profile/josiahparry.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Bluesky</a
+                        >
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">Coursera R-Programming: Week 2 Problems</h1>
+
+         
+        <div class="flex flex-wrap gap-2 mb-4">
+            
+            <a
+                href="/categories/R"
+                class="badge-secondary cursor pointer"
+                >R</a
+            >
+            
+            <a
+                href="/categories/tutorial"
+                class="badge-secondary cursor pointer"
+                >tutorial</a
+            >
+            
+        </div>
+         
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >April 14, 2018</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><p>Over the past several weeks I have been helping students, career professionals, and people of other backgrounds learn R. During this time one this has become apparent, people are teaching the old paradigm of R and avoiding the tidyverse all together.</p>
+<p>I recently had a student reach out to me in need of help with the first programming assignment from the <a href="https://www.coursera.org/learn/r-programming">Coursera R-Programming</a> course (part of the Johns Hopkins Data Science Specialization). This particular student was struggling with combining the her new knowledge of R data types, conditional statements, looping, control statements, scoping, and functions to solve the assignment problem set. I provided her with a walk through of each question in base R, the style of the course. I couldn't help but empathize with her as I too learned the long way first. However I thought that she shouldn't be learning the hard way first (see David Robinson's <a href="http://varianceexplained.org/r/teach-hard-way/">blog post</a>, <em>"Don't teach students the hard way first"</em>), she should be learning the effective way.</p>
+<p>In my written response to her, I gave her solutions to her problems in base R and using the tidyverse. Here, I will go over the problems and adress them from a tidy perspective. This will not serve as a full introduction to the tidyverse. For an introduction and a reason why the tidyverse is superior to base R, I leave you with <a href="http://stat545.com/block009_dplyr-intro.html"><strong>Stat 545</strong>: <em>Introduction to dplyr</em></a></p>
+<p>The assignment utilizes a directory of data called <code>specdata</code> which can be downloaded <a href="https://d396qusza40orc.cloudfront.net/rprog%2Fdata%2Fspecdata.zip"><strong>here</strong></a>, and describes it:</p>
+<blockquote>
+<p>The zip file contains 332 comma-separated-value (CSV) files containing pollution monitoring data for fine particulate matter (PM) air pollution at 332 locations in the United States. Each file contains data from a single monitor and the ID number for each monitor is contained in the file name. For example, data for monitor 200 is contained in the file "200.csv". Each file contains three variables:</p>
+</blockquote>
+<blockquote>
+<ul>
+<li><strong>Date</strong>: the date of the observation in <code>YYYY-MM-DD</code> format (year-month-day)</li>
+<li><strong>sulfate</strong>: the level of sulfate PM in the air on that date (measured in micrograms per cubic meter)</li>
+<li><strong>nitrate</strong>: the level of nitrate PM in the air on that date (measured in micrograms per cubic meter)</li>
+</ul>
+</blockquote>
+<blockquote>
+<p>For this programming assignment you will need to unzip this file and create the directory 'specdata'. Once you have unzipped the zip file, do not make any modifications to the files in the 'specdata' directory. In each file you'll notice that there are many days where either sulfate or nitrate (or both) are missing (coded as NA). This is common with air pollution monitoring data in the United States.</p>
+</blockquote>
+<hr />
+<h1 id="part-i">Part I</h1>
+<p>Problem 1:</p>
+<blockquote>
+<p>Write a function named 'pollutantmean' that calculates the mean of a pollutant (sulfate or nitrate) across a specified list of monitors. The function 'pollutantmean' takes three arguments: 'directory', 'pollutant', and 'id'. Given a vector monitor ID numbers, 'pollutantmean' reads that monitors' particulate matter data from the directory specified in the 'directory' argument and returns the mean of the pollutant across all of the monitors, ignoring any missing values coded as NA. A prototype of the function is as follows</p>
+</blockquote>
+<pre class="z-code"><code><span class="z-text z-plain"> pollutantmean &lt;- function(directory, pollutant, id = 1:332){
+</span><span class="z-text z-plain">    ## &#39;directory&#39; is a character vector of length 1 indicating
+</span><span class="z-text z-plain">    ## the location of the CSV files
+</span><span class="z-text z-plain">    
+</span><span class="z-text z-plain">    ## &#39;pollutant&#39; is a character vector of length 1 indicating
+</span><span class="z-text z-plain">    ## the name of the pollutant for which we will calculate the 
+</span><span class="z-text z-plain">    ## mean; either &quot;sulfate&quot; or &quot;nitrate&quot;
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">    ## &#39;id&#39; is an integer vector indicating the monitor ID numbers
+</span><span class="z-text z-plain">    ## to be used
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">    ## Return the mean of the pollutant across all monitors list
+</span><span class="z-text z-plain">    ## in the &#39;id&#39; vector (ignoring NA values)
+</span><span class="z-text z-plain">    ## NOTE: Do not round the result!
+</span><span class="z-text z-plain">}
+</span></code></pre>
+<p>Before we tackle the function, I believe the best approach is to first solve the problem in a regular script. This problem has four clear steps:</p>
+<ol>
+<li>Identify files in the directory</li>
+<li>Subset files based on provided ID</li>
+<li>Read the files</li>
+<li>Calculate and return the mean on the desired column</li>
+</ol>
+<p>This problem gives us a directory of files from which we need to read in the data based on the provided IDs. For the sake of this walk through we will randomly sample 10 values within the range designated in the problem statement (332).</p>
+<p>We will first generate random IDs, then identify all of the files within the specified directory and obtain their file paths using the <a href="https://rdrr.io/r/base/list.files.html"><code>list.files()</code></a> function. After this we will subset our file list based on the IDs, then iterate over our file list and read in each file as a csv using <code>purrr:map_df()</code> combined with <a href="https://readr.tidyverse.org/reference/read_delim.html"><code>readr::read_csv()</code></a>. Fortunately <a href="https://purrr.tidyverse.org/reference/map.html"><code>map_df()</code></a> returns a nice and pretty data frame which lets us avoid having to explicitly bind each unique data frame.</p>
+<h4 id="identify-files">Identify Files</h4>
+<p>Here we create 10 random IDs and store them in the <code>ids</code> variable. Next we use <a href="https://rdrr.io/r/base/list.files.html"><code>list.files()</code></a> to look within the <code>specdata</code> folder that we downloaded above. Everyone's path will most likely be different. Be sure to obtain the correct file path---help for <a href="http://osxdaily.com/2013/06/19/copy-file-folder-path-mac-os-x/">Mac</a>.</p>
+<p>Next we identify the files we need based on the sampled <code>ids</code> and store the subset in the <code>files_filtered</code> variable. We use the values of the <code>ids</code> to locate the file paths positionally. For example, ID number 1 is the first file, number 10 is the tenth, etc.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'># Load our handy dandy functions</span>
+<span class='kr'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='o'>(</span><span class='nv'><a href='https://tidyverse.tidyverse.org'>tidyverse</a></span><span class='o'>)</span>
+
+<span class='c'># 10 random IDs in ID range</span>
+<span class='nv'>ids</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span><span class='o'>(</span><span class='m'>1</span><span class='o'>:</span><span class='m'>332</span>, <span class='m'>10</span><span class='o'>)</span>
+
+<span class='c'># Identify all files within the directory</span>
+<span class='nv'>files</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span><span class='o'>(</span><span class='s'>"../../data/specdata"</span>, full.names <span class='o'>=</span> <span class='kc'>TRUE</span><span class='o'>)</span>
+
+<span class='c'># Subset the data</span>
+<span class='nv'>files_filtered</span> <span class='o'>&lt;-</span> <span class='nv'>files</span><span class='o'>[</span><span class='nv'>ids</span><span class='o'>]</span>
+
+<span class='c'># View the files to verify</span>
+<span class='nf'><a href='https://rdrr.io/r/base/paste.html'>paste</a></span><span class='o'>(</span><span class='nv'>ids</span>, <span class='nv'>files_filtered</span><span class='o'>)</span></code></pre>
+</div>
+<h4 id="reading-the-files">Reading the Files</h4>
+<p>Now that we have identified the files that we are going to read in, we can use <code>purrr:map_df()</code> to apply the <a href="https://readr.tidyverse.org/reference/read_delim.html"><code>readr::read_csv()</code></a> function to each value of <code>files_filtered</code> and return a data frame (hence the <code>_df()</code> suffix). We supply additional arguments to <a href="https://readr.tidyverse.org/reference/read_delim.html"><code>read_csv()</code></a> to ensure that every column is read in properly.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'># Read in the subset of the data. Notice the brackets after files[]</span>
+<span class='nv'>specdata</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://purrr.tidyverse.org/reference/map.html'>map_df</a></span><span class='o'>(</span><span class='nv'>files_filtered</span>, <span class='nv'>read_csv</span>, 
+                   col_types <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='o'>(</span>
+                     <span class='nf'><a href='https://readr.tidyverse.org/reference/parse_datetime.html'>col_date</a></span><span class='o'>(</span><span class='o'>)</span>,
+                     <span class='nf'><a href='https://readr.tidyverse.org/reference/parse_atomic.html'>col_double</a></span><span class='o'>(</span><span class='o'>)</span>,
+                     <span class='nf'><a href='https://readr.tidyverse.org/reference/parse_atomic.html'>col_double</a></span><span class='o'>(</span><span class='o'>)</span>,
+                     <span class='nf'><a href='https://readr.tidyverse.org/reference/parse_atomic.html'>col_integer</a></span><span class='o'>(</span><span class='o'>)</span>
+                   <span class='o'>)</span><span class='o'>)</span>
+
+<span class='nf'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='o'>(</span><span class='nv'>specdata</span><span class='o'>)</span></code></pre>
+</div>
+<p>Next, we get to utilize some <code>dplyr</code> magic. Here we take the <code>specdata</code> object we created from reading in our files, deselct the <code>Date</code> column, then utilize <a href="https://dplyr.tidyverse.org/reference/summarise_all.html"><code>summarise_if()</code></a> to apply the <a href="https://rdrr.io/r/base/mean.html"><code>mean()</code></a> function to our data. <a href="https://dplyr.tidyverse.org/reference/summarise_all.html"><code>summarise_if()</code></a> requires that we provide a logical statement as the first argument. <em>If</em> (hence the <code>_if()</code> suffix) the logical statement evaluates to <code>TRUE</code> on a column then it will apply a list of functions to those columns where the statement evaluated to <code>TRUE</code>. We can also specify additional arguments to the functions. Here we specify <code>na.rm = TRUE</code> for handling missing values.</p>
+<p>In this case, we are checking to see if our columns are of the data type <code>double</code> using the <a href="https://rdrr.io/r/base/double.html"><code>is.double()</code></a> function. If you're wondering why we didn't use <a href="https://rdrr.io/r/base/numeric.html"><code>is.numeric()</code></a>, it's because the <code>ID</code> column is an integer which is considered numeric.</p>
+<p>If we wanted to take the underlying vector of one of the columns, we can also, use <code>dplyr::pull(col_name)</code>. This will be helpful later when we want to obtain the mean of just one column.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'># Obtain mean nitrate</span>
+<span class='nv'>specdata</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='o'>(</span><span class='o'>-</span><span class='nv'>Date</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/summarise_all.html'>summarise_if</a></span><span class='o'>(</span><span class='nv'>is.double</span>, <span class='nv'>mean</span>, na.rm <span class='o'>=</span> <span class='kc'>TRUE</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='c'># Pull just the sulfate column</span>
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/pull.html'>pull</a></span><span class='o'>(</span><span class='nv'>sulfate</span><span class='o'>)</span>
+
+<span class='nv'>specdata</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='o'>(</span><span class='o'>-</span><span class='nv'>Date</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/summarise_all.html'>summarise_if</a></span><span class='o'>(</span><span class='nv'>is.double</span>, <span class='nv'>mean</span>, na.rm <span class='o'>=</span> <span class='kc'>TRUE</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='c'># Pull just the nitrate column</span>
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/pull.html'>pull</a></span><span class='o'>(</span><span class='nv'>nitrate</span><span class='o'>)</span>
+</code></pre>
+</div>
+<p>Now that we have all of the tools, we can put this together into a single function, which I will call <code>pollutant_mean()</code> to somewhat adhere---functions should take the name of verbs---to the tidyverse style guide.</p>
+<p>Here we have three arguments:</p>
+<ul>
+<li><code>directory</code>: Where to look for the files</li>
+<li><code>pollutant</code>: Which pollutant (nitrate or sulfate) to evaluate
+<ul>
+<li>This needs to be a character value unless we want to get into <a href="https://dplyr.tidyverse.org/articles/programming.html">tidyeval</a>, which frankly I will leave to the professionals. But I will provide an alternative solution at the end that doesn't require quoted <code>pollutant</code> names.</li>
+</ul>
+</li>
+<li><code>id</code>: Which monitoring stations we should look at</li>
+</ul>
+<p>Within the function we take everything we did in the above steps but generalize it to a function. We identify the files in the directory provided (<code>specdata</code>), subset the files positionally based on the provided <code>id</code> vector, and then iterate over the file names and read them in with <a href="https://purrr.tidyverse.org/reference/map.html"><code>map_df()</code></a> and <a href="https://readr.tidyverse.org/reference/read_delim.html"><code>read_csv()</code></a>.</p>
+<p>Next we take our data and calculate the mean on both <code>sulfate</code> and <code>nitrate</code> columns. We then <a href="https://dplyr.tidyverse.org/reference/pull.html"><code>pull()</code></a> the specified column from the <code>pollutant</code> argument and then <a href="https://rdrr.io/r/base/function.html"><code>return()</code></a> that value.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'>
+<span class='nv'>pollutant_mean</span> <span class='o'>&lt;-</span> <span class='kr'>function</span><span class='o'>(</span><span class='nv'>directory</span>, <span class='nv'>pollutant</span>, <span class='nv'>id</span> <span class='o'>=</span> <span class='m'>1</span><span class='o'>:</span><span class='m'>332</span><span class='o'>)</span> <span class='o'>&#123;</span>
+  <span class='nv'>files</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span><span class='o'>(</span><span class='nv'>directory</span>, full.names <span class='o'>=</span> <span class='kc'>TRUE</span><span class='o'>)</span>
+  <span class='nv'>files_filtered</span> <span class='o'>&lt;-</span> <span class='nv'>files</span><span class='o'>[</span><span class='nv'>id</span><span class='o'>]</span>
+  <span class='nv'>specdata</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://purrr.tidyverse.org/reference/map.html'>map_df</a></span><span class='o'>(</span><span class='nv'>files_filtered</span>, <span class='nv'>read_csv</span>, 
+                     col_types <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='o'>(</span>
+                       <span class='nf'><a href='https://readr.tidyverse.org/reference/parse_datetime.html'>col_date</a></span><span class='o'>(</span><span class='o'>)</span>,
+                       <span class='nf'><a href='https://readr.tidyverse.org/reference/parse_atomic.html'>col_double</a></span><span class='o'>(</span><span class='o'>)</span>,
+                       <span class='nf'><a href='https://readr.tidyverse.org/reference/parse_atomic.html'>col_double</a></span><span class='o'>(</span><span class='o'>)</span>,
+                       <span class='nf'><a href='https://readr.tidyverse.org/reference/parse_atomic.html'>col_integer</a></span><span class='o'>(</span><span class='o'>)</span>
+                     <span class='o'>)</span><span class='o'>)</span>
+  
+  <span class='nv'>specdata</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='nf'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='o'>(</span><span class='o'>-</span><span class='nv'>Date</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='nf'><a href='https://dplyr.tidyverse.org/reference/summarise_all.html'>summarise_if</a></span><span class='o'>(</span><span class='nv'>is.double</span>, <span class='nv'>mean</span>, na.rm <span class='o'>=</span> <span class='kc'>TRUE</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='nf'><a href='https://dplyr.tidyverse.org/reference/pull.html'>pull</a></span><span class='o'>(</span><span class='nv'>pollutant</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='kr'><a href='https://rdrr.io/r/base/function.html'>return</a></span><span class='o'>(</span><span class='o'>)</span>
+
+<span class='o'>&#125;</span></code></pre>
+</div>
+<p>Here we can test out the function with both types of pollutants and different <code>id</code> values.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'>pollutant_mean</span><span class='o'>(</span>directory <span class='o'>=</span> <span class='s'>"../../data/specdata"</span>, pollutant <span class='o'>=</span> <span class='s'>"sulfate"</span>, id <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span><span class='o'>(</span><span class='m'>1</span><span class='o'>:</span><span class='m'>332</span>, <span class='m'>20</span><span class='o'>)</span><span class='o'>)</span>
+<span class='c'>#pollutant_mean("../../data/specdata", "nitrate", 2)</span></code></pre>
+</div>
+<hr />
+<h1 id="part-ii">Part II:</h1>
+<p>Let us continue to the second problem in the problem set.</p>
+<p>Problem 2:</p>
+<blockquote>
+<p>Write a function that reads a directory full of files and reports the number of completely observed cases in each data file. The function should return a data frame where the first column is the name of the file and the second column is the number of complete cases.</p>
+</blockquote>
+<p>The assignment provides an example function format, but I think it to be a bit misleading. So I will go about this in the way I think is best. We will work on creating a function called <code>complete_spec_cases()</code> which will take only two arguments, <code>directory</code>, and <code>id</code>. <code>directory</code> and <code>id</code> will be used in the the same way as the previous problem.</p>
+<p>For this problem our goal is to identify how many complete cases there are by provided ID. This should be exceptionally simple. We will have to identify our files, subset them, and read them in the same way as before. Next we can identify complete cases by piping our <code>specdata</code> object to <a href="https://rdrr.io/r/stats/na.fail.html"><code>na.omit()</code></a> which will remove any row with a missing value. Next, we have to group by the <code>ID</code> column and pipe our grouped data frame to <a href="https://dplyr.tidyverse.org/reference/count.html"><code>count()</code></a> which will count how many observations there are by group. We will then return this data frame to the user.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>complete_spec_cases</span> <span class='o'>&lt;-</span> <span class='kr'>function</span><span class='o'>(</span><span class='nv'>directory</span>, <span class='nv'>id</span> <span class='o'>=</span> <span class='m'>1</span><span class='o'>:</span><span class='m'>332</span><span class='o'>)</span> <span class='o'>&#123;</span>
+
+  <span class='nv'>files</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span><span class='o'>(</span><span class='nv'>directory</span>, full.names <span class='o'>=</span> <span class='kc'>TRUE</span><span class='o'>)</span>
+  
+  <span class='nv'>specdata</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://purrr.tidyverse.org/reference/map.html'>map_df</a></span><span class='o'>(</span><span class='nv'>files</span><span class='o'>[</span><span class='nv'>id</span><span class='o'>]</span>, <span class='nv'>read_csv</span>,
+                     col_types <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='o'>(</span>
+                       <span class='nf'><a href='https://readr.tidyverse.org/reference/parse_datetime.html'>col_date</a></span><span class='o'>(</span><span class='o'>)</span>,
+                       <span class='nf'><a href='https://readr.tidyverse.org/reference/parse_atomic.html'>col_double</a></span><span class='o'>(</span><span class='o'>)</span>,
+                       <span class='nf'><a href='https://readr.tidyverse.org/reference/parse_atomic.html'>col_double</a></span><span class='o'>(</span><span class='o'>)</span>,
+                       <span class='nf'><a href='https://readr.tidyverse.org/reference/parse_atomic.html'>col_integer</a></span><span class='o'>(</span><span class='o'>)</span>
+                     <span class='o'>)</span><span class='o'>)</span>
+  
+  <span class='nv'>complete_specdata</span> <span class='o'>&lt;-</span> <span class='nv'>specdata</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='nf'><a href='https://rdrr.io/r/stats/na.fail.html'>na.omit</a></span><span class='o'>(</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='nf'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='o'>(</span><span class='nv'>ID</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='nf'><a href='https://dplyr.tidyverse.org/reference/summarise.html'>summarise</a></span><span class='o'>(</span>nobs <span class='o'>=</span> <span class='nf'><a href='https://dplyr.tidyverse.org/reference/context.html'>n</a></span><span class='o'>(</span><span class='o'>)</span><span class='o'>)</span>
+  
+  <span class='kr'><a href='https://rdrr.io/r/base/function.html'>return</a></span><span class='o'>(</span><span class='nv'>complete_specdata</span><span class='o'>)</span>
+<span class='o'>&#125;</span></code></pre>
+</div>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'>complete_spec_cases</span><span class='o'>(</span><span class='s'>"../../data/specdata"</span>, id <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span><span class='o'>(</span><span class='m'>1</span><span class='o'>:</span><span class='m'>332</span>, <span class='m'>20</span><span class='o'>)</span><span class='o'>)</span></code></pre>
+</div>
+<hr />
+<h1 id="part-iii">Part III:</h1>
+<p>This final problem is probably the most complicated, but with the method we just used above and with a bit more help from the <code>purrr</code> and <code>dplyr</code> packages, we can do this no problem.</p>
+<p>Problem 3:</p>
+<blockquote>
+<p>Write a function that takes a directory of data files and a threshold for complete cases and calculates the correlation between sulfate and nitrate for monitor locations where the <em>number of completely observed cases</em> (on all variables) is greater than the threshold. The function should return a vector of correlations for the monitors that meet the threshold requirement. If no monitors meet the threshold requirement, then the function should return a numeric vector of length 0. A prototype of this function follows:</p>
+</blockquote>
+<pre class="z-code"><code><span class="z-text z-plain">Correct &lt;- function(directory, threshold = 0){
+</span><span class="z-text z-plain">    ## &#39;directory&#39; is a character vector of length 1 indicating
+</span><span class="z-text z-plain">    ## the location of the CSV files
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">    ## &#39;threshold&#39; is a numeric vector of length 1 indicating the
+</span><span class="z-text z-plain">    ## number of completely observed observations (on all
+</span><span class="z-text z-plain">    ## variables) required to compute the correlation between
+</span><span class="z-text z-plain">    ## nitrate and sulfate; the default is 0
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">    ## Return a numeric vector of correlations
+</span><span class="z-text z-plain">    ## NOTE: Do not round the result!
+</span><span class="z-text z-plain">}
+</span></code></pre>
+<p>Let keep this simple. The above statement essentially is asking that we find the correlation between <code>nitrate</code> and <code>sulfate</code> for each monitoring station (ID). But there is a catch! Each ID must meet a specified threshold of complete cases, and if none of the monitors meet the requirement the function must return a <code>numeric(0)</code>.</p>
+<p>The way we will structure this function will be to first read in the data---as we have done twice now, except this time there will be no subsetting of IDs. Then we need to identify the number of complete cases by ID---as we did in problem 2---and identify the stations that meet the threshold requirement. At this point we will use an <code>if</code> statement to check if we have at least 1 monitoring station that meets our threshold, if we do not, we return the <code>numeric(0)</code>---there is most likely a more tidy way to do this, but I am not aware. If we have at least 1 monitoring station that meets the specified threshold we will use an <a href="https://dplyr.tidyverse.org/reference/mutate-joins.html"><code>inner_join()</code></a> to make sure that <code>specdata</code> contains only those IDs that meet the requirement.</p>
+<p>For the sake of this example, we will continue to use the <code>specdata</code> object we created in previous examples, and we will set our threshold to <code>100.</code> Once we identify the stations with the proper number of counts (<code>&gt; 100</code>), we will store that data frame in an object called <code>id_counts</code></p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'>
+<span class='nv'>id_counts</span> <span class='o'>&lt;-</span> <span class='nv'>specdata</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='nf'><a href='https://rdrr.io/r/stats/na.fail.html'>na.omit</a></span><span class='o'>(</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='nf'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='o'>(</span><span class='nv'>ID</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='nf'><a href='https://dplyr.tidyverse.org/reference/count.html'>count</a></span><span class='o'>(</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='nf'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='o'>(</span><span class='nv'>n</span> <span class='o'>&gt;</span> <span class='m'>100</span><span class='o'>)</span> 
+  
+  <span class='kr'>if</span> <span class='o'>(</span><span class='nf'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='o'>(</span><span class='nv'>id_counts</span><span class='o'>)</span> <span class='o'>&lt;</span> <span class='m'>1</span><span class='o'>)</span> <span class='o'>&#123;</span>
+    <span class='kr'><a href='https://rdrr.io/r/base/function.html'>return</a></span><span class='o'>(</span><span class='nf'><a href='https://rdrr.io/r/base/numeric.html'>numeric</a></span><span class='o'>(</span><span class='m'>0</span><span class='o'>)</span><span class='o'>)</span>
+  <span class='o'>&#125;</span> <span class='kr'>else</span> <span class='o'>&#123;</span>
+    <span class='nf'><a href='https://rdrr.io/r/base/print.html'>print</a></span><span class='o'>(</span><span class='s'>"All is well."</span><span class='o'>)</span>
+  <span class='o'>&#125;</span>
+
+  <span class='nv'>specdata</span> <span class='o'>&lt;-</span> <span class='nv'>id_counts</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='nf'><a href='https://dplyr.tidyverse.org/reference/mutate-joins.html'>inner_join</a></span><span class='o'>(</span><span class='nv'>specdata</span>, by <span class='o'>=</span> <span class='s'>"ID"</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span>
+    <span class='nf'><a href='https://rdrr.io/r/stats/na.fail.html'>na.omit</a></span><span class='o'>(</span><span class='o'>)</span> 
+  
+  <span class='nv'>specdata</span></code></pre>
+</div>
+<p>This is where it gets kind of funky. Once we have filtered down our data set, we need to calculate the correlations for each ID. The way that we do this is by nesting our data frame on the <code>ID</code> column. Calling <code>nest(-ID)</code> allows us to, for each value of ID, create a data frame for just those rows where the <code>ID</code> is the same. We will then have a new list type column where each value is actually a data frame. Let's check out what this looks like before we hop into the function.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>specdata</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://tidyr.tidyverse.org/reference/nest.html'>nest</a></span><span class='o'>(</span><span class='o'>-</span><span class='nv'>ID</span><span class='o'>)</span></code></pre>
+</div>
+<p>Now that we know how to nest our data, we need to calculate the correlations for each row (ID value). We will do this by combining <a href="https://dplyr.tidyverse.org/reference/mutate.html"><code>mutate()</code></a> and <a href="https://purrr.tidyverse.org/reference/map.html"><code>map()</code></a>. Here <code>.x</code> references the data that is within each nested tibble. To learn more about <code>purrr</code> I recommend the <a href="http://r4ds.had.co.nz/iteration.html">chapter</a> on iteration from <em>R For Data Science</em>.</p>
+<p>After we have done our calculations we undo our nesting using <a href="https://tidyr.tidyverse.org/reference/nest.html"><code>unnest()</code></a> on the new column we created, and deselect the <code>data</code> column.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>specdata</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://rdrr.io/r/stats/na.fail.html'>na.omit</a></span><span class='o'>(</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='nf'><a href='https://tidyr.tidyverse.org/reference/nest.html'>nest</a></span><span class='o'>(</span><span class='o'>-</span><span class='nv'>ID</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='nf'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='o'>(</span>correlation <span class='o'>=</span> <span class='nf'><a href='https://purrr.tidyverse.org/reference/map.html'>map</a></span><span class='o'>(</span><span class='nv'>data</span>, <span class='o'>~</span><span class='nf'><a href='https://rdrr.io/r/stats/cor.html'>cor</a></span><span class='o'>(</span><span class='nv'>.x</span><span class='o'>$</span><span class='nv'>sulfate</span>, <span class='nv'>.x</span><span class='o'>$</span><span class='nv'>nitrate</span><span class='o'>)</span><span class='o'>)</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://tidyr.tidyverse.org/reference/nest.html'>unnest</a></span><span class='o'>(</span><span class='nv'>correlation</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='o'>(</span><span class='o'>-</span><span class='nv'>data</span><span class='o'>)</span></code></pre>
+</div>
+<p>We can now place these above examples within a new function called <code>pollutant_cor()</code>.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>pollutant_cor</span> <span class='o'>&lt;-</span> <span class='kr'>function</span><span class='o'>(</span><span class='nv'>directory</span>, <span class='nv'>threshold</span> <span class='o'>=</span> <span class='m'>0</span><span class='o'>)</span> <span class='o'>&#123;</span>
+  <span class='nv'>files</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/r/base/list.files.html'>list.files</a></span><span class='o'>(</span><span class='nv'>directory</span>, full.names <span class='o'>=</span> <span class='kc'>TRUE</span><span class='o'>)</span>
+  <span class='nv'>specdata</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://purrr.tidyverse.org/reference/map.html'>map_df</a></span><span class='o'>(</span><span class='nv'>files</span>, <span class='nv'>read_csv</span>, 
+                     col_types <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='o'>(</span>
+                       <span class='nf'><a href='https://readr.tidyverse.org/reference/parse_datetime.html'>col_date</a></span><span class='o'>(</span><span class='o'>)</span>,
+                       <span class='nf'><a href='https://readr.tidyverse.org/reference/parse_atomic.html'>col_double</a></span><span class='o'>(</span><span class='o'>)</span>,
+                       <span class='nf'><a href='https://readr.tidyverse.org/reference/parse_atomic.html'>col_double</a></span><span class='o'>(</span><span class='o'>)</span>,
+                       <span class='nf'><a href='https://readr.tidyverse.org/reference/parse_atomic.html'>col_integer</a></span><span class='o'>(</span><span class='o'>)</span>
+                     <span class='o'>)</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> <span class='nf'><a href='https://rdrr.io/r/stats/na.fail.html'>na.omit</a></span><span class='o'>(</span><span class='o'>)</span>
+  
+  <span class='nv'>id_counts</span> <span class='o'>&lt;-</span> <span class='nv'>specdata</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='nf'><a href='https://dplyr.tidyverse.org/reference/group_by.html'>group_by</a></span><span class='o'>(</span><span class='nv'>ID</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='nf'><a href='https://dplyr.tidyverse.org/reference/count.html'>count</a></span><span class='o'>(</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='nf'><a href='https://dplyr.tidyverse.org/reference/filter.html'>filter</a></span><span class='o'>(</span><span class='nv'>n</span> <span class='o'>&gt;</span> <span class='nv'>threshold</span><span class='o'>)</span> 
+  
+  <span class='kr'>if</span> <span class='o'>(</span><span class='nf'><a href='https://rdrr.io/r/base/nrow.html'>nrow</a></span><span class='o'>(</span><span class='nv'>id_counts</span><span class='o'>)</span> <span class='o'>&lt;</span> <span class='m'>1</span><span class='o'>)</span> <span class='o'>&#123;</span>
+    <span class='kr'><a href='https://rdrr.io/r/base/function.html'>return</a></span><span class='o'>(</span><span class='nf'><a href='https://rdrr.io/r/base/numeric.html'>numeric</a></span><span class='o'>(</span><span class='m'>0</span><span class='o'>)</span><span class='o'>)</span>
+  <span class='o'>&#125;</span>
+  
+  <span class='nv'>correlations</span> <span class='o'>&lt;-</span> <span class='nv'>id_counts</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='nf'><a href='https://dplyr.tidyverse.org/reference/mutate-joins.html'>inner_join</a></span><span class='o'>(</span><span class='nv'>specdata</span>, by <span class='o'>=</span> <span class='s'>"ID"</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='nf'><a href='https://tidyr.tidyverse.org/reference/nest.html'>nest</a></span><span class='o'>(</span><span class='o'>-</span><span class='nv'>ID</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='nf'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='o'>(</span>correlation <span class='o'>=</span> <span class='nf'><a href='https://purrr.tidyverse.org/reference/map.html'>map</a></span><span class='o'>(</span><span class='nv'>data</span>, <span class='o'>~</span><span class='nf'><a href='https://rdrr.io/r/stats/cor.html'>cor</a></span><span class='o'>(</span><span class='nv'>.x</span><span class='o'>$</span><span class='nv'>sulfate</span>, <span class='nv'>.x</span><span class='o'>$</span><span class='nv'>nitrate</span><span class='o'>)</span><span class='o'>)</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='nf'><a href='https://tidyr.tidyverse.org/reference/nest.html'>unnest</a></span><span class='o'>(</span><span class='nv'>correlation</span><span class='o'>)</span>
+  
+  <span class='kr'><a href='https://rdrr.io/r/base/function.html'>return</a></span><span class='o'>(</span><span class='nv'>correlations</span><span class='o'>)</span>
+
+  
+<span class='o'>&#125;</span></code></pre>
+</div>
+<p>We can now test our function against two different thresholds to see how it reacts.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'>pollutant_cor</span><span class='o'>(</span><span class='s'>"../../data/specdata"</span>, <span class='m'>100</span><span class='o'>)</span></code></pre>
+</div>
+<p>If we set the threshold to 100,000, we should expect a <code>numeric(0)</code>.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'>pollutant_cor</span><span class='o'>(</span><span class='s'>"../../data/specdata"</span>, <span class='m'>100000</span><span class='o'>)</span></code></pre>
+</div>
+<p>It all works!</p>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <!-- Basecoat sidebar component -->
+        <script
+            src="https://josiah.rs/js/basecoat/sidebar.min.js"
+            defer
+        ></script>
+        <!-- Sidebar toggle for mobile -->
+        <script src="https://josiah.rs/js/sidebar-toggle.js" defer></script>
+        <!-- Custom tabs for panel-tabset -->
+        <script src="https://josiah.rs/js/tabs.js" defer></script>
+        <!-- Search functionality -->
+        <script src="https://josiah.rs/js/search.js" defer></script>
+        <script>
+            (() => {
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+
+                    // Toggle syntax highlighting themes via media attribute
+                    const darkSyntax = document.getElementById("syntax-dark");
+                    const lightSyntax = document.getElementById("syntax-light");
+                    if (darkSyntax && lightSyntax) {
+                        darkSyntax.media = dark ? "all" : "not all";
+                        lightSyntax.media = dark ? "not all" : "all";
+                    }
+
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        ></script>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"
+        ></script>
+        
+    </body>
+</html>

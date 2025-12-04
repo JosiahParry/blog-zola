@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            xgboost feature importance | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+
+        <!-- Determine theme before loading syntax highlighting -->
+        <script>
+            (() => {
+                const stored = localStorage.getItem("themeMode");
+                // Use stored preference if exists, otherwise always default to dark
+                const isDark = stored ? stored === "dark" : true;
+
+                if (isDark) {
+                    document.documentElement.classList.add("dark");
+                }
+            })();
+        </script>
+
+        <!-- Syntax highlighting themes -->
+        <link rel="stylesheet" href="https://josiah.rs/syntax-dark.css" id="syntax-dark" />
+        <link rel="stylesheet" href="https://josiah.rs/syntax-light.css" id="syntax-light" />
+
+        <!-- KaTeX for math rendering -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        />
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-semibold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4 relative">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-sm bg-muted/50 border border-border"
+                id="search-input"
+            />
+            <div
+                id="search-results"
+                class="hidden absolute top-full left-4 -mt-1 w-96 max-h-96 overflow-y-auto bg-background border border-border rounded-lg shadow-lg z-50 p-2"
+            ></div>
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-2 text-sm pl-3 transition-colors font-medium border-l-2 border-primary -ml-px bg-sidebar-accent"
+                    >
+                        Posts
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Socials -->
+            <div
+                class="mt-4 block py-2 transition-colors font-medium px-3 text-sm bg-sidebar-accent"
+            >
+                <h2
+                    class="text-sm font-medium tracking-tight mb-2 text-muted-foreground border-b border-muted-foreground/20 pb-1"
+                >
+                    Socials
+                </h2>
+                <ul class="space-y-1.5">
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <polygon
+                                points="160 128 112 96 112 160 160 128"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M24,128c0,29.91,3.07,47.45,5.41,56.47A16,16,0,0,0,39,195.42C72.52,208.35,128,208,128,208s55.48.35,89-12.58a16,16,0,0,0,9.63-10.95c2.34-9,5.41-26.56,5.41-56.47s-3.07-47.45-5.41-56.47a16,16,0,0,0-9.63-11C183.48,47.65,128,48,128,48s-55.48-.35-89,12.58a16,16,0,0,0-9.63,11C27.07,80.54,24,98.09,24,128Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://www.youtube.com/@josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >YouTube</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <rect
+                                x="32"
+                                y="32"
+                                width="192"
+                                height="192"
+                                rx="8"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="120"
+                                y1="112"
+                                x2="120"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="88"
+                                y1="112"
+                                x2="88"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M120,140a28,28,0,0,1,56,0v36"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <circle cx="88" cy="84" r="12" />
+                        </svg>
+                        <a
+                            href="https://www.linkedin.com/in/josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >LinkedIn</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M119.83,56A52,52,0,0,0,76,32a51.92,51.92,0,0,0-3.49,44.7A49.28,49.28,0,0,0,64,104v8a48,48,0,0,0,48,48h48a48,48,0,0,0,48-48v-8a49.28,49.28,0,0,0-8.51-27.3A51.92,51.92,0,0,0,196,32a52,52,0,0,0-43.83,24Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,232V192a32,32,0,0,1,32-32h0a32,32,0,0,1,32,32v40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,208H72a32,32,0,0,1-32-32A32,32,0,0,0,8,144"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="http://github.com/josiahparry/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >GitHub</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M160,224H72a32,32,0,0,1-32-32V72A32,32,0,0,1,72,40H184a32,32,0,0,1,32,32v72a32,32,0,0,1-32,32H40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M128,136V104a24,24,0,0,0-48,0v32"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M176,136V104a24,24,0,0,0-48,0"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://fosstodon.org/@josi"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Mastodon</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                            class="w-4 h-4"
+                            fill="currentColor"
+                        >
+                            <path
+                                d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.698-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948"
+                            />
+                        </svg>
+                        <a
+                            href="https://bsky.app/profile/josiahparry.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Bluesky</a
+                        >
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">xgboost feature importance</h1>
+
+         
+        <div class="flex flex-wrap gap-2 mb-4">
+            
+            <a
+                href="/categories/R"
+                class="badge-secondary cursor pointer"
+                >R</a
+            >
+            
+            <a
+                href="/categories/machine learning"
+                class="badge-secondary cursor pointer"
+                >machine learning</a
+            >
+            
+        </div>
+         
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >December 01, 2018</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><p>This post will go over extracting feature (variable) importance and creating a function for creating a ggplot object for it. I will draw on the simplicity of Chris Albon's post. For steps to do the following in Python, I recommend his <a href="https://chrisalbon.com/machine_learning/trees_and_forests/feature_importance/">post</a>.</p>
+<img alt="Feature Importance by Chris Albon" src="https://chrisalbon.com/images/machine_learning_flashcards/Feature_Importance_print.png"/>
+<p>If you've ever created a decision tree, you've probably looked at measures of feature importance. In the above flashcard, impurity refers to how many times a feature was use and lead to a misclassification. Here, we're looking at the importance of a feature, so how much it helped in the classification or prediction of an outcome.</p>
+<p>This example will draw on the build in data <code>Sonar</code> from the <code>mlbench</code> package.</p>
+<h3 id="prepping-the-environment">Prepping the Environment</h3>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='kr'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='o'>(</span><span class='nv'><a href='https://github.com/topepo/caret/'>caret</a></span><span class='o'>)</span>
+<span class='kr'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='o'>(</span><span class='nv'><a href='https://github.com/dmlc/xgboost'>xgboost</a></span><span class='o'>)</span>
+<span class='kr'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='o'>(</span><span class='nv'><a href='https://tidyverse.tidyverse.org'>tidyverse</a></span><span class='o'>)</span></code></pre>
+</div>
+<h3 id="loading-the-data">Loading the data</h3>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'><a href='https://rdrr.io/r/utils/data.html'>data</a></span><span class='o'>(</span><span class='s'>"Sonar"</span>, package <span class='o'>=</span> <span class='s'>"mlbench"</span><span class='o'>)</span></code></pre>
+</div>
+<h3 id="train-the-decision-tree">Train the decision tree</h3>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>xgb_fit</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/pkg/caret/man/train.html'>train</a></span><span class='o'>(</span><span class='nv'>Class</span> <span class='o'>~</span> <span class='nv'>.</span>,
+                 data <span class='o'>=</span> <span class='nv'>Sonar</span>,
+                 method <span class='o'>=</span> <span class='s'>"xgbLinear"</span><span class='o'>)</span>
+</code></pre>
+</div>
+<div class="highlight">
+</div>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>xgb_fit</span>
+<span class='c'>#&gt; eXtreme Gradient Boosting </span>
+<span class='c'>#&gt; </span>
+<span class='c'>#&gt; 208 samples</span>
+<span class='c'>#&gt;  60 predictor</span>
+<span class='c'>#&gt;   2 classes: 'M', 'R' </span>
+<span class='c'>#&gt; </span>
+<span class='c'>#&gt; No pre-processing</span>
+<span class='c'>#&gt; Resampling: Bootstrapped (25 reps) </span>
+<span class='c'>#&gt; Summary of sample sizes: 208, 208, 208, 208, 208, 208, ... </span>
+<span class='c'>#&gt; Resampling results across tuning parameters:</span>
+<span class='c'>#&gt; </span>
+<span class='c'>#&gt;   lambda  alpha  nrounds  Accuracy   Kappa    </span>
+<span class='c'>#&gt;   0e+00   0e+00   50      0.7954411  0.5856736</span>
+<span class='c'>#&gt;   0e+00   0e+00  100      0.7955067  0.5859968</span>
+<span class='c'>#&gt;   0e+00   0e+00  150      0.7955067  0.5859968</span>
+<span class='c'>#&gt;   0e+00   1e-04   50      0.7931161  0.5807902</span>
+<span class='c'>#&gt;   0e+00   1e-04  100      0.7896880  0.5736899</span>
+<span class='c'>#&gt;   0e+00   1e-04  150      0.7896880  0.5736899</span>
+<span class='c'>#&gt;   0e+00   1e-01   50      0.7974045  0.5899654</span>
+<span class='c'>#&gt;   0e+00   1e-01  100      0.8007978  0.5965433</span>
+<span class='c'>#&gt;   0e+00   1e-01  150      0.8018652  0.5987027</span>
+<span class='c'>#&gt;   1e-04   0e+00   50      0.7936100  0.5817500</span>
+<span class='c'>#&gt;   1e-04   0e+00  100      0.7902008  0.5746993</span>
+<span class='c'>#&gt;   1e-04   0e+00  150      0.7902008  0.5746993</span>
+<span class='c'>#&gt;   1e-04   1e-04   50      0.7916874  0.5777943</span>
+<span class='c'>#&gt;   1e-04   1e-04  100      0.7883283  0.5708511</span>
+<span class='c'>#&gt;   1e-04   1e-04  150      0.7883283  0.5708511</span>
+<span class='c'>#&gt;   1e-04   1e-01   50      0.7974045  0.5899654</span>
+<span class='c'>#&gt;   1e-04   1e-01  100      0.8007978  0.5965433</span>
+<span class='c'>#&gt;   1e-04   1e-01  150      0.8018652  0.5987027</span>
+<span class='c'>#&gt;   1e-01   0e+00   50      0.7937810  0.5824365</span>
+<span class='c'>#&gt;   1e-01   0e+00  100      0.7958099  0.5863334</span>
+<span class='c'>#&gt;   1e-01   0e+00  150      0.7958099  0.5863334</span>
+<span class='c'>#&gt;   1e-01   1e-04   50      0.7953707  0.5854209</span>
+<span class='c'>#&gt;   1e-01   1e-04  100      0.7963228  0.5873658</span>
+<span class='c'>#&gt;   1e-01   1e-04  150      0.7963228  0.5873658</span>
+<span class='c'>#&gt;   1e-01   1e-01   50      0.7987849  0.5923712</span>
+<span class='c'>#&gt;   1e-01   1e-01  100      0.8034709  0.6018293</span>
+<span class='c'>#&gt;   1e-01   1e-01  150      0.8049729  0.6047501</span>
+<span class='c'>#&gt; </span>
+<span class='c'>#&gt; Tuning parameter 'eta' was held constant at a value of 0.3</span>
+<span class='c'>#&gt; Accuracy was used to select the optimal model using the largest value.</span>
+<span class='c'>#&gt; The final values used for the model were nrounds = 150, lambda = 0.1, alpha = 0.1</span>
+<span class='c'>#&gt;  and eta = 0.3.</span></code></pre>
+</div>
+<h3 id="extract-feature-importance">Extract feature importance</h3>
+<p>Since we are using the <code>caret</code> package we can use the built in function to extract feature importance, or the function from the <code>xgboost</code> package. We will do both.</p>
+<h4 id="caret-feature-importance"><code>caret</code> feature importance</h4>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>caret_imp</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/pkg/caret/man/varImp.html'>varImp</a></span><span class='o'>(</span><span class='nv'>xgb_fit</span><span class='o'>)</span>
+<span class='c'>#&gt; Warning in value[[3L]](cond): The model had been generated by XGBoost version 1.0.0 or earlier and was loaded from a RDS file. We strongly ADVISE AGAINST using saveRDS() function, to ensure that your model can be read in current and upcoming XGBoost releases. Please use xgb.save() instead to preserve models for the long term. For more details and explanation, see https://xgboost.readthedocs.io/en/latest/tutorials/saving_model.html</span>
+<span class='c'>#&gt; [16:44:09] WARNING: amalgamation/../src/learner.cc:940: Loading model from XGBoost &lt; 1.0.0, consider saving it again for improved compatibility</span>
+<span class='nv'>caret_imp</span>
+<span class='c'>#&gt; xgbLinear variable importance</span>
+<span class='c'>#&gt; </span>
+<span class='c'>#&gt;   only 20 most important variables shown (out of 60)</span>
+<span class='c'>#&gt; </span>
+<span class='c'>#&gt;     Overall</span>
+<span class='c'>#&gt; V11 100.000</span>
+<span class='c'>#&gt; V45  26.941</span>
+<span class='c'>#&gt; V16  24.354</span>
+<span class='c'>#&gt; V21  21.665</span>
+<span class='c'>#&gt; V51  18.798</span>
+<span class='c'>#&gt; V4   18.140</span>
+<span class='c'>#&gt; V48  14.366</span>
+<span class='c'>#&gt; V9   12.607</span>
+<span class='c'>#&gt; V31  12.489</span>
+<span class='c'>#&gt; V27  12.347</span>
+<span class='c'>#&gt; V15  11.269</span>
+<span class='c'>#&gt; V34   9.125</span>
+<span class='c'>#&gt; V37   8.805</span>
+<span class='c'>#&gt; V20   8.792</span>
+<span class='c'>#&gt; V52   8.114</span>
+<span class='c'>#&gt; V28   7.162</span>
+<span class='c'>#&gt; V32   5.897</span>
+<span class='c'>#&gt; V55   4.584</span>
+<span class='c'>#&gt; V17   4.490</span>
+<span class='c'>#&gt; V49   4.129</span></code></pre>
+</div>
+<h4 id="xgboost-feature-importance"><code>xgboost</code> feature importance</h4>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>xgb_imp</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/pkg/xgboost/man/xgb.importance.html'>xgb.importance</a></span><span class='o'>(</span>feature_names <span class='o'>=</span> <span class='nv'>xgb_fit</span><span class='o'>$</span><span class='nv'>finalModel</span><span class='o'>$</span><span class='nv'>feature_names</span>,
+               model <span class='o'>=</span> <span class='nv'>xgb_fit</span><span class='o'>$</span><span class='nv'>finalModel</span><span class='o'>)</span>
+
+<span class='nf'><a href='https://rdrr.io/r/utils/head.html'>head</a></span><span class='o'>(</span><span class='nv'>xgb_imp</span><span class='o'>)</span>
+<span class='c'>#&gt;    Feature       Gain      Cover  Frequency</span>
+<span class='c'>#&gt; 1:     V11 0.25619825 0.12851518 0.03283582</span>
+<span class='c'>#&gt; 2:     V45 0.06902206 0.04458378 0.03582090</span>
+<span class='c'>#&gt; 3:     V16 0.06239349 0.04163116 0.01492537</span>
+<span class='c'>#&gt; 4:     V21 0.05550596 0.03471532 0.02686567</span>
+<span class='c'>#&gt; 5:     V51 0.04816044 0.04527491 0.05373134</span>
+<span class='c'>#&gt; 6:      V4 0.04647539 0.03484924 0.03880597</span></code></pre>
+</div>
+<h3 id="plotting-feature-importance">Plotting feature importance</h3>
+<h4 id="caret">caret</h4>
+<p>You have a few options when it comes to plotting feature importance. You can call plot on the saved object from caret as follows:</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'><a href='https://r-spatial.github.io/sf/reference/plot.html'>plot</a></span><span class='o'>(</span><span class='nv'>caret_imp</span><span class='o'>)</span>
+</code></pre>
+<img src="figs/unnamed-chunk-8-1.png" width="700px" style="display: block; margin: auto;" />
+</div>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'><a href='https://ggplot2.tidyverse.org/reference/ggplot.html'>ggplot</a></span><span class='o'>(</span><span class='nv'>caret_imp</span><span class='o'>)</span> <span class='o'>+</span>
+  <span class='nf'><a href='https://ggplot2.tidyverse.org/reference/ggtheme.html'>theme_minimal</a></span><span class='o'>(</span><span class='o'>)</span>
+</code></pre>
+<img src="figs/unnamed-chunk-9-1.png" width="700px" style="display: block; margin: auto;" />
+</div>
+<h4 id="xgboost"><code>xgboost</code></h4>
+<p>You can use the plot functionality from <code>xgboost</code></p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'><a href='https://rdrr.io/pkg/xgboost/man/xgb.plot.importance.html'>xgb.plot.importance</a></span><span class='o'>(</span><span class='nv'>xgb_imp</span><span class='o'>)</span>
+</code></pre>
+<img src="figs/unnamed-chunk-10-1.png" width="700px" style="display: block; margin: auto;" />
+</div>
+<p>Or use their ggplot feature</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'><a href='https://rdrr.io/pkg/xgboost/man/xgb.plot.importance.html'>xgb.ggplot.importance</a></span><span class='o'>(</span><span class='nv'>xgb_imp</span><span class='o'>)</span></code></pre>
+</div>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <!-- Basecoat sidebar component -->
+        <script
+            src="https://josiah.rs/js/basecoat/sidebar.min.js"
+            defer
+        ></script>
+        <!-- Sidebar toggle for mobile -->
+        <script src="https://josiah.rs/js/sidebar-toggle.js" defer></script>
+        <!-- Custom tabs for panel-tabset -->
+        <script src="https://josiah.rs/js/tabs.js" defer></script>
+        <!-- Search functionality -->
+        <script src="https://josiah.rs/js/search.js" defer></script>
+        <script>
+            (() => {
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+
+                    // Toggle syntax highlighting themes via media attribute
+                    const darkSyntax = document.getElementById("syntax-dark");
+                    const lightSyntax = document.getElementById("syntax-light");
+                    if (darkSyntax && lightSyntax) {
+                        darkSyntax.media = dark ? "all" : "not all";
+                        lightSyntax.media = dark ? "not all" : "all";
+                    }
+
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        ></script>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"
+        ></script>
+        
+    </body>
+</html>

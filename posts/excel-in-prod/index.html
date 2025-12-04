@@ -1,0 +1,701 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            Excel in pRod | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+
+        <!-- Determine theme before loading syntax highlighting -->
+        <script>
+            (() => {
+                const stored = localStorage.getItem("themeMode");
+                // Use stored preference if exists, otherwise always default to dark
+                const isDark = stored ? stored === "dark" : true;
+
+                if (isDark) {
+                    document.documentElement.classList.add("dark");
+                }
+            })();
+        </script>
+
+        <!-- Syntax highlighting themes -->
+        <link rel="stylesheet" href="https://josiah.rs/syntax-dark.css" id="syntax-dark" />
+        <link rel="stylesheet" href="https://josiah.rs/syntax-light.css" id="syntax-light" />
+
+        <!-- KaTeX for math rendering -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        />
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-semibold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4 relative">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-sm bg-muted/50 border border-border"
+                id="search-input"
+            />
+            <div
+                id="search-results"
+                class="hidden absolute top-full left-4 -mt-1 w-96 max-h-96 overflow-y-auto bg-background border border-border rounded-lg shadow-lg z-50 p-2"
+            ></div>
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-2 text-sm pl-3 transition-colors font-medium border-l-2 border-primary -ml-px bg-sidebar-accent"
+                    >
+                        Posts
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Socials -->
+            <div
+                class="mt-4 block py-2 transition-colors font-medium px-3 text-sm bg-sidebar-accent"
+            >
+                <h2
+                    class="text-sm font-medium tracking-tight mb-2 text-muted-foreground border-b border-muted-foreground/20 pb-1"
+                >
+                    Socials
+                </h2>
+                <ul class="space-y-1.5">
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <polygon
+                                points="160 128 112 96 112 160 160 128"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M24,128c0,29.91,3.07,47.45,5.41,56.47A16,16,0,0,0,39,195.42C72.52,208.35,128,208,128,208s55.48.35,89-12.58a16,16,0,0,0,9.63-10.95c2.34-9,5.41-26.56,5.41-56.47s-3.07-47.45-5.41-56.47a16,16,0,0,0-9.63-11C183.48,47.65,128,48,128,48s-55.48-.35-89,12.58a16,16,0,0,0-9.63,11C27.07,80.54,24,98.09,24,128Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://www.youtube.com/@josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >YouTube</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <rect
+                                x="32"
+                                y="32"
+                                width="192"
+                                height="192"
+                                rx="8"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="120"
+                                y1="112"
+                                x2="120"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="88"
+                                y1="112"
+                                x2="88"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M120,140a28,28,0,0,1,56,0v36"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <circle cx="88" cy="84" r="12" />
+                        </svg>
+                        <a
+                            href="https://www.linkedin.com/in/josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >LinkedIn</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M119.83,56A52,52,0,0,0,76,32a51.92,51.92,0,0,0-3.49,44.7A49.28,49.28,0,0,0,64,104v8a48,48,0,0,0,48,48h48a48,48,0,0,0,48-48v-8a49.28,49.28,0,0,0-8.51-27.3A51.92,51.92,0,0,0,196,32a52,52,0,0,0-43.83,24Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,232V192a32,32,0,0,1,32-32h0a32,32,0,0,1,32,32v40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,208H72a32,32,0,0,1-32-32A32,32,0,0,0,8,144"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="http://github.com/josiahparry/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >GitHub</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M160,224H72a32,32,0,0,1-32-32V72A32,32,0,0,1,72,40H184a32,32,0,0,1,32,32v72a32,32,0,0,1-32,32H40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M128,136V104a24,24,0,0,0-48,0v32"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M176,136V104a24,24,0,0,0-48,0"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://fosstodon.org/@josi"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Mastodon</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                            class="w-4 h-4"
+                            fill="currentColor"
+                        >
+                            <path
+                                d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.698-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948"
+                            />
+                        </svg>
+                        <a
+                            href="https://bsky.app/profile/josiahparry.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Bluesky</a
+                        >
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">Excel in pRod</h1>
+
+          
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >March 01, 2020</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><h2 id="or-how-to-incorporate-excel-into-a-production-api-using-plumber-or-a-micro-excel-micro-service">or <em>how to incorporate excel into a production API using plumber</em> or, <em>a micro-excel-micro-service</em>.</h2>
+<p>I recently had a conversation that touched on using <a href="https://rplumber.io"><code>plumber</code></a> to automate the parsing of Excel documents for administering data science assets. This brings up some very interesting points:</p>
+<ol>
+<li>Excel is sometimes unavoidable and we need to be okay with that.</li>
+<li>How can we incorporate Excel into production?</li>
+</ol>
+<blockquote>
+<p>Note that this is no time to 💩 on Excel. It serves very real business purposes and unfortunately not everyone can learn to program 😕. Here's a fun one for the h8rs: almost every presidential election campaign's data program is based on the back of Google Sheets.</p>
+</blockquote>
+<p>In this post I set out to explore if and how one can incorporate Excel into productionized code. Please see the <a href="https://github.com/JosiahParry/plumber-excel">GitHub repository</a> for the code used here.</p>
+<p>What does it mean to productionize code---aka put it in prod<sup class="footnote-reference"><a href="#1">1</a></sup>? There is no one definition of what this mean and each and every organization will operationalize it differently.</p>
+<blockquote>
+<p>An <em>operationalized definition</em>, at least in the social science perspective, is how a thing is defined so as to have a shared understanding of said thing.</p>
+</blockquote>
+<p>Greg Wilson has defined it as "code that <em>isn't</em> going to make the operations team cry" <sup class="footnote-reference"><a href="#2">2</a></sup> (emphasis his). This is my favorite definition because it is whimsical, sardonic, honest, and acknowledges that the code will have to leave the data science inner circle.</p>
+<p>As I understand it, the current data science discourse emphasizes the use of RESTful APIs as the best, or at least the dominant, way of <em>productionizing</em> code.</p>
+<p>An API is an application programming interface. When I was first learning what APIs were my uncle told me to think of them as "machines talking to other machines." That's not so far off!</p>
+<p>A RESTful API is a special kind of API that does <em><strong>re</strong>presentational <strong>s</strong>tate <strong>t</strong>ransfer</em>. Frankly, I do not know what that really means. As I understand it, REST is actually an opinionated way of architecting APIs. RESTful APIs use HTTP requests which makes them very easy to access. RESTful APIs are key in developing micro-services and micro-services are at the core of putting code in prod<sup class="footnote-reference"><a href="#3">3</a></sup>. Within the python ecosystem Flask is one of the leading libraries for making micro-services. Within the R space a package called <code>plumber</code> is taking on that role.</p>
+<p>We can envisage a hypothetical scenario in which we receive Excel files via some data collection process. Once that Excel file is received it is used to kick off some other process---e.g. report writing or data processing. Often people may create Shiny applications to provide a UI for uploading and data input. This is really great when we want to develop a user-centric interface. But what about when we want to automate the process or at least make the processing available to other tools? This is when we can turn to plumber as a way to create a micro-service to handle this.</p>
+<div class="highlight">
+<div id="htmlwidget-77f7966dca011158b958" style="width:700px;height:415.296px;" class="nomnoml html-widget"></div>
+<script type="application/json" data-for="htmlwidget-77f7966dca011158b958">{"x":{"code":"\n#fill: #FEFEFF\n#lineWidth: 1\n#zoom: 4\n#direction: right\n\n[<frame> Plumber API |\n   [<abstract>Recieve Excel File]-:> [<abstract>1: upload]\n   [<abstract>Recieve Excel File] -:> [2: use data]\n  ]\n","svg":false,"png":null},"evals":[],"jsHooks":[]}</script>
+</div>
+<p>The above graphic (made with <a href="https://github.com/javierluraschi/nomnoml"><code>nomnoml</code></a>) illustrates two different ways we can approach this. First, we will receive the Excel file. From there we may want to upload the file into a shared drive, a database, or both. Alternatively, we may not want to store the data, but rather use it immediately.</p>
+<p>From an API development perspective, we can imagine each process as an API <em>endpoint</em>. An endpoint is essentially a url which says where each application interaction will happen. In this small example, we will create two endpoints: <code>/read_excel</code> and <code>/upload</code>. The first will, you guessed it, read an Excel file that is sent with a request. The second will upload said file.</p>
+<p>Before we can approach creating the API, we need to first figure out how we can even send a file through an API. And before we can figure that out, we need to know what type of requests we can make to an API. Since the REST API will be an HTTP API, its imperative we know what type of requests we can make with an HTTP protocol. There are 7 HTTP request types.</p>
+<ul>
+<li>GET</li>
+<li>POST</li>
+<li>PUT</li>
+<li>HEAD</li>
+<li>DELETE</li>
+<li>PATCH</li>
+<li>OPTION</li>
+</ul>
+<p>Frankly, I do not remember what <code>HEAD</code>, <code>PATCH</code>, and <code>OPTIONS</code> do---if you don't use it you lose it, right? For super simple APIs all we need to know are <code>GET</code> and <code>POST</code> requests---catch me never <code>DELETE</code>ing anything, I can't be trusted.</p>
+<p><code>GET</code> is used to <em>get</em> data from a resource. You can pass key value pairs as parameters into the <code>GET</code> request. "<code>GET</code> requests are only used to request data (not modify)."<sup class="footnote-reference"><a href="#4">4</a></sup> You should never, ever, ever, ever, ever, <strong>ever</strong> send sensitive information through a <code>GET</code> request.</p>
+<p>That brings us to the <code>POST</code> method. <code>POST</code> methods are used to send data to a server for the purpose of creating, modifying, or updating resources<sup class="footnote-reference"><a href="#5">5</a></sup>. When you have a lot of parameters to send, or if they're sensitive, or if you need to send a file via API use <code>POST</code>.</p>
+<p>In approaching this API design I had three questions.</p>
+<ol>
+<li>How do you even send a file via HTTP request?</li>
+<li>Once we send it, how do we access the file and where does it go?</li>
+<li>How do we get the data from the API to R?</li>
+</ol>
+<p>I don't speak Linux so bless <code>httr</code> for making this easy(ish). <code>httr</code> contains two functions that will be central to POSTing an excel file. There are <a href="https://httr.r-lib.org/reference/POST.html"><code>POST()</code></a> for making the POST request and <a href="https://httr.r-lib.org/reference/upload_file.html"><code>upload_file()</code></a> which will be used for uploading the file in the post request.</p>
+<blockquote>
+<p>Can we just take a moment to appreciate how perfectly named functions can be sometimes? The more self-explanatory the better.</p>
+</blockquote>
+<p>If you don't have much experience crafting requests with <code>httr</code>, I recommend you start with the <a href="https://cran.r-project.org/web/packages/httr/vignettes/quickstart.html">quickstart vignette</a>.</p>
+<p>The structure of our POST request will look like</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'>POST</span><span class='o'>(</span><span class='nv'>end_point</span>, 
+     body <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='o'>(</span>param <span class='o'>=</span> <span class='nf'>upload_file</span><span class='o'>(</span><span class='s'>"file-path.ext"</span><span class='o'>)</span><span class='o'>)</span>
+     <span class='o'>)</span></code></pre>
+</div>
+<h2 id="building-the-first-endpoint">Building the first endpoint</h2>
+<p>Now we get <em>how</em> the file will be sent. But the tough part is actually building the plumber API endpoint which will receive it. There is a fair amount of discourse on how files should be uploaded via plumber<sup class="footnote-reference"><a href="#6">6</a></sup>. Fortunately, <a href="https://github.com/krlmlr">@krlmlr</a> pointed out <a href="https://rdrr.io/pkg/mime/man/parse_multipart.html"><code>mime::parse_multipart()</code></a> which can be used for handling files sent in requests<sup class="footnote-reference"><a href="#7">7</a></sup>.</p>
+<blockquote>
+<p>Note: MIME is a standard way of sending files through the internet. I know nothing about MIME types and greatly appreciate the work that Yihui Xie, Jeffrey Horner, and Bian Beilei have done with the <a href="https://github.com/yihui/mime"><code>{mime}</code></a> package for abstracting all of this away.</p>
+</blockquote>
+<p><code>parse_multipart()</code> will take the incoming request and return a named list. Most importantly for us the returned object contains our POSTed file to a temporary location. Within the resultant list is a path to to the temporary file. In our plumber function definition, we parse the request, and pull out the <code>datapath</code>. That saved path is then fed to <a href="https://readxl.tidyverse.org/reference/read_excel.html"><code>readxl::read_excel()</code></a> which returns a tibble!</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'>#* Read excel file </span>
+<span class='c'>#* @post /read_excel</span>
+
+<span class='kr'>function</span><span class='o'>(</span><span class='nv'>req</span><span class='o'>)</span> <span class='o'>&#123;</span>
+  
+  <span class='nv'>multipart</span> <span class='o'>&lt;-</span> <span class='nf'>mime</span><span class='nf'>::</span><span class='nf'><a href='https://rdrr.io/pkg/mime/man/parse_multipart.html'>parse_multipart</a></span><span class='o'>(</span><span class='nv'>req</span><span class='o'>)</span>
+  
+  <span class='nv'>fp</span> <span class='o'>&lt;-</span> <span class='nf'>purrr</span><span class='nf'>::</span><span class='nf'><a href='https://purrr.tidyverse.org/reference/pluck.html'>pluck</a></span><span class='o'>(</span><span class='nv'>multipart</span>, <span class='m'>1</span>, <span class='s'>"datapath"</span>, <span class='m'>1</span><span class='o'>)</span>
+  
+  <span class='nf'>readxl</span><span class='nf'>::</span><span class='nf'><a href='https://readxl.tidyverse.org/reference/read_excel.html'>read_excel</a></span><span class='o'>(</span><span class='nv'>fp</span><span class='o'>)</span>
+  
+<span class='o'>&#125;</span></code></pre>
+</div>
+<h3 id="a-note-on-developing-plumber-apis">A note on developing plumber APIs</h3>
+<p>Unfortunately it's not easy to illustrate the development of a plumber API in blog format. My secret for developing plumber APIs is a combination of the RStudio background jobs launcher and the <code>rstudioapi</code> package. To figure out the structure of the named list returned from <code>parse_multipart()</code> I returned the <code>multipart</code> object from the API.</p>
+<p>In the session I was using to develop the API I had 3 scripts. The first, <code>plumber.R</code> contains the plumber endpoint definitions. The second, <code>activate.R</code> contains the following two lines of code:</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>pr</span> <span class='o'>&lt;-</span> <span class='nf'>plumber</span><span class='nf'>::</span><span class='nf'><a href='https://www.rplumber.io/reference/plumb.html'>plumb</a></span><span class='o'>(</span><span class='s'>"plumber.R"</span><span class='o'>)</span>
+<span class='nv'>pr</span><span class='o'>$</span><span class='nf'>run</span><span class='o'>(</span>host <span class='o'>=</span> <span class='s'>"127.0.0.1"</span>, port <span class='o'>=</span> <span class='m'>5846</span><span class='o'>)</span></code></pre>
+</div>
+<p>These two lines start the API defined in <code>plumber.R</code>. In my third script, where I was developing from, I had the following function call:</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'># start a background job using the RStudio job launcher</span>
+<span class='nf'>rstudioapi</span><span class='nf'>::</span><span class='nf'><a href='https://rdrr.io/pkg/rstudioapi/man/jobRunScript.html'>jobRunScript</a></span><span class='o'>(</span>path <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='o'>(</span><span class='nf'>here</span><span class='nf'>::</span><span class='nf'><a href='https://here.r-lib.org//reference/here.html'>here</a></span><span class='o'>(</span><span class='o'>)</span>, <span class='s'>"activate.R"</span><span class='o'>)</span>,
+                         workingDir <span class='o'>=</span> <span class='nf'>here</span><span class='nf'>::</span><span class='nf'><a href='https://here.r-lib.org//reference/here.html'>here</a></span><span class='o'>(</span><span class='o'>)</span><span class='o'>)</span></code></pre>
+</div>
+<p>This function call sources the <code>activate.R</code> in a background session. Having the API running in another session frees up the current session I work from to develop sample POST requests.This provides a rather fast paced iterative way of testing endpoint function definitions.</p>
+<p><img src="https://media.giphy.com/media/cbkBcxRLwjoys/giphy.gif" alt="" /></p>
+<p><sub> I hope you're able to understand all that use of the word <em>session</em></sub></p>
+<p>For example, to figure out where <code>datapath</code> was, my API definition was strictly</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'>#* Read excel file </span>
+<span class='c'>#* @post /read_excel</span>
+
+<span class='kr'>function</span><span class='o'>(</span><span class='nv'>req</span><span class='o'>)</span> <span class='o'>&#123;</span>
+  <span class='nf'>mime</span><span class='nf'>::</span><span class='nf'><a href='https://rdrr.io/pkg/mime/man/parse_multipart.html'>parse_multipart</a></span><span class='o'>(</span><span class='nv'>req</span><span class='o'>)</span>
+<span class='o'>&#125;</span></code></pre>
+</div>
+<p>allowing me to work with the resultant object from an active R session.</p>
+<h2 id="uploading-files">Uploading files</h2>
+<p><strong>Disclaimer</strong>: Uploading files is inherently risky business. Every time you put a new file into your system you are creating an opportunity for vulnerabilities. I am not a security expert nor an API expert so take me with a grain of salt.</p>
+<p>Defining an upload process is rather straight forward now that we are able to access the temporary file. We will use <a href="https://fs.r-lib.org/reference/copy.html"><code>fs::file_copy()</code></a> to copy the temporary file to a permanent location. To do this, we need to determine where it will be uploaded. For the sake of example I am hard coding the upload path to be at <code>./data</code>. You could feasibly create another parameter which determines where the file will be copied to, but I didn't 🤷🏻‍♂️.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'>
+<span class='c'>#* Upload excel file</span>
+<span class='c'>#* @post /upload</span>
+<span class='kr'>function</span><span class='o'>(</span><span class='nv'>req</span><span class='o'>)</span> <span class='o'>&#123;</span>
+  
+  <span class='nv'>multipart</span> <span class='o'>&lt;-</span> <span class='nf'>mime</span><span class='nf'>::</span><span class='nf'><a href='https://rdrr.io/pkg/mime/man/parse_multipart.html'>parse_multipart</a></span><span class='o'>(</span><span class='nv'>req</span><span class='o'>)</span>
+  
+  <span class='nv'>fp</span> <span class='o'>&lt;-</span> <span class='nf'>purrr</span><span class='nf'>::</span><span class='nf'><a href='https://purrr.tidyverse.org/reference/pluck.html'>pluck</a></span><span class='o'>(</span><span class='nv'>multipart</span>, <span class='m'>1</span>, <span class='s'>"datapath"</span>, <span class='m'>1</span><span class='o'>)</span>
+  
+  <span class='nv'>f_name</span> <span class='o'>&lt;-</span> <span class='nf'>purrr</span><span class='nf'>::</span><span class='nf'><a href='https://purrr.tidyverse.org/reference/pluck.html'>pluck</a></span><span class='o'>(</span><span class='nv'>multipart</span>, <span class='m'>1</span>, <span class='s'>"name"</span><span class='o'>)</span>
+  
+  <span class='nv'>u_path</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='o'>(</span><span class='s'>"data"</span>, <span class='nv'>f_name</span><span class='o'>)</span>
+  
+  <span class='nf'>fs</span><span class='nf'>::</span><span class='nf'><a href='https://fs.r-lib.org/reference/copy.html'>file_copy</a></span><span class='o'>(</span><span class='nv'>fp</span>, <span class='nv'>u_path</span><span class='o'>)</span>
+  
+<span class='o'>&#125;</span></code></pre>
+</div>
+<h2 id="creating-api-wrappers">Creating API wrappers</h2>
+<p>Creating API wrappers is one of my favorite activities because it's rather simple and feels super empowering 💪🏼. As mentioned earlier, all we will need to do to create the POST request is to specify where to make the request (the endpoint), and provide some parameters to it.</p>
+<p>Spin up the API in the background.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'># start a background job using the RStudio job launcher</span>
+<span class='nf'>rstudioapi</span><span class='nf'>::</span><span class='nf'><a href='https://rdrr.io/pkg/rstudioapi/man/jobRunScript.html'>jobRunScript</a></span><span class='o'>(</span>path <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/file.path.html'>file.path</a></span><span class='o'>(</span><span class='nf'>here</span><span class='nf'>::</span><span class='nf'><a href='https://here.r-lib.org//reference/here.html'>here</a></span><span class='o'>(</span><span class='o'>)</span>, <span class='s'>"activate.R"</span><span class='o'>)</span>,
+                         workingDir <span class='o'>=</span> <span class='nf'>here</span><span class='nf'>::</span><span class='nf'><a href='https://here.r-lib.org//reference/here.html'>here</a></span><span class='o'>(</span><span class='o'>)</span><span class='o'>)</span></code></pre>
+</div>
+<p>We first define an object called <code>b_url</code> (base url) with our endpoint. Next we specify the path of the file we want to upload within the <a href="https://httr.r-lib.org/reference/upload_file.html"><code>upload_file()</code></a> command. In the repository I've included <code>test.xls</code> which contains information about top coded variables in the American Community Survey (social science, amirite?). Note that uploaded file is part of a named list within the <code>body</code> argument. Any parameters that need to be passed to your API need to be defined in the list provided to the <code>body</code>. I <em>think</em> the name of the uploaded file needs to match that of what is defined in the plumber API (<code>req</code>). I may be wrong, but for safe measures!</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='kr'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='o'>(</span><span class='nv'><a href='https://httr.r-lib.org/'>httr</a></span><span class='o'>)</span>
+<span class='kr'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='o'>(</span><span class='nv'><a href='https://tidyverse.tidyverse.org'>tidyverse</a></span><span class='o'>)</span>
+
+<span class='c'># define the url</span>
+<span class='nv'>b_url</span> <span class='o'>&lt;-</span> <span class='s'>"http://127.0.0.1:5846/read_excel"</span>
+
+<span class='c'># make the request!</span>
+<span class='nv'>req</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://httr.r-lib.org/reference/POST.html'>POST</a></span><span class='o'>(</span><span class='nv'>b_url</span>, body <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='o'>(</span>req <span class='o'>=</span> <span class='nf'><a href='https://httr.r-lib.org/reference/upload_file.html'>upload_file</a></span><span class='o'>(</span><span class='s'>"data/test.xls"</span><span class='o'>)</span><span class='o'>)</span><span class='o'>)</span></code></pre>
+</div>
+<p>We have now uploaded the file and made our request! Though the request is useless to us if we can't access the data 😮. We can get the content of the request using <a href="https://httr.r-lib.org/reference/content.html"><code>httr::content()</code></a>. I set <code>type = "text/json"</code> because I find it easier to make json into a tibble than a named list.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'># get json</span>
+<span class='nv'>res_json</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='o'>(</span><span class='nv'>req</span>, type <span class='o'>=</span> <span class='s'>"text/json"</span><span class='o'>)</span>
+
+<span class='c'># show the first 50 characters of resultant json</span>
+<span class='nf'><a href='https://rdrr.io/r/base/strtrim.html'>strtrim</a></span><span class='o'>(</span><span class='nv'>res_json</span>, <span class='m'>50</span><span class='o'>)</span></code></pre>
+</div>
+<p>To get this json into a tibble will use <a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html"><code>jsonlite::fromJSON()</code></a> and <a href="https://tibble.tidyverse.org/reference/as_tibble.html"><code>tibble::as_tibble()</code></a>.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>res</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='o'>(</span><span class='nv'>req</span>, type <span class='o'>=</span> <span class='s'>"text/json"</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'>jsonlite</span><span class='nf'>::</span><span class='nf'><a href='https://rdrr.io/pkg/jsonlite/man/fromJSON.html'>fromJSON</a></span><span class='o'>(</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://tibble.tidyverse.org/reference/as_tibble.html'>as_tibble</a></span><span class='o'>(</span><span class='o'>)</span> 
+
+<span class='nf'><a href='https://pillar.r-lib.org/reference/glimpse.html'>glimpse</a></span><span class='o'>(</span><span class='nv'>res</span><span class='o'>)</span></code></pre>
+</div>
+<p>Boom!!! It worked. Now time to make it a function. To make this generalizable we need to make it so that users can specify file paths for <a href="https://httr.r-lib.org/reference/upload_file.html"><code>upload_file()</code></a>.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'># define `post_excel()`</span>
+<span class='nv'>post_excel</span> <span class='o'>&lt;-</span> <span class='kr'>function</span><span class='o'>(</span><span class='nv'>file</span><span class='o'>)</span> <span class='o'>&#123;</span>
+
+  <span class='nv'>b_url</span> <span class='o'>&lt;-</span> <span class='s'>"http://127.0.0.1:5846/read_excel"</span>
+  
+  <span class='nv'>req</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://httr.r-lib.org/reference/POST.html'>POST</a></span><span class='o'>(</span><span class='nv'>b_url</span>, body <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='o'>(</span>req <span class='o'>=</span> <span class='nf'><a href='https://httr.r-lib.org/reference/upload_file.html'>upload_file</a></span><span class='o'>(</span><span class='nv'>file</span><span class='o'>)</span><span class='o'>)</span><span class='o'>)</span>
+  
+  <span class='nv'>res</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://httr.r-lib.org/reference/content.html'>content</a></span><span class='o'>(</span><span class='nv'>req</span>, type <span class='o'>=</span> <span class='s'>"text/json"</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='nf'>jsonlite</span><span class='nf'>::</span><span class='nf'><a href='https://rdrr.io/pkg/jsonlite/man/fromJSON.html'>fromJSON</a></span><span class='o'>(</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+    <span class='nf'>tibble</span><span class='nf'>::</span><span class='nf'><a href='https://tibble.tidyverse.org/reference/as_tibble.html'>as_tibble</a></span><span class='o'>(</span><span class='o'>)</span>
+  
+  <span class='nv'>res</span>
+  
+<span class='o'>&#125;</span>
+</code></pre>
+</div>
+<p>You've created a wrapper to your API! Now you have a micro-service running and accessible via an R wrapper.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'>post_excel</span><span class='o'>(</span><span class='s'>"data/test.xls"</span><span class='o'>)</span></code></pre>
+</div>
+<p>We can create a similar function for the <code>/upload</code> endpoint.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>upload</span> <span class='o'>&lt;-</span> <span class='kr'>function</span><span class='o'>(</span><span class='nv'>file</span><span class='o'>)</span> <span class='o'>&#123;</span>
+  <span class='nv'>b_url</span> <span class='o'>&lt;-</span> <span class='s'>"http://127.0.0.1:5846/upload"</span>
+  
+  <span class='nf'>usethis</span><span class='nf'>::</span><span class='nf'><a href='https://usethis.r-lib.org/reference/ui.html'>ui_info</a></span><span class='o'>(</span><span class='nf'>glue</span><span class='nf'>::</span><span class='nf'><a href='https://glue.tidyverse.org/reference/glue.html'>glue</a></span><span class='o'>(</span><span class='s'>"Copying &#123;file&#125; to /data/&#123;file&#125;"</span><span class='o'>)</span><span class='o'>)</span>
+  
+  <span class='nv'>req</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://httr.r-lib.org/reference/POST.html'>POST</a></span><span class='o'>(</span><span class='nv'>b_url</span>, body <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='o'>(</span>req <span class='o'>=</span> <span class='nf'><a href='https://httr.r-lib.org/reference/upload_file.html'>upload_file</a></span><span class='o'>(</span><span class='nv'>file</span><span class='o'>)</span><span class='o'>)</span><span class='o'>)</span>
+  
+  <span class='nf'><a href='https://rdrr.io/r/base/invisible.html'>invisible</a></span><span class='o'>(</span><span class='nv'>req</span><span class='o'>)</span>
+<span class='o'>&#125;</span></code></pre>
+</div>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'>upload</span><span class='o'>(</span><span class='s'>"data/test.xls"</span><span class='o'>)</span></code></pre>
+</div>
+<blockquote>
+<p>Note: I recommend using the <code>ui_*()</code> functions from {usethis} to provide informative messages to the user. <br> Second note: If you intend on only allowing a file to be uploaded once, as this function does, you should probably actually be using a PUT request.</p>
+</blockquote>
+<p>Badah-bing badah-boom. You now have the ability to create a micro-service with plumber that is able to handle Microsoft Excel files. That is no small feat! What's next? You should create a nice little python wrapper for your newly created API. The python wrapper will be a great asset to your team and now your R based tools are accessible to anyone or anything that can make HTTP requests!!!</p>
+<div class="footnote-definition" id="1"><sup class="footnote-definition-label">1</sup>
+<p><a href="https://putrinprod.com/">https://putrinprod.com/</a></p>
+</div>
+<div class="footnote-definition" id="2"><sup class="footnote-definition-label">2</sup>
+<p>Please see <a href="https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005412"><em>Ten simple rules for making research software more robust</em></a> (Taschuk, and Wilson, 2017).</p>
+</div>
+<div class="footnote-definition" id="3"><sup class="footnote-definition-label">3</sup>
+<p><a href="https://medium.com/@ericjwhuang/restful-api-vs-microservice-eea903ac3e73">https://medium.com/@ericjwhuang/restful-api-vs-microservice-eea903ac3e73</a></p>
+</div>
+<div class="footnote-definition" id="4"><sup class="footnote-definition-label">4</sup>
+<p><a href="https://www.w3schools.com/tags/ref_httpmethods.asp">https://www.w3schools.com/tags/ref_httpmethods.asp</a></p>
+</div>
+<div class="footnote-definition" id="5"><sup class="footnote-definition-label">5</sup>
+<p><a href="https://www.w3schools.com/tags/ref_httpmethods.asp">https://www.w3schools.com/tags/ref_httpmethods.asp</a></p>
+</div>
+<div class="footnote-definition" id="6"><sup class="footnote-definition-label">6</sup>
+<p><a href="https://github.com/rstudio/plumber/issues/75">https://github.com/rstudio/plumber/issues/75</a></p>
+</div>
+<div class="footnote-definition" id="7"><sup class="footnote-definition-label">7</sup>
+<p><a href="https://github.com/rstudio/plumber/issues/75">https://github.com/rstudio/plumber/issues/75</a></p>
+</div>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <!-- Basecoat sidebar component -->
+        <script
+            src="https://josiah.rs/js/basecoat/sidebar.min.js"
+            defer
+        ></script>
+        <!-- Sidebar toggle for mobile -->
+        <script src="https://josiah.rs/js/sidebar-toggle.js" defer></script>
+        <!-- Custom tabs for panel-tabset -->
+        <script src="https://josiah.rs/js/tabs.js" defer></script>
+        <!-- Search functionality -->
+        <script src="https://josiah.rs/js/search.js" defer></script>
+        <script>
+            (() => {
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+
+                    // Toggle syntax highlighting themes via media attribute
+                    const darkSyntax = document.getElementById("syntax-dark");
+                    const lightSyntax = document.getElementById("syntax-light");
+                    if (darkSyntax && lightSyntax) {
+                        darkSyntax.media = dark ? "all" : "not all";
+                        lightSyntax.media = dark ? "not all" : "all";
+                    }
+
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        ></script>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"
+        ></script>
+        
+    </body>
+</html>

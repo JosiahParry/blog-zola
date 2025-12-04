@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Josiah Parry - databricks</title>
+    <link rel="self" type="application/atom+xml" href="https://josiah.rs/categories/databricks/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://josiah.rs"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2022-05-11T00:00:00+00:00</updated>
+    <id>https://josiah.rs/categories/databricks/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Make your R scripts Databricks notebooks</title>
+        <published>2022-05-11T00:00:00+00:00</published>
+        <updated>2022-05-11T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/r-scripts-as-notebooks/"/>
+        <id>https://josiah.rs/posts/r-scripts-as-notebooks/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/r-scripts-as-notebooks/">&lt;p&gt;I&#x27;ve never had a good reason to deviate from the canonical &lt;code&gt;.R&lt;&#x2F;code&gt; file extension until today.&lt;&#x2F;p&gt;
+&lt;p&gt;As you may have seen over the past few month from my numerous rage-tweets and &lt;a href=&quot;https:&#x2F;&#x2F;twitter.com&#x2F;JosiahParry&#x2F;status&#x2F;1517195634293489664&quot;&gt;Databricks related threads&lt;&#x2F;a&gt;, I&#x27;ve been doing &lt;em&gt;a lot&lt;&#x2F;em&gt; of work getting figuring out Databricks as an R user so we can get onboard with adoption here at NPD.&lt;&#x2F;p&gt;
+&lt;p&gt;One of my biggest qualms about Databricks is that it&#x27;s tailored to their notebooks. The notebooks get magical superpowers that aren&#x27;t available anywhere else. Notebooks get root permissions, they have access to &lt;code&gt;dbutils&lt;&#x2F;code&gt;, and are the only thing that can actually be scheduled by Databricks outside of a jar file or SparkSQL code.&lt;&#x2F;p&gt;
+&lt;p&gt;I&#x27;ve spent quite a bit of time thinking about how we can schedule R scripts through a notebook. If you&#x27;re wondering, have the notebook kickoff the R script with a shell command.&lt;&#x2F;p&gt;
+&lt;p&gt;But, alas, I&#x27;ve learned something today. If you connect your Git repo to Databricks through their &lt;code&gt;&quot;Repos&quot;&lt;&#x2F;code&gt;, you can have your R scripts be accessible as notebooks with quite literally only two changes.&lt;&#x2F;p&gt;
+&lt;p&gt;First, R scripts need to have the less-preferable, though equally functional, file extension &lt;code&gt;.r&lt;&#x2F;code&gt;. Second, the first line of the script should be a comment that says &lt;code&gt;# Databricks notebook source&lt;&#x2F;code&gt;. And that&#x27;s it. Then once the git repo has been connected, it will recognize those as notebooks.&lt;&#x2F;p&gt;
+&lt;p&gt;If you want to create cells in your code write a comment &lt;code&gt;# COMMAND ----------&lt;&#x2F;code&gt;—that&#x27;s 10 hyphens at the end.&lt;&#x2F;p&gt;
+&lt;p&gt;If you create a file &lt;code&gt;main.r&lt;&#x2F;code&gt; which contains the body&lt;&#x2F;p&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;# Databricks notebook source
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;print(&amp;quot;Hello world&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;# COMMAND ---------
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;print(&amp;quot;Databricks! I&amp;#39;ve figured you out—sorta....&amp;quot;)
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;# COMMAND ---------
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;print(&amp;quot;I feel powerful.&amp;quot;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;You will have an R script that is recognized as a notebook by Databricks that can be scheduled using Databricks&#x27; scheduling wizard.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

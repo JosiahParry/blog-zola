@@ -1,0 +1,701 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            Type safe(r) R code | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+
+        <!-- Determine theme before loading syntax highlighting -->
+        <script>
+            (() => {
+                const stored = localStorage.getItem("themeMode");
+                // Use stored preference if exists, otherwise always default to dark
+                const isDark = stored ? stored === "dark" : true;
+
+                if (isDark) {
+                    document.documentElement.classList.add("dark");
+                }
+            })();
+        </script>
+
+        <!-- Syntax highlighting themes -->
+        <link rel="stylesheet" href="https://josiah.rs/syntax-dark.css" id="syntax-dark" />
+        <link rel="stylesheet" href="https://josiah.rs/syntax-light.css" id="syntax-light" />
+
+        <!-- KaTeX for math rendering -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        />
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-semibold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4 relative">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-sm bg-muted/50 border border-border"
+                id="search-input"
+            />
+            <div
+                id="search-results"
+                class="hidden absolute top-full left-4 -mt-1 w-96 max-h-96 overflow-y-auto bg-background border border-border rounded-lg shadow-lg z-50 p-2"
+            ></div>
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-2 text-sm pl-3 transition-colors font-medium border-l-2 border-primary -ml-px bg-sidebar-accent"
+                    >
+                        Posts
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Socials -->
+            <div
+                class="mt-4 block py-2 transition-colors font-medium px-3 text-sm bg-sidebar-accent"
+            >
+                <h2
+                    class="text-sm font-medium tracking-tight mb-2 text-muted-foreground border-b border-muted-foreground/20 pb-1"
+                >
+                    Socials
+                </h2>
+                <ul class="space-y-1.5">
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <polygon
+                                points="160 128 112 96 112 160 160 128"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M24,128c0,29.91,3.07,47.45,5.41,56.47A16,16,0,0,0,39,195.42C72.52,208.35,128,208,128,208s55.48.35,89-12.58a16,16,0,0,0,9.63-10.95c2.34-9,5.41-26.56,5.41-56.47s-3.07-47.45-5.41-56.47a16,16,0,0,0-9.63-11C183.48,47.65,128,48,128,48s-55.48-.35-89,12.58a16,16,0,0,0-9.63,11C27.07,80.54,24,98.09,24,128Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://www.youtube.com/@josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >YouTube</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <rect
+                                x="32"
+                                y="32"
+                                width="192"
+                                height="192"
+                                rx="8"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="120"
+                                y1="112"
+                                x2="120"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="88"
+                                y1="112"
+                                x2="88"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M120,140a28,28,0,0,1,56,0v36"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <circle cx="88" cy="84" r="12" />
+                        </svg>
+                        <a
+                            href="https://www.linkedin.com/in/josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >LinkedIn</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M119.83,56A52,52,0,0,0,76,32a51.92,51.92,0,0,0-3.49,44.7A49.28,49.28,0,0,0,64,104v8a48,48,0,0,0,48,48h48a48,48,0,0,0,48-48v-8a49.28,49.28,0,0,0-8.51-27.3A51.92,51.92,0,0,0,196,32a52,52,0,0,0-43.83,24Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,232V192a32,32,0,0,1,32-32h0a32,32,0,0,1,32,32v40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,208H72a32,32,0,0,1-32-32A32,32,0,0,0,8,144"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="http://github.com/josiahparry/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >GitHub</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M160,224H72a32,32,0,0,1-32-32V72A32,32,0,0,1,72,40H184a32,32,0,0,1,32,32v72a32,32,0,0,1-32,32H40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M128,136V104a24,24,0,0,0-48,0v32"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M176,136V104a24,24,0,0,0-48,0"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://fosstodon.org/@josi"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Mastodon</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                            class="w-4 h-4"
+                            fill="currentColor"
+                        >
+                            <path
+                                d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.698-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948"
+                            />
+                        </svg>
+                        <a
+                            href="https://bsky.app/profile/josiahparry.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Bluesky</a
+                        >
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">Type safe(r) R code</h1>
+
+         
+        <div class="flex flex-wrap gap-2 mb-4">
+            
+            <a
+                href="/categories/R"
+                class="badge-secondary cursor pointer"
+                >R</a
+            >
+            
+        </div>
+         
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >July 01, 2024</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><h2 id="introduction-to-r-lib-type-safety-checks">Introduction to r-lib type safety checks</h2>
+<p>Type safety is all the rage these days. It’s the (one of the many)
+reason why people love Rust , TypeScript, and Pydantic.</p>
+<p>Knowing what type of data is coming in and going out of a function is
+critical! It means fewer bugs and more robust code.</p>
+<p>I will introduce you to the r-lib standalone checks. Here is a peek of
+some code from <code>{arcgisgeocode}</code> that helps make the function more type
+safe.</p>
+<img src="images/Untitled.png" style="width:50.0%" />
+<h2 id="what-is-type-safety">What is type safety?</h2>
+<p>A type safe language is one where each variable has a known and
+<em>validated</em> type. R <em><strong>is not type safe.</strong></em></p>
+<p>When you define a function in a type safe language, you have to specify
+the input types and the output types.</p>
+<p>Here is a function that scales one numeric variable by another.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function z-name z-r"><span class="z-entity z-name z-function z-r">scale_by</span> </span><span class="z-meta z-function z-r"><span class="z-keyword z-operator z-assignment z-r">&lt;-</span> </span><span class="z-meta z-function z-r"><span class="z-storage z-type z-function z-r">function</span></span><span class="z-meta z-function z-parameters z-r"><span class="z-punctuation z-section z-parameters z-begin z-r">(</span><span class="z-variable z-parameter z-r">x</span><span class="z-punctuation z-separator z-parameters z-r">,</span> <span class="z-variable z-parameter z-r">y</span><span class="z-punctuation z-section z-parameters z-end z-r">)</span></span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span><span class="z-source z-r">  x <span class="z-keyword z-operator z-arithmetic z-r">/</span> y
+</span><span class="z-source z-r"><span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></code></pre>
+<p><strong>This is not type safe</strong>. I can pass in a <strong>character</strong> vector a
+<strong>list</strong>, <strong>NULL</strong>, or even a <strong>POSIXct</strong> class. Sometimes R will do the
+appropriate conversions for us. But other times it wont.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">scale_by</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-constant z-numeric z-float z-decimal z-r">100</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>10<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">Error in x/y: non-numeric argument to binary operator
+</span></code></pre>
+<p><strong>You want to be in control of your function!</strong></p>
+<h2 id="why-type-safety-is-important">Why type safety is important</h2>
+<p>Type safety allows us to catch and prevent errors early and thus
+<strong>prevent unintended bugs</strong>. Without type safety, R may perform silent
+<strong>coercions</strong> or your code may run as R intended—but not <em>as you</em>
+intended.</p>
+<div class="aside">
+<p>💡 A type <strong>coercion</strong> is a type conversion that occurs because one type
+does not match the other and is done silently. <strong>Casting</strong> is when you
+explicitly change the type—e.g. calling <code>as.integer()</code> on <code>doubles()</code></p>
+</div>
+<p>Adding type guarantees ensures that your code functions as intended.</p>
+<h2 id="type-safety-in-other-languages">Type safety in other languages</h2>
+<p>Type safety is becoming an increasingly common and more important aspect
+of programming. People love Rust for its type safety among other things.
+Rust (and C/++ and Java and Scala etc) is a <strong>statically typed</strong>
+language.</p>
+<div class="aside">
+<p>💡 A statically typed language requires you to specify the <em>type</em> of
+object that are used in a function and elsewhere.</p>
+</div>
+<h3 id="rust-s-static-typing">Rust’s static typing</h3>
+<p>In Rust, you define a type and that type is unique.</p>
+<pre data-lang="rust" class="language-rust z-code"><code class="language-rust" data-lang="rust"><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-storage z-type z-struct z-rust">struct</span> </span><span class="z-meta z-struct z-rust"><span class="z-entity z-name z-struct z-rust">Person</span> </span><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust">    <span class="z-variable z-other z-member z-rust">name</span><span class="z-punctuation z-separator z-type z-rust">:</span> String,
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust">    <span class="z-variable z-other z-member z-rust">age</span><span class="z-punctuation z-separator z-type z-rust">:</span> <span class="z-storage z-type z-rust">u8</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust"></span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span></span>
+</span></code></pre>
+<p>To create a person you would write
+<code>Person { name: "Josiah".to_string(), age: 28 }</code> . This is recognized as
+a <code>Person</code> struct. In Rust, a function must know its argument types, for
+example:</p>
+<pre data-lang="rust" class="language-rust z-code"><code class="language-rust" data-lang="rust"><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-function z-rust"><span class="z-storage z-type z-function z-rust">fn</span> </span><span class="z-entity z-name z-function z-rust">calculate_birth_year</span></span><span class="z-meta z-function z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-punctuation z-section z-parameters z-begin z-rust">(</span><span class="z-variable z-parameter z-rust">person</span><span class="z-punctuation z-separator z-rust">:</span> <span class="z-keyword z-operator z-rust">&amp;</span>Person</span><span class="z-meta z-function z-rust"><span class="z-meta z-function z-parameters z-rust"><span class="z-punctuation z-section z-parameters z-end z-rust">)</span></span></span></span><span class="z-meta z-function z-rust"> <span class="z-meta z-function z-return-type z-rust"><span class="z-punctuation z-separator z-rust">-&gt;</span> <span class="z-storage z-type z-rust">i32</span></span> </span><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">    <span class="z-comment z-line z-double-slash z-rust"><span class="z-punctuation z-definition z-comment z-rust">//</span> use chrono::DateLike
+</span></span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">    <span class="z-storage z-type z-rust">let</span> now <span class="z-keyword z-operator z-assignment z-rust">=</span> <span class="z-meta z-path z-rust">chrono<span class="z-punctuation z-accessor z-rust">::</span></span><span class="z-meta z-path z-rust">Utc<span class="z-punctuation z-accessor z-rust">::</span></span>now<span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span><span class="z-punctuation z-terminator z-rust">;</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust">    <span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span>now<span class="z-punctuation z-accessor z-dot z-rust">.</span><span class="z-support z-function z-rust">year</span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-begin z-rust">(</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span> <span class="z-keyword z-operator z-arithmetic z-rust">-</span> person<span class="z-punctuation z-accessor z-dot z-rust">.</span>age <span class="z-keyword z-operator z-rust">as</span> <span class="z-storage z-type z-rust">i32</span></span><span class="z-meta z-group z-rust"><span class="z-punctuation z-section z-group z-end z-rust">)</span></span> 
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-function z-rust"><span class="z-meta z-block z-rust"></span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span></span>
+</span></code></pre>
+<p>This function takes a reference to a <code>Person</code> and calculates (roughly)
+what year they were born in. If I had another struct called <code>Me</code> with
+the same exact fields, this wouldn’t work.</p>
+<pre data-lang="rust" class="language-rust z-code"><code class="language-rust" data-lang="rust"><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-storage z-type z-struct z-rust">struct</span> </span><span class="z-meta z-struct z-rust"><span class="z-entity z-name z-struct z-rust">Me</span> </span><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-begin z-rust">{</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust">    <span class="z-variable z-other z-member z-rust">name</span><span class="z-punctuation z-separator z-type z-rust">:</span> String,
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust">    <span class="z-variable z-other z-member z-rust">age</span><span class="z-punctuation z-separator z-type z-rust">:</span> <span class="z-storage z-type z-rust">u8</span>
+</span></span></span><span class="z-source z-rust"><span class="z-meta z-struct z-rust"><span class="z-meta z-block z-rust"></span><span class="z-meta z-block z-rust"><span class="z-punctuation z-section z-block z-end z-rust">}</span></span></span>
+</span></code></pre>
+<p>Even though <code>Me</code> and <code>Person</code> have the exact same field types, they are
+recognized as different types.</p>
+<p>This is different than how JavaScript does this.</p>
+<h3 id="typescript-interfaces">TypeScript Interfaces</h3>
+<p>The JavaScript folks now have TypeScript which is pseudo-type safety.
+TypeScript uses <strong>duck typing.</strong></p>
+<div class="aside">
+<p>💡 If it looks like a duck, swims like a duck, and quacks like a duck,
+this it probably <em>is</em> a duck.</p>
+</div>
+<p>If I understand TypeScript correctly, they use a type <strong>interface.</strong>
+These feel similar to struct definitions in Rust.</p>
+<pre data-lang="tsx" class="language-tsx z-code"><code class="language-tsx" data-lang="tsx"><span class="z-source z-tsx"><span class="z-meta z-interface z-tsx"><span class="z-storage z-type z-interface z-tsx">interface</span> <span class="z-entity z-name z-type z-interface z-tsx">Person</span> <span class="z-punctuation z-definition z-block z-tsx">{</span>
+</span></span><span class="z-source z-tsx"><span class="z-meta z-interface z-tsx"><span class="z-meta z-field z-declaration z-tsx">    <span class="z-meta z-definition z-property z-tsx"><span class="z-variable z-object z-property z-tsx">name</span></span><span class="z-meta z-type z-annotation z-tsx"><span class="z-keyword z-operator z-type z-annotation z-tsx">:</span> <span class="z-support z-type z-primitive z-tsx">string</span></span></span><span class="z-punctuation z-terminator z-statement z-tsx">;</span>
+</span></span><span class="z-source z-tsx"><span class="z-meta z-interface z-tsx"><span class="z-meta z-field z-declaration z-tsx">    <span class="z-meta z-definition z-property z-tsx"><span class="z-variable z-object z-property z-tsx">age</span></span><span class="z-meta z-type z-annotation z-tsx"><span class="z-keyword z-operator z-type z-annotation z-tsx">:</span> <span class="z-support z-type z-primitive z-tsx">number</span></span></span><span class="z-punctuation z-terminator z-statement z-tsx">;</span>
+</span></span><span class="z-source z-tsx"><span class="z-meta z-interface z-tsx"><span class="z-punctuation z-definition z-block z-tsx">}</span></span>
+</span></code></pre>
+<p>In TypeScript, these interfaces are a way to standardizes what a type
+<em>looks like</em>. But not an actual type themself! This is (I think), the
+equivalent JavaScript code to calculate the birth year of an individual.</p>
+<pre data-lang="tsx" class="language-tsx z-code"><code class="language-tsx" data-lang="tsx"><span class="z-source z-tsx"><span class="z-meta z-function z-tsx"><span class="z-storage z-type z-function z-tsx">function</span> <span class="z-meta z-definition z-function z-tsx"><span class="z-entity z-name z-function z-tsx">calculateBirthYear</span></span><span class="z-meta z-parameters z-tsx"><span class="z-punctuation z-definition z-parameters z-begin z-tsx">(</span><span class="z-variable z-parameter z-tsx">person</span><span class="z-meta z-type z-annotation z-tsx"><span class="z-keyword z-operator z-type z-annotation z-tsx">:</span> <span class="z-entity z-name z-type z-tsx">Person</span></span><span class="z-punctuation z-definition z-parameters z-end z-tsx">)</span></span> <span class="z-meta z-block z-tsx"><span class="z-punctuation z-definition z-block z-tsx">{</span>
+</span></span></span><span class="z-source z-tsx"><span class="z-meta z-function z-tsx"><span class="z-meta z-block z-tsx">        <span class="z-meta z-function-call z-tsx"><span class="z-support z-class z-builtin z-tsx">Date</span></span><span class="z-meta z-brace z-round z-tsx">(</span><span class="z-meta z-brace z-round z-tsx">)</span><span class="z-meta z-function-call z-tsx"><span class="z-punctuation z-accessor z-tsx">.</span><span class="z-support z-function z-tsx">getFullYear</span></span><span class="z-meta z-brace z-round z-tsx">(</span><span class="z-meta z-brace z-round z-tsx">)</span> <span class="z-keyword z-operator z-arithmetic z-tsx">-</span> <span class="z-variable z-other z-object z-tsx">person</span><span class="z-punctuation z-accessor z-tsx">.</span><span class="z-variable z-other z-property z-tsx">age</span>
+</span></span></span><span class="z-source z-tsx"><span class="z-meta z-function z-tsx"><span class="z-meta z-block z-tsx"><span class="z-punctuation z-definition z-block z-tsx">}</span></span></span>
+</span></code></pre>
+<p>With this, though, you don’t actually need to have an instance of
+<code>Person</code> . Instead, you can have a normal JavaScript object that <em>looks</em>
+(and quacks) just like the <code>Person</code> type.</p>
+<pre data-lang="tsx" class="language-tsx z-code"><code class="language-tsx" data-lang="tsx"><span class="z-source z-tsx"><span class="z-meta z-var z-expr z-tsx"><span class="z-storage z-type z-tsx">const</span> <span class="z-meta z-var-single-variable z-expr z-tsx"><span class="z-meta z-definition z-variable z-tsx"><span class="z-variable z-other z-constant z-tsx">john</span></span><span class="z-meta z-type z-annotation z-tsx"><span class="z-keyword z-operator z-type z-annotation z-tsx">:</span> <span class="z-entity z-name z-type z-tsx">Person</span> </span></span><span class="z-keyword z-operator z-assignment z-tsx">=</span> <span class="z-meta z-objectliteral z-tsx"><span class="z-punctuation z-definition z-block z-tsx">{</span>
+</span></span></span><span class="z-source z-tsx"><span class="z-meta z-var z-expr z-tsx"><span class="z-meta z-objectliteral z-tsx">    <span class="z-meta z-object z-member z-tsx"><span class="z-meta z-object-literal z-key z-tsx">name</span></span><span class="z-meta z-object z-member z-tsx"><span class="z-meta z-object-literal z-key z-tsx"><span class="z-punctuation z-separator z-key-value z-tsx">:</span></span> <span class="z-string z-quoted z-single z-tsx"><span class="z-punctuation z-definition z-string z-begin z-tsx">&#39;</span>John Doe<span class="z-punctuation z-definition z-string z-end z-tsx">&#39;</span></span></span><span class="z-punctuation z-separator z-comma z-tsx">,</span>
+</span></span></span><span class="z-source z-tsx"><span class="z-meta z-var z-expr z-tsx"><span class="z-meta z-objectliteral z-tsx">    <span class="z-meta z-object z-member z-tsx"><span class="z-meta z-object-literal z-key z-tsx">age</span></span><span class="z-meta z-object z-member z-tsx"><span class="z-meta z-object-literal z-key z-tsx"><span class="z-punctuation z-separator z-key-value z-tsx">:</span></span> <span class="z-constant z-numeric z-decimal z-tsx">30</span>
+</span></span></span></span><span class="z-source z-tsx"><span class="z-meta z-var z-expr z-tsx"><span class="z-meta z-objectliteral z-tsx"><span class="z-meta z-object z-member z-tsx"></span><span class="z-punctuation z-definition z-block z-tsx">}</span></span></span>
+</span><span class="z-source z-tsx">
+</span><span class="z-source z-tsx"><span class="z-meta z-var z-expr z-tsx"><span class="z-storage z-type z-tsx">let</span> <span class="z-meta z-var-single-variable z-expr z-tsx"><span class="z-meta z-definition z-variable z-tsx"><span class="z-variable z-other z-readwrite z-tsx">jane</span></span> </span><span class="z-keyword z-operator z-assignment z-tsx">=</span> <span class="z-meta z-objectliteral z-tsx"><span class="z-punctuation z-definition z-block z-tsx">{</span> <span class="z-meta z-object z-member z-tsx"><span class="z-meta z-object-literal z-key z-tsx">name</span></span><span class="z-meta z-object z-member z-tsx"><span class="z-meta z-object-literal z-key z-tsx"><span class="z-punctuation z-separator z-key-value z-tsx">:</span></span> <span class="z-string z-quoted z-single z-tsx"><span class="z-punctuation z-definition z-string z-begin z-tsx">&#39;</span>Jane Doe<span class="z-punctuation z-definition z-string z-end z-tsx">&#39;</span></span></span><span class="z-punctuation z-separator z-comma z-tsx">,</span> <span class="z-meta z-object z-member z-tsx"><span class="z-meta z-object-literal z-key z-tsx">age</span></span><span class="z-meta z-object z-member z-tsx"><span class="z-meta z-object-literal z-key z-tsx"><span class="z-punctuation z-separator z-key-value z-tsx">:</span></span> <span class="z-constant z-numeric z-decimal z-tsx">28</span> </span><span class="z-punctuation z-definition z-block z-tsx">}</span></span></span>
+</span><span class="z-source z-tsx">
+</span><span class="z-source z-tsx"><span class="z-meta z-function-call z-tsx"><span class="z-support z-class z-console z-tsx">console</span><span class="z-punctuation z-accessor z-tsx">.</span><span class="z-support z-function z-console z-tsx">log</span></span><span class="z-meta z-brace z-round z-tsx">(</span><span class="z-meta z-function-call z-tsx"><span class="z-entity z-name z-function z-tsx">calculateBirthYear</span></span><span class="z-meta z-brace z-round z-tsx">(</span><span class="z-variable z-other z-readwrite z-tsx">john</span><span class="z-meta z-brace z-round z-tsx">)</span><span class="z-meta z-brace z-round z-tsx">)</span><span class="z-punctuation z-terminator z-statement z-tsx">;</span>
+</span><span class="z-source z-tsx"><span class="z-meta z-function-call z-tsx"><span class="z-support z-class z-console z-tsx">console</span><span class="z-punctuation z-accessor z-tsx">.</span><span class="z-support z-function z-console z-tsx">log</span></span><span class="z-meta z-brace z-round z-tsx">(</span><span class="z-meta z-function-call z-tsx"><span class="z-entity z-name z-function z-tsx">calculateBirthYear</span></span><span class="z-meta z-brace z-round z-tsx">(</span><span class="z-variable z-other z-readwrite z-tsx">jane</span><span class="z-meta z-brace z-round z-tsx">)</span><span class="z-meta z-brace z-round z-tsx">)</span><span class="z-punctuation z-terminator z-statement z-tsx">;</span>
+</span></code></pre>
+<p>These both work.</p>
+<h2 id="type-safety-in-r">Type safety in R</h2>
+<p>Like JavaScript, and Python (yes I know about type hinting, thats opt in
+and different), R doesn’t do any validation of arguments. TypeScript can
+add a layer of Duck Typing checks to the functions which is great for
+them. But what about us?</p>
+<p>How can we make our R functions safer? In R, (almost) everything is a
+vector. The <code>r-lib</code> team has (very quietly) created what I think is the
+greatest contribution to the tidyverse ecosystem in a long time in the
+form of standalone type check functions.</p>
+<h2 id="stand-alone-type-checks">Stand-alone type checks</h2>
+<p>The standalone functions are quite unique. I’ve never seen anything
+quite like them. They’re literally standalone R files with a bunch of
+handy R functions. It’s like adding a package but without adding it as a
+dependency.</p>
+<p>These are functions prefixed with <code>check_</code> that test inputs for the most
+common types. They provide beautiful error messages and have commonly
+needed flexibility.</p>
+<h3 id="add-type-checks-to-your-project">Add type checks to your project</h3>
+<p>The usethis package has a handy function <code>use_standalone()</code> which will
+add these functions for you.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">usethis<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">use_standalone</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>r-lib/rlang<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">file</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>types-check<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<p>This is supposed to be used in the context of an R package but can still
+be used in any R script. THe function requires an R directory to be
+found at the root.</p>
+<h2 id="standalone-type-checks">Standalone type checks</h2>
+<p>We can get <em>really far</em> in enhancing type safety</p>
+<p><a href="https://usethis.r-lib.org/reference/use_standalone.html">https://usethis.r-lib.org/reference/use_standalone.html</a></p>
+<p>Since this isn’t an R package, I will source the functions. Otherwise,
+run <code>devtools::load_all()</code> for the functions to become available.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">getwd</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">[1] &quot;/Users/josiahparry/github/misc/blog-zola/content/posts/2024-06-30-type-safety&quot;
+</span></code></pre>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">source</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>R/import-standalone-obj-type.R<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">local</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-language z-r">TRUE</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">source</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>R/import-standalone-types-check.R<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">local</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-language z-r">TRUE</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">library</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>rlang<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<div class="alert-note">
+<p>These standalone checks require that <code>{rlang}</code> be an imported package.
+Use <code>usethis::use_package("rlang")</code>. It is a very small package and has
+no dependencies. Very little to lose by adding it.</p>
+</div>
+<h2 id="scalar-checks">Scalar checks</h2>
+<p>R doesn’t have the concept of a scalar. Though using a scalar is still
+very useful in R.</p>
+<p>The standalone checks provide helpers for checking scalar values. There
+a quite a few but the ones I use most commonly are:</p>
+<ul>
+<li><code>check_string()</code></li>
+<li><code>check_bool()</code></li>
+<li><code>check_number_whole()</code></li>
+<li><code>check_number_decimal()</code></li>
+</ul>
+<h3 id="usage">Usage</h3>
+<p>Each of these functions provide the arguments:</p>
+<ul>
+<li><code>allow_na</code></li>
+<li><code>allow_null</code></li>
+</ul>
+<p>This is helpful because using NULL is often used as a default argument
+for optional arguments.</p>
+<p>For example we can check that something is a string:</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">check_string</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>a<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<p>But when it is a character vector:</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">check_string</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">c</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>hello<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>world<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">Error:
+</span><span class="z-text z-plain">! `c(&quot;hello&quot;, &quot;world&quot;)` must be a single string, not a character vector.
+</span></code></pre>
+<p>This gives us an informative error telling the user what type was found
+and expected.</p>
+<p>In the case of <code>NULL</code>s we can provide the <code>allow_null</code> argument which
+allows the test to pass.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">check_string</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-constant z-language z-r">NULL</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">check_string</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-constant z-language z-r">NULL</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">allow_null</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-language z-r">TRUE</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<h2 id="vector-checks">Vector checks</h2>
+<p>In addition to scalar checks, there are many handy vectorized checks.</p>
+<p>There are vector checks these are:</p>
+<ul>
+<li><code>check_character()</code></li>
+<li><code>check_logical()</code></li>
+<li><code>check_data_frame()</code></li>
+</ul>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">check_character</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-constant z-numeric z-float z-decimal z-r">1</span><span class="z-keyword z-other z-r">:</span><span class="z-constant z-numeric z-float z-decimal z-r">2</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">check_logical</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">c</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>a<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>b<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">check_data_frame</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-storage z-type z-r">list</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-variable z-parameter z-r">a</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-numeric z-float z-decimal z-r">1</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">b</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-numeric z-float z-decimal z-r">2</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">Error:
+</span><span class="z-text z-plain">! `1:2` must be a character vector, not an integer vector.
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Error:
+</span><span class="z-text z-plain">! `c(&quot;a&quot;, &quot;b&quot;)` must be a logical vector, not a character vector.
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Error:
+</span><span class="z-text z-plain">! `list(a = 1, b = 2)` must be a data frame, not a list.
+</span></code></pre>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <!-- Basecoat sidebar component -->
+        <script
+            src="https://josiah.rs/js/basecoat/sidebar.min.js"
+            defer
+        ></script>
+        <!-- Sidebar toggle for mobile -->
+        <script src="https://josiah.rs/js/sidebar-toggle.js" defer></script>
+        <!-- Custom tabs for panel-tabset -->
+        <script src="https://josiah.rs/js/tabs.js" defer></script>
+        <!-- Search functionality -->
+        <script src="https://josiah.rs/js/search.js" defer></script>
+        <script>
+            (() => {
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+
+                    // Toggle syntax highlighting themes via media attribute
+                    const darkSyntax = document.getElementById("syntax-dark");
+                    const lightSyntax = document.getElementById("syntax-light");
+                    if (darkSyntax && lightSyntax) {
+                        darkSyntax.media = dark ? "all" : "not all";
+                        lightSyntax.media = dark ? "not all" : "all";
+                    }
+
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        ></script>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"
+        ></script>
+        
+    </body>
+</html>

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Josiah Parry - sfdep</title>
+    <link rel="self" type="application/atom+xml" href="https://josiah.rs/categories/sfdep/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://josiah.rs"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2022-11-07T00:00:00+00:00</updated>
+    <id>https://josiah.rs/categories/sfdep/atom.xml</id>
+    <entry xml:lang="en">
+        <title>spacetime representations aren&#x27;t good—yet</title>
+        <published>2022-11-07T00:00:00+00:00</published>
+        <updated>2022-11-07T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/spacetime-representations/"/>
+        <id>https://josiah.rs/posts/spacetime-representations/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/spacetime-representations/">&lt;p&gt;My beliefs can be summarized somewhat succinctly.&lt;&#x2F;p&gt;
+&lt;p&gt;We should not limit space-time data to dates or timestamps.&lt;&#x2F;p&gt;
+&lt;p&gt;The R ecosystem should always utilize a normalized approach as described
+above. Further, a representation should use friendly R objects. The
+friendliest object is a data frame. A new representation should allow
+context switching between geometries and temporal data. That new
+representation should always use time-long formats and the geometries
+should &lt;em&gt;never&lt;&#x2F;em&gt; be repeated.&lt;&#x2F;p&gt;
+&lt;p&gt;A spacetime representation should give users complete and total freedom
+to manipulate their data as they see fit (e.g. dplyr or data.table
+operations).&lt;&#x2F;p&gt;
+&lt;p&gt;The only time to be strict in the format of spacetime data is when
+statstics are going to be derived from the data.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;background&quot;&gt;Background&lt;&#x2F;h2&gt;
+&lt;p&gt;While implementing emerging hotspot analysis in &lt;code&gt;sfdep&lt;&#x2F;code&gt; I encountered
+the need for a formalized spacetime class in R. As my focus in sfdep has
+been tidyverse-centric functionality, I desired a “tidy” data frame that
+could be used as a spacetime representation. Moreover, space (in the
+spacetime representation) should be represented as an sf or sfc object.
+In sfdep I introduced the new S3 class &lt;code&gt;spacetime&lt;&#x2F;code&gt; based on Edzer
+Pebesma’s 2012 article &lt;a href=&quot;https:&#x2F;&#x2F;www.jstatsoft.org&#x2F;article&#x2F;view&#x2F;v051i07&quot;&gt;“spacetime: Spatio-Temporal Data in
+R”&lt;&#x2F;a&gt; and Thomas Lin
+Pederson’s &lt;a href=&quot;https:&#x2F;&#x2F;ggraph.data-imaginist.com&#x2F;articles&#x2F;tidygraph.html&quot;&gt;tidygraph
+package&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;representations-of-spatial-data&quot;&gt;Representations of Spatial Data&lt;&#x2F;h2&gt;
+&lt;p&gt;Before describing my preferences in a spacetime representation in R, I
+want to review possible representations of spacetime data.&lt;&#x2F;p&gt;
+&lt;p&gt;Pebesma (2012) outlines three tabular representations of spatio-temporal
+data.&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;“&lt;strong&gt;Time-wide&lt;&#x2F;strong&gt;: Where different columns reflect different moments in
+time.&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Space-wide&lt;&#x2F;strong&gt;: Where different columns reflect different measurement
+locations or areas.&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;Long formats&lt;&#x2F;strong&gt;: Where each record reflects a single time and space
+combination.&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;The “long format” is what we may consider “tidy” per &lt;a href=&quot;https:&#x2F;&#x2F;www.jstatsoft.org&#x2F;article&#x2F;view&#x2F;v059i10&quot;&gt;Wickham
+(2014)&lt;&#x2F;a&gt;. In this case,
+both time and space are variables with unique combinations as rows.&lt;&#x2F;p&gt;
+&lt;p&gt;Pebesma further qualifies spatial data representation into a “sparse
+grid” and a “full grid.” Say we have a variable X. In a spatio temporal
+full grid we will store all combinations of time (t) and locations (i) .
+If Xi is missing at any of those location and time combinations (Xit is
+missing), the value of X is recorded as a missing value. Whereas in a
+sparse grid, if there is any missing data, the observation is omitted.
+Necessarily, in a full grid there will be i x t number of rows. In a
+sparse grid there will be fewer than i x t rows.&lt;&#x2F;p&gt;
+&lt;p&gt;Very recently in an r-spatial &lt;a href=&quot;https:&#x2F;&#x2F;r-spatial.org&#x2F;r&#x2F;2022&#x2F;09&#x2F;12&#x2F;vdc.html#multiple-long-table-forms-database-normalization&quot;&gt;blog post, “Vector Data
+Cubes”&lt;&#x2F;a&gt;,
+Edzer describes another approach to representing spacetime using a
+database normalization approach. Database normalization is a process
+that reduces redundancy by creating a number of smaller tables
+containing IDs and values. These tables can then be joined only when
+needed. When we consider spacetime data, we have repeating geometries
+across time. It is inefficient to to keep multiple copies of the
+geometry. Instead, we can keep track of the unique ID of a geometry and
+store the geometry in another table.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;sfdep-spacetime-representation&quot;&gt;sfdep spacetime representation&lt;&#x2F;h2&gt;
+&lt;p&gt;The spacetime class in &lt;a href=&quot;https:&#x2F;&#x2F;sfdep.josiahparry.com&quot;&gt;sfdep&lt;&#x2F;a&gt; is in
+essence a database normalization approach (see above blog post). It is
+implemented with the database normalization approach and the ergonomics
+of &lt;a href=&quot;https:&#x2F;&#x2F;tidygraph.data-imaginist.com&#x2F;&quot;&gt;tidygraph&lt;&#x2F;a&gt; in mind.&lt;&#x2F;p&gt;
+&lt;p&gt;The objective of the spacetime class in sfdep is to&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;allow complete freedom of data manipulation via data.frame objects,&lt;&#x2F;li&gt;
+&lt;li&gt;prevent duplication of geometries,&lt;&#x2F;li&gt;
+&lt;li&gt;and provide leeway in what “time” can be defined as.&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Similar to tidygraph, &lt;code&gt;spacetime&lt;&#x2F;code&gt; provides access to two contexts: data
+and geometry. The data context is a data frame and the geometry context.
+These are linked based on a unqie identifie that is present in both
+contexts.&lt;&#x2F;p&gt;
+&lt;details&gt;
+&lt;summary&gt;
+&lt;p&gt;&lt;em&gt;R code&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;summary&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;library&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;dplyr&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;times &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;seq&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;Sys.time&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; 
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;Sys.time&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-arithmetic z-r&quot;&gt;+&lt;&#x2F;span&gt; lubridate&lt;span class=&quot;z-punctuation z-accessor z-colons z-r&quot;&gt;::&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;hours&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;5&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;length.out&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;5&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;locations &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;c&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;001&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;002&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;data_context &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; tidyr&lt;span class=&quot;z-punctuation z-accessor z-colons z-r&quot;&gt;::&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;crossing&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;location&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; locations&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;time&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; times
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;|&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;&amp;gt;&lt;&#x2F;span&gt; 
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;mutate&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;value&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;rnorm&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;n&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;|&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;&amp;gt;&lt;&#x2F;span&gt; 
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;arrange&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;location&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;library&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;sf&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Linking to GEOS 3.13.0, GDAL 3.8.5, PROJ 9.5.1; sf_use_s2() is TRUE
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;geometry_context &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;st_sfc&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-storage z-type z-r&quot;&gt;list&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;st_point&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;c&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;0&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;1&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;st_point&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;c&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;1&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;1&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;|&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;&amp;gt;&lt;&#x2F;span&gt; 
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;st_as_sf&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;|&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;&amp;gt;&lt;&#x2F;span&gt; 
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;mutate&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;location&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;c&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;001&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;002&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Use the spacetime constructor&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;library&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;sfdep&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;spt &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;spacetime&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;.data&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; data_context&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;.geometry&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; geometry_context&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; 
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;.loc_col&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;location&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; 
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;.time_col&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;time&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Swap contexts with activate&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;activate&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;spt&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;geometry&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;spacetime ────
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Context:`geometry`
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;2 locations `location`
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;5 time periods `time`
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;── geometry context ────────────────────────────────────────────────────────────
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Simple feature collection with 2 features and 1 field Geometry type:
+POINT Dimension: XY Bounding box: xmin: 0 ymin: 1 xmax: 1 ymax: 1 CRS:
+NA x location 1 POINT (0 1) 001 2 POINT (1 1) 002&lt;&#x2F;p&gt;
+&lt;&#x2F;details&gt;
+&lt;p&gt;One of my very strong beliefs is that temporal data does not, and should
+not, always be represented as a date or a timestamp. This paradigm is
+too limiting. What about panel data where you’re measuring cohorts along
+periods 1 - 10? Should these be represented as dates? No, definitely
+not. Because of this, sfdep allows you to utilize any numeric column
+that can be sorted.&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;em&gt;Perhaps I’ve just spent too much time listening to ecometricians…&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;details&gt;
+&lt;summary&gt;
+&lt;p&gt;&lt;em&gt;example of using integers&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;summary&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;spacetime&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;mutate&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;data_context&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;period&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;row_number&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  geometry_context&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; 
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;.loc_col&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;location&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;.time_col&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;period&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;spacetime ────
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Context:`data`
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;2 locations `location`
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;10 time periods `period`
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;── data context ────────────────────────────────────────────────────────────────
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;# A tibble: 10 × 4
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;   location time                  value period
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; * &amp;lt;chr&amp;gt;    &amp;lt;dttm&amp;gt;                &amp;lt;dbl&amp;gt;  &amp;lt;int&amp;gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 1 001      2025-12-03 14:46:55  0.469       1
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 2 001      2025-12-03 16:01:55  0.531       2
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 3 001      2025-12-03 17:16:55 -2.30        3
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 4 001      2025-12-03 18:31:55 -0.0152      4
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 5 001      2025-12-03 19:46:55  2.25        5
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 6 002      2025-12-03 14:46:55 -0.0245      6
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 7 002      2025-12-03 16:01:55  0.313       7
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 8 002      2025-12-03 17:16:55 -0.263       8
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 9 002      2025-12-03 18:31:55  0.158       9
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;10 002      2025-12-03 19:46:55  0.436      10
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;details&gt;
+&lt;h2 id=&quot;qualifiers&quot;&gt;Qualifiers&lt;&#x2F;h2&gt;
+&lt;p&gt;I don’t think my spacetime class is the panacea. I don’t have the
+technical chops to make a great data format. I also don’t want to have
+that burden. Additionally, the class is desgned with lattice data in
+mind. I don’t think it is sufficient for trajectories or point pattern
+without repeating locations.&lt;&#x2F;p&gt;
+&lt;p&gt;There’s a new R package called &lt;code&gt;cubble&lt;&#x2F;code&gt; for spatio-temporal data. I’ve
+not explored it. It may be better suited to your tidy-centric
+spatio-temporal data.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

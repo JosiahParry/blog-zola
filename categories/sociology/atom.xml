@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Josiah Parry - sociology</title>
+    <link rel="self" type="application/atom+xml" href="https://josiah.rs/categories/sociology/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://josiah.rs"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2018-11-25T00:00:00+00:00</updated>
+    <id>https://josiah.rs/categories/sociology/atom.xml</id>
+    <entry xml:lang="en">
+        <title>US Representation: Part I</title>
+        <published>2018-11-25T00:00:00+00:00</published>
+        <updated>2018-11-25T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/us-representation-i/"/>
+        <id>https://josiah.rs/posts/us-representation-i/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/us-representation-i/">&lt;p&gt;Before the United States created the Constitution, something called the &lt;a href=&quot;https:&#x2F;&#x2F;history.state.gov&#x2F;milestones&#x2F;1776-1783&#x2F;articles&quot;&gt;&lt;em&gt;Articles of Confederation&lt;&#x2F;em&gt;&lt;&#x2F;a&gt; defined what the US Government would look like. It was the first attempt at creating some sort of agreement between the 13 original states to form a central government. In the end, the Articles of Confederation made the new central government too weak to accomplish anything. Then, in 1787 representatives from each state met in Philadelphia to entirely scrap the Articles of Confederation in a meeting that became known as the &lt;a href=&quot;https:&#x2F;&#x2F;history.state.gov&#x2F;milestones&#x2F;1784-1800&#x2F;convention-and-ratification&quot;&gt;Constitutional Convention&lt;&#x2F;a&gt;. They would then end up creating the Constitution of the United States of America which we all know today.&lt;&#x2F;p&gt;
+&lt;p&gt;During this time, there were three main issues at hand. Representatives of the convention sought to give each state enough autonomy to function independently. They engaged in heated debated about how much power each state should be given and eventually, the issue of slavery --- (3) how would slaves be counted for tax and representation purposes?&lt;&#x2F;p&gt;
+&lt;p&gt;The debate surrounding how much power (or representation) that would be given to each state in the new government was the source of much rancour at the convention. There were two leading ideas that addressed this problem. One of which was that each state would have an equal say regardless of its physical size or the number of people within it. The other was that each state would have power relative to their total population.&lt;&#x2F;p&gt;
+&lt;p&gt;These ideas were presented as the &lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;New_Jersey_Plan&quot;&gt;&lt;em&gt;New Jersey Plan&lt;&#x2F;em&gt;&lt;&#x2F;a&gt; and the &lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Virginia_Plan&quot;&gt;&lt;em&gt;Virginia Plan&lt;&#x2F;em&gt;&lt;&#x2F;a&gt;. James Madison drafted the Virginia Plan which also would be known as the &quot;large-state-plan&quot; and was intended to introduce proportional representation---effectively giving states with the most people the most power.&lt;&#x2F;p&gt;
+&lt;p&gt;Small states, feeling threatened by this, introduced the New Jersey plan. The New Jersey plan was an attempt to level the playing field between small and big states. The New Jersey plan would give each state 1 vote in the new government and would allow states like Delaware to have as much weight in votes as big states.&lt;&#x2F;p&gt;
+&lt;p&gt;In a move that would be known as the &lt;a href=&quot;https:&#x2F;&#x2F;www.senate.gov&#x2F;artandhistory&#x2F;history&#x2F;minute&#x2F;A_Great_Compromise.htm&quot;&gt;Great Compromise&lt;&#x2F;a&gt; (or the Connecticut compromise), the representatives from Connecticut (a medium sized state) suggested that both ideas be put into effect. This idea created what is called a &quot;bicameral legislature&quot;---a legislative (law-making) body with two parts.&lt;&#x2F;p&gt;
+&lt;p&gt;One part of the new government would provide equal representation for each of the states. This became known as the &lt;em&gt;Senate&lt;&#x2F;em&gt; which today has two representatives for each state. The other part of the new government became the &lt;em&gt;House of Representatives&lt;&#x2F;em&gt; (also known more generally as &quot;Congress&quot;). This new body gave each state &lt;em&gt;&quot;one [representative] for every Thirty Thousand [people]&quot;&lt;&#x2F;em&gt;. But as the US population grew so did the number of representatives in Washington DC. Eventually rules had to change to prevent the number of representatives from getting any more out of hand . Today, the House of Representatives has 435 congresspeople (more &lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;United_States_congressional_apportionment#Past_increases&quot;&gt;here&lt;&#x2F;a&gt;).&lt;&#x2F;p&gt;
+&lt;p&gt;Though the Connecticut compromise was an act of genius, it also implemented one of most reprehensible policies in US history: &lt;em&gt;the 3&#x2F;5ths compromise&lt;&#x2F;em&gt;. Slavery was the largest economic driving force in Southern states created by a seemingly endless supply of cost-free labor. Looking at the prospect of proportional representation, large slave owning states wanted each slave to be counted towards their population. For reference slaves composed 43% of the population of South Carolina, 41.6% of Virginia, 35.5% of Georgia, and 32% of North Carolina.&lt;&#x2F;p&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;img src=&quot;figs&#x2F;unnamed-chunk-1-1.png&quot; width=&quot;700px&quot; style=&quot;display: block; margin: auto;&quot; &#x2F;&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;But there is one major catch, slaves were treated as property and not people. They were not given the same &quot;inalienable rights&quot; as everyone else. This was seen as unfair because slaves would not &lt;em&gt;actually&lt;&#x2F;em&gt; be &lt;em&gt;represented&lt;&#x2F;em&gt; in congress. If only free people were to be counted, that would punish slave holding states and empower Northern states.&lt;&#x2F;p&gt;
+&lt;p&gt;Eventually representatives of the convention came to a solution, one that still haunts our country until this very day. It was decided that 3 out of every 5 slaves would be counted for representation purposes (called apportionment). This compromise gave Southern states more representative power than their free population actually dictated. This rule stayed in effect until 1865 when the 13th Amendment was ratified.&lt;&#x2F;p&gt;
+&lt;p&gt;This compromise created the government that we have today. It paved the foundation for the Senate and the House of Representatives. The effects of this decision are being seen today. During the time of the Connecticut Compromise the United States was still a fledgling rural nation. Today, we are a leader in industry, play an outsized role in global economics, and we have seen an enormous push to city and suburban areas. This compromise is demonstrating an increasing rural bias in American politics.&lt;&#x2F;p&gt;
+&lt;p&gt;In a following post I will examine the implications of increasing urbanization on governing and legislation in the United States.&lt;&#x2F;p&gt;
+&lt;p&gt;If you still feel like you want more, check out &lt;a href=&quot;https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=kCCmuftyj8A&quot;&gt;this&lt;&#x2F;a&gt; fun youtube video on constitutional compromises.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

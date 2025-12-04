@@ -1,0 +1,768 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            Spatial Data Science Across Languages | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+
+        <!-- Determine theme before loading syntax highlighting -->
+        <script>
+            (() => {
+                const stored = localStorage.getItem("themeMode");
+                // Use stored preference if exists, otherwise always default to dark
+                const isDark = stored ? stored === "dark" : true;
+
+                if (isDark) {
+                    document.documentElement.classList.add("dark");
+                }
+            })();
+        </script>
+
+        <!-- Syntax highlighting themes -->
+        <link rel="stylesheet" href="https://josiah.rs/syntax-dark.css" id="syntax-dark" />
+        <link rel="stylesheet" href="https://josiah.rs/syntax-light.css" id="syntax-light" />
+
+        <!-- KaTeX for math rendering -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        />
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-semibold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4 relative">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-sm bg-muted/50 border border-border"
+                id="search-input"
+            />
+            <div
+                id="search-results"
+                class="hidden absolute top-full left-4 -mt-1 w-96 max-h-96 overflow-y-auto bg-background border border-border rounded-lg shadow-lg z-50 p-2"
+            ></div>
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-2 text-sm pl-3 transition-colors font-medium border-l-2 border-primary -ml-px bg-sidebar-accent"
+                    >
+                        Posts
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Socials -->
+            <div
+                class="mt-4 block py-2 transition-colors font-medium px-3 text-sm bg-sidebar-accent"
+            >
+                <h2
+                    class="text-sm font-medium tracking-tight mb-2 text-muted-foreground border-b border-muted-foreground/20 pb-1"
+                >
+                    Socials
+                </h2>
+                <ul class="space-y-1.5">
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <polygon
+                                points="160 128 112 96 112 160 160 128"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M24,128c0,29.91,3.07,47.45,5.41,56.47A16,16,0,0,0,39,195.42C72.52,208.35,128,208,128,208s55.48.35,89-12.58a16,16,0,0,0,9.63-10.95c2.34-9,5.41-26.56,5.41-56.47s-3.07-47.45-5.41-56.47a16,16,0,0,0-9.63-11C183.48,47.65,128,48,128,48s-55.48-.35-89,12.58a16,16,0,0,0-9.63,11C27.07,80.54,24,98.09,24,128Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://www.youtube.com/@josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >YouTube</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <rect
+                                x="32"
+                                y="32"
+                                width="192"
+                                height="192"
+                                rx="8"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="120"
+                                y1="112"
+                                x2="120"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="88"
+                                y1="112"
+                                x2="88"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M120,140a28,28,0,0,1,56,0v36"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <circle cx="88" cy="84" r="12" />
+                        </svg>
+                        <a
+                            href="https://www.linkedin.com/in/josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >LinkedIn</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M119.83,56A52,52,0,0,0,76,32a51.92,51.92,0,0,0-3.49,44.7A49.28,49.28,0,0,0,64,104v8a48,48,0,0,0,48,48h48a48,48,0,0,0,48-48v-8a49.28,49.28,0,0,0-8.51-27.3A51.92,51.92,0,0,0,196,32a52,52,0,0,0-43.83,24Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,232V192a32,32,0,0,1,32-32h0a32,32,0,0,1,32,32v40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,208H72a32,32,0,0,1-32-32A32,32,0,0,0,8,144"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="http://github.com/josiahparry/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >GitHub</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M160,224H72a32,32,0,0,1-32-32V72A32,32,0,0,1,72,40H184a32,32,0,0,1,32,32v72a32,32,0,0,1-32,32H40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M128,136V104a24,24,0,0,0-48,0v32"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M176,136V104a24,24,0,0,0-48,0"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://fosstodon.org/@josi"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Mastodon</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                            class="w-4 h-4"
+                            fill="currentColor"
+                        >
+                            <path
+                                d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.698-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948"
+                            />
+                        </svg>
+                        <a
+                            href="https://bsky.app/profile/josiahparry.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Bluesky</a
+                        >
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">Spatial Data Science Across Languages</h1>
+
+         
+        <div class="flex flex-wrap gap-2 mb-4">
+            
+            <a
+                href="/categories/r"
+                class="badge-secondary cursor pointer"
+                >r</a
+            >
+            
+            <a
+                href="/categories/r-spatial"
+                class="badge-secondary cursor pointer"
+                >r-spatial</a
+            >
+            
+            <a
+                href="/categories/spatial"
+                class="badge-secondary cursor pointer"
+                >spatial</a
+            >
+            
+        </div>
+         
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >September 22, 2023</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><p>I feel very fortunate to have been invited to the first Spatial Data
+Science Across Languages (SDSL) workshop at the University of Münster. I
+am even more fortunate that I have an employer who sees the value in an
+event such as this and be my patron for it.</p>
+<p>The event brought together package maintainers from Julia, Python, and R
+languages to just <em>discuss</em>. The event was loosely framed around a few
+broad discussion topics that were varied and drifted.</p>
+<p>In general, the theme of the workshop was “standards.” We need standards
+be able to ensure cohesion not only <em>within</em> languages, but across them.
+Users should be able to move between languages and be able to expect
+similar behavior, have similar terminology, and expect the same analysis
+results.</p>
+<h2 id="arrow">Arrow</h2>
+<p>We started everything off by discussing Arrow which set the theme of
+“standards.” Arrow gets conflated at many thing all at once—I do that.
+At the core Arrow is a memory format specification. It describes how
+data should be held in memory.</p>
+<p>R holds objects in memory one way, Python another, and Julia another as
+well. Arrow describes just one way that specific types of object can be
+held in memory. GeoArrow is an extension of Arrow that specifies the
+memory layout for geometry arrays.</p>
+<h3 id="geoarrow">GeoArrow</h3>
+<p>Specifications like well-known text (WKT) and well-known binary (WKB)
+are encodings of a <em>single</em> geometry. GeoArrow recognizes that we almost
+never work with scalar objects alone. GeoArrow is a memory layout for an
+array of geometries.</p>
+<p><img src="https://josiah.rs/posts/sdsl/image.png" alt="" /></p>
+<p>If each language can hold Arrow arrays in memory, they can be passed
+from one tool to another with 0 cost. Python can create an arrow array
+and R can pick it up if it knows where it exists.</p>
+<p>The current approach looks something like this. Each tool serializes its
+data in one way. In order for another tool to use it, the data needs to
+be copied (memory inefficient) and converted (computationally expensive)
+into the appropriate format.</p>
+<div class="aside">
+<p>Maybe we ought to start framing adoption of Arrow as an effort to be
+more “green.” If we spend less time computing we use less energy which
+is overall a net positive for the world.</p>
+</div>
+<p><img src="https://josiah.rs/posts/sdsl/image-2.png" alt="" /></p>
+<p>The Arrow specification would allow data handoff between tools to be
+much more seamless and look like so:</p>
+<p><img src="https://josiah.rs/posts/sdsl/image-1.png" alt="" /></p>
+<p>This is a massive productivity improvement. There’s no computation cost
+in converting between one format to another saving time, energy, and
+money.</p>
+<div class="aside">
+<p>There’s a good chance that in order to adopt Arrow in <code>{sf}</code> there will
+be breaking changes. I am an advocate for breaking changes when they are
+for a good reason. Being on the leading edge is how to make a language
+succeed.</p>
+<p>I also think if we can move towards a “trait-driven” approach to spatial
+data frames, we can support both GeoArrow geometries as well as current
+<code>sfc</code> objects.</p>
+<p><a href="https://github.com/JosiahParry/sdf">Read my spatial data frame
+manifesto.</a></p>
+</div>
+<p>The key thing though, is that in order for Arrow to be useful, <strong>it has
+to be adopted widely</strong>. If GeoPandas uses Arrow and <code>{sf}</code> does not, we
+have to go through the copy and convert process anyways.</p>
+<h3 id="why-geoarrow-excites-me">Why GeoArrow excites me</h3>
+<p>The promise of Arrow and GeoArrow is that memory can be handed off
+between tools without any additional cost. This (in theory) lowers the
+bar for what is needed to hand off between tools and languages.
+Hopefully <a href="https://wesmckinney.com/blog/the-problem-with-the-data-science-language-wars/">ending the language
+wars</a></p>
+<p><a href="https://github.com/kylebarron">Kyle Barron</a> demonstrated really cool
+example use-case where he created GeoArrow arrays using
+<a href="https://github.com/geopolars/geopolars">GeoPolars</a>. That array was then
+written to a buffer and picked up by javascript. Since there was no
+serialization or deserialization it was unbelievably fast!</p>
+<p><img src="https://josiah.rs/posts/sdsl/image-3.png" alt="" /></p>
+<p>Additionally, we are seeing <a href="https://webassembly.org/">WebAssembly</a>
+proliferate in the data science community.
+<a href="https://webr.r-wasm.org/">WebR</a> provides R users with the ability to
+execute R in the browser. This is also possible in Python, Rust, Go, and
+I’m sure many others. Each language can be compiled to be used in the
+browser and hand off components between them.</p>
+<p>Client side computation will reduce the need for server side operations.
+If we can reduce the amount of hours that servers are constantly running
+by offloading lighter operations into the browser, we may be able to
+save money, energy, be more green, and create tools that do not
+necessarily require an active internet connection.</p>
+<h2 id="spatial-support">Spatial Support</h2>
+<p>We also discussed the more esoteric topic of <strong>spatial support</strong>. This
+was completely new to me. Support defines the relationship between an
+attribute to the geometry. There are two kinds:</p>
+<ul>
+<li><strong>point support</strong> - a constant values associated with every location
+in a geometry
+<ul>
+<li><em>example</em>: temperature measurement at a weather station</li>
+</ul>
+</li>
+<li><strong>block support</strong> - a value derived from aggregating measures over
+space
+<ul>
+<li><em>example</em>: population count in a census tract</li>
+</ul>
+</li>
+</ul>
+<div class="alert-tip">
+<p>Read <a href="https://r-spatial.org/book/01-hello.html#sec-support">chapter 1.6 of Spatial Data
+Science</a> (SDS) for
+more on this topic.</p>
+</div>
+<p>When geometries are manipulated and the associated attributes come along
+for the ride, support assumptions are often violated resulting in
+inaccurate calculations or maps.</p>
+<h3 id="attribute-geometry-relationships">Attribute-Geometry Relationships</h3>
+<p>SDS formalizes the relationship between attributes and geometry a bit
+further in something they call the <strong>Attribute-Geometry Relationship
+(AGR)</strong>. Attributes of spatial features can have one of 3 types of AGR:</p>
+<ul>
+<li>constant value (i.e. point support)</li>
+<li>aggregate value (i.e. block support)</li>
+<li>identity (i.e. attribute unique to a geometry)</li>
+</ul>
+<p>Knowing the relationships between geometries can be useful in tracking
+the assumptions of analyses. For example, taking the mean of an
+<em>aggregate</em> attribute such as median age, creates as assumptions of
+homogeneity in the aggregated areas and can contribute to the
+<a href="https://en.wikipedia.org/wiki/Modifiable_areal_unit_problem">modifiable areal unit problem
+(MAUP)</a>.</p>
+<h3 id="intensive-vs-extensive">Intensive vs Extensive</h3>
+<p>Spatial intensive vs extensive variables were also discussed in the
+context of spatial interpolation. I’m still quite unclear on how to
+conceptualize intensive and extensive variables. <a href="https://github.com/MobiTobi">Tobias
+G</a> pointed out that these terms come from
+physics and provided a useful non-geometry motivating example.</p>
+<blockquote>
+<p>“The price of an ingot of gold is an extensive property and its
+temperature would be intensive.”</p>
+</blockquote>
+<div class="aside">
+<p>The common example is that population is extensive and population
+density is intensive. This requires the assumption that population is
+<em>constant</em> across space. So the examples are more confusing than
+helpful. I have yet to come up with an example of a spatially intensive
+variable that makes sense.</p>
+<p>If you can think of one, please comment on below!</p>
+</div>
+<p><strong>Extensive</strong> variables are one that are associated with the physical
+geometry itself. <strong>Intensive</strong> ones <em>do not</em> change when a geometry is
+modified.</p>
+<p>If an ingot of gold is split into half the price changes, each piece is
+now worth less than the whole. But, assuming the room temperature didn’t
+change, the temperature of each piece remained the same.</p>
+<h3 id="domains">Domains</h3>
+<p>These properties of attributes are quite important but are forgotten
+about. One of the ideas raised in discussions was adding
+attribute-geometry relationship and a flag like <code>is_intensive</code> to a
+field domain.</p>
+<p>A
+<a href="https://desktop.arcgis.com/en/arcmap/latest/manage-data/geodatabases/an-overview-of-attribute-domains.htm">Domain</a>
+is a concept that <em>I think</em> originated at Esri. It allows you to specify
+the field type, range of valid values, as well as policies that
+determine how fields behave when they are split or merged. <a href="https://github.com/OSGeo/gdal/releases/tag/v3.3.0">Field
+domains were added to GDAL in version
+3.3</a>.</p>
+<p>Is there utility in adding <code>AGR</code> and (ex/in)tensive flags to a field
+domain?</p>
+<div class="aside">
+<p>Arrow allows for embedded metadata at an array and table level. Perhaps
+there should be a GeoArrow table (data frame) format spec too? I’d like
+that. It would fit with my generic spatial data frame manifesto as well.</p>
+</div>
+<h2 id="geodesic-first">Geodesic first</h2>
+<p>A good amount of attention was paid to geodesic coordinate operations.
+The conversation was kicked off by this “motivating example.”</p>
+<p><img src="https://josiah.rs/posts/sdsl/geopandas-geodesic.png" alt="" /></p>
+<div class="aside">
+<p>Really, I think this was just an excuse for Edzer to poke fun at the
+GeoPandas devs! 😵‍💫🤣</p>
+</div>
+<p>The example shows an area calculation on a dataset that uses a
+geographic coordinate system (GCS). Area, though, is typically
+calculated under the assumption that coordinates are on a plane
+(rectangle). With GCS, the data is on a circle. So if we calculate the
+area of angles the result is <em>definitely wrong</em>.</p>
+<div class="aside">
+<p>I think about it like calculating the area but cutting through the Earth
+like so: <img src="https://josiah.rs/posts/sdsl/circle.png" alt="" /></p>
+</div>
+<p>The open source ecosystem is behind on support of geodetic calculations.
+Data more often than not is captured using GCS and users often fail to
+project their data. It would be nice if tools did this.</p>
+<p>R supports spherical geometries by using <a href="https://r-spatial.github.io/s2/">Google’s S2
+library</a>. Python is presently building
+out support for S2. Some operations like buffering still aren’t made
+available by S2.</p>
+<h3 id="the-full-polygon">The “full polygon”</h3>
+<p>One interesting point that was brought up is that in a GCS there is a
+concept of a <strong>full polygon</strong>. This is the polygon that covers the
+entire ellipsoid. There is no way to capture this using typical
+coordinates.</p>
+<h2 id="spatial-weights-matrix-serialization">Spatial Weights Matrix Serialization</h2>
+<p>Probably the second most interesting topic to me was around how to store
+spatial weights matrixes. We didn’t really discuss the “how” of holding
+it memory. Though I think they can be held in memory as a ragged Arrow
+array of indices or IDs. What was quite interesting was the concept of
+<em>serializing</em> the spatial weights matrix.</p>
+<p><a href="https://martinfleischmann.net/">Martin</a> mentioned that in Pysal they
+had moved to serializing spatial weights as a parquet file which greatly
+improved their speed. In essence, spatial weights are stored in a 3
+column table.</p>
+<div class="aside">
+<table>
+<caption>Spatial Weights Matrix</caption>
+<thead>
+<tr>
+<th>i</th>
+<th>j</th>
+<th>wij</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>3</td>
+<td>0.5</td>
+</tr>
+<tr>
+<td>1</td>
+<td>2</td>
+<td>0.75</td>
+</tr>
+<tr>
+<td>1</td>
+<td>9</td>
+<td>0.3</td>
+</tr>
+<tr>
+<td>2</td>
+<td>7</td>
+<td>0.2</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>It was noted that additional metadata can be associated at the table
+level or column level. This can be very handy to keep track of things
+like the method for identifying neighbors, the weighting mechanism used,
+storing flags to know if the focal feature is included and maybe even
+remove weights if there is a constant value.</p>
+<p>Additionally, since this is parquet, it can be handled and stored by a
+number of databases.</p>
+<p>One benefit of using arrow here, is that we can conceivably have a
+future where spatial weights matrices are interchangeable between spdep,
+pysal, geoda, and ArcGIS.</p>
+<h2 id="closing">Closing</h2>
+<p>I’m about to hop on a flight back to the US now—10 hours without
+internet is going to be a test of monk-like fortitude. I have left my
+strongest feels for another time. Chatting with devs from other
+languages makes is clear how great CRAN is as a package storage and
+testing mechanism but yet how utterly abysmal it is as a developer. I
+will write another post soon on the topics of retirement and how I think
+we can make CRAN a better place for developers.</p>
+<h2 id="additional-links">Additional links</h2>
+<p>I’ll add more here as I can (hopefully).</p>
+<ul>
+<li><a href="https://martinfleischmann.net/a-note-on-spatial-data-science-across-languages-vol.1/">Martin’s SDSL blog
+post</a></li>
+</ul>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <!-- Basecoat sidebar component -->
+        <script
+            src="https://josiah.rs/js/basecoat/sidebar.min.js"
+            defer
+        ></script>
+        <!-- Sidebar toggle for mobile -->
+        <script src="https://josiah.rs/js/sidebar-toggle.js" defer></script>
+        <!-- Custom tabs for panel-tabset -->
+        <script src="https://josiah.rs/js/tabs.js" defer></script>
+        <!-- Search functionality -->
+        <script src="https://josiah.rs/js/search.js" defer></script>
+        <script>
+            (() => {
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+
+                    // Toggle syntax highlighting themes via media attribute
+                    const darkSyntax = document.getElementById("syntax-dark");
+                    const lightSyntax = document.getElementById("syntax-light");
+                    if (darkSyntax && lightSyntax) {
+                        darkSyntax.media = dark ? "all" : "not all";
+                        lightSyntax.media = dark ? "not all" : "all";
+                    }
+
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        ></script>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"
+        ></script>
+        
+    </body>
+</html>

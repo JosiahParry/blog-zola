@@ -1,0 +1,2735 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            Posts | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+
+        <!-- Determine theme before loading syntax highlighting -->
+        <script>
+            (() => {
+                const stored = localStorage.getItem("themeMode");
+                // Use stored preference if exists, otherwise always default to dark
+                const isDark = stored ? stored === "dark" : true;
+
+                if (isDark) {
+                    document.documentElement.classList.add("dark");
+                }
+            })();
+        </script>
+
+        <!-- Syntax highlighting themes -->
+        <link rel="stylesheet" href="https://josiah.rs/syntax-dark.css" id="syntax-dark" />
+        <link rel="stylesheet" href="https://josiah.rs/syntax-light.css" id="syntax-light" />
+
+        <!-- KaTeX for math rendering -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        />
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-semibold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4 relative">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-sm bg-muted/50 border border-border"
+                id="search-input"
+            />
+            <div
+                id="search-results"
+                class="hidden absolute top-full left-4 -mt-1 w-96 max-h-96 overflow-y-auto bg-background border border-border rounded-lg shadow-lg z-50 p-2"
+            ></div>
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-2 text-sm pl-3 transition-colors font-medium border-l-2 border-primary -ml-px bg-sidebar-accent"
+                    >
+                        Posts
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Socials -->
+            <div
+                class="mt-4 block py-2 transition-colors font-medium px-3 text-sm bg-sidebar-accent"
+            >
+                <h2
+                    class="text-sm font-medium tracking-tight mb-2 text-muted-foreground border-b border-muted-foreground/20 pb-1"
+                >
+                    Socials
+                </h2>
+                <ul class="space-y-1.5">
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <polygon
+                                points="160 128 112 96 112 160 160 128"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M24,128c0,29.91,3.07,47.45,5.41,56.47A16,16,0,0,0,39,195.42C72.52,208.35,128,208,128,208s55.48.35,89-12.58a16,16,0,0,0,9.63-10.95c2.34-9,5.41-26.56,5.41-56.47s-3.07-47.45-5.41-56.47a16,16,0,0,0-9.63-11C183.48,47.65,128,48,128,48s-55.48-.35-89,12.58a16,16,0,0,0-9.63,11C27.07,80.54,24,98.09,24,128Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://www.youtube.com/@josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >YouTube</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <rect
+                                x="32"
+                                y="32"
+                                width="192"
+                                height="192"
+                                rx="8"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="120"
+                                y1="112"
+                                x2="120"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="88"
+                                y1="112"
+                                x2="88"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M120,140a28,28,0,0,1,56,0v36"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <circle cx="88" cy="84" r="12" />
+                        </svg>
+                        <a
+                            href="https://www.linkedin.com/in/josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >LinkedIn</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M119.83,56A52,52,0,0,0,76,32a51.92,51.92,0,0,0-3.49,44.7A49.28,49.28,0,0,0,64,104v8a48,48,0,0,0,48,48h48a48,48,0,0,0,48-48v-8a49.28,49.28,0,0,0-8.51-27.3A51.92,51.92,0,0,0,196,32a52,52,0,0,0-43.83,24Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,232V192a32,32,0,0,1,32-32h0a32,32,0,0,1,32,32v40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,208H72a32,32,0,0,1-32-32A32,32,0,0,0,8,144"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="http://github.com/josiahparry/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >GitHub</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M160,224H72a32,32,0,0,1-32-32V72A32,32,0,0,1,72,40H184a32,32,0,0,1,32,32v72a32,32,0,0,1-32,32H40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M128,136V104a24,24,0,0,0-48,0v32"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M176,136V104a24,24,0,0,0-48,0"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://fosstodon.org/@josi"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Mastodon</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                            class="w-4 h-4"
+                            fill="currentColor"
+                        >
+                            <path
+                                d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.698-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948"
+                            />
+                        </svg>
+                        <a
+                            href="https://bsky.app/profile/josiahparry.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Bluesky</a
+                        >
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-8 sm:ml-64 relative">
+    <!-- Categories sidebar (absolute right) -->
+    <aside class="hidden xl:block absolute right-8 top-8">
+        <h2 class="text-sm font-medium tracking-tight mb-3 text-muted-foreground">Categories</h2>
+        <ul class="space-y-1.5">
+             
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;aoc&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    aoc <span class="text-xs">(1)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;api&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    api <span class="text-xs">(1)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;arrow&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    arrow <span class="text-xs">(2)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;auth&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    auth <span class="text-xs">(1)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;cran&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    cran <span class="text-xs">(1)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;databricks&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    databricks <span class="text-xs">(1)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;deep-learning&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    deep-learning <span class="text-xs">(1)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;docker&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    Docker <span class="text-xs">(2)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;duckdb&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    duckdb <span class="text-xs">(2)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;extendr&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    extendr <span class="text-xs">(2)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;geniusr&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    geniusR <span class="text-xs">(1)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;gnn&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    gnn <span class="text-xs">(1)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;history&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    history <span class="text-xs">(1)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;httr2&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    httr2 <span class="text-xs">(1)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;leptos&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    leptos <span class="text-xs">(2)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;letters&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    letters <span class="text-xs">(1)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;machine-learning&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    machine learning <span class="text-xs">(1)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;ml&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    ml <span class="text-xs">(1)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;oidc&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    oidc <span class="text-xs">(1)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;package-dev&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    package-dev <span class="text-xs">(3)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;package-development&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    package-development <span class="text-xs">(1)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;personal&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    personal <span class="text-xs">(1)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;pkg-dev&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    pkg-dev <span class="text-xs">(3)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;plumber&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    plumber <span class="text-xs">(2)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;politics&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    politics <span class="text-xs">(5)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;prod&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    prod <span class="text-xs">(2)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;production&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    production <span class="text-xs">(4)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;python&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    Python <span class="text-xs">(3)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;r&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    R <span class="text-xs">(44)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;r-spatial&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    r-spatial <span class="text-xs">(2)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;rlang&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    rlang <span class="text-xs">(1)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;rstats&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    rstats <span class="text-xs">(1)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;rust&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    rust <span class="text-xs">(13)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;s7&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    s7 <span class="text-xs">(1)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;security&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    security <span class="text-xs">(1)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;sfdep&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    sfdep <span class="text-xs">(1)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;sociology&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    sociology <span class="text-xs">(1)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;spacetime&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    spacetime <span class="text-xs">(1)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;spatial&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    spatial <span class="text-xs">(7)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;toml&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    toml <span class="text-xs">(1)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;tutorial&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    tutorial <span class="text-xs">(6)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;us&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    US <span class="text-xs">(1)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;wasm&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    wasm <span class="text-xs">(2)</span>
+                </a>
+            </li>
+            
+            <li>
+                <a
+                    href="https:&#x2F;&#x2F;josiah.rs&#x2F;categories&#x2F;webr&#x2F;"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                >
+                    webr <span class="text-xs">(2)</span>
+                </a>
+            </li>
+            
+        </ul>
+    </aside>
+
+    <!-- Posts list (centered) -->
+    <div class="max-w-3xl mx-auto">
+        <h1 class="text-2xl font-medium tracking-tight mb-8">Posts</h1>
+
+        <div class="space-y-6">
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;gnn-for-sds&#x2F;" class="block group">
+                    <time
+                        datetime="2025-11-16"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        November 16, 2025
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Graph Neural Nets for Spatial Data Science
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">spatial</span>
+                        
+                        <span class="badge">r</span>
+                        
+                        <span class="badge">deep-learning</span>
+                        
+                        <span class="badge">gnn</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;broadcast&#x2F;" class="block group">
+                    <time
+                        datetime="2025-08-18"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        August 18, 2025
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Broadcasting: Scalars or vectors
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">r</span>
+                        
+                        <span class="badge">rlang</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;cross-language-ds&#x2F;" class="block group">
+                    <time
+                        datetime="2025-06-04"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        June 04, 2025
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Apache Arrow, Rust, and cross-langauge data science
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">rust</span>
+                        
+                        <span class="badge">r</span>
+                        
+                        <span class="badge">python</span>
+                        
+                        <span class="badge">extendr</span>
+                        
+                        <span class="badge">arrow</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;plumber-caddy-https&#x2F;" class="block group">
+                    <time
+                        datetime="2025-05-12"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        May 12, 2025
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        https with `{plumber}` using Caddy
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">r</span>
+                        
+                        <span class="badge">prod</span>
+                        
+                        <span class="badge">plumber</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;building-for-webr&#x2F;" class="block group">
+                    <time
+                        datetime="2025-04-30"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        April 30, 2025
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Building local packages for WebR
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">webr</span>
+                        
+                        <span class="badge">r</span>
+                        
+                        <span class="badge">wasm</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;tomledit&#x2F;" class="block group">
+                    <time
+                        datetime="2025-04-10T00:00:00Z"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        April 10, 2025
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Create and edit TOML in R with {tomledit}
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">r</span>
+                        
+                        <span class="badge">toml</span>
+                        
+                        <span class="badge">rust</span>
+                        
+                        <span class="badge">extendr</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;advent-day-1&#x2F;" class="block group">
+                    <time
+                        datetime="2024-12-01T00:00:00Z"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        December 01, 2024
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        🎄dvent Day 1: Rust and R solutions
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">r</span>
+                        
+                        <span class="badge">rust</span>
+                        
+                        <span class="badge">aoc</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;httr2-oidc&#x2F;" class="block group">
+                    <time
+                        datetime="2024-11-28T00:00:00Z"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        November 28, 2024
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Implementing OpenID Connect (OIDC) in R
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">r</span>
+                        
+                        <span class="badge">httr2</span>
+                        
+                        <span class="badge">auth</span>
+                        
+                        <span class="badge">oidc</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;s7-options-objects&#x2F;" class="block group">
+                    <time
+                        datetime="2024-11-21T00:00:00Z"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        November 21, 2024
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        S7 &amp; Options objects
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">pkg-dev</span>
+                        
+                        <span class="badge">r</span>
+                        
+                        <span class="badge">s7</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;leptos-highlight-js&#x2F;" class="block group">
+                    <time
+                        datetime="2024-10-10"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        October 10, 2024
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Add syntax highlighting to leptos
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">rust</span>
+                        
+                        <span class="badge">leptos</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;cran-checks&#x2F;" class="block group">
+                    <time
+                        datetime="2024-09-01"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        September 01, 2024
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Get notified of failing CRAN checks
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">cran</span>
+                        
+                        <span class="badge">r</span>
+                        
+                        <span class="badge">pkg-dev</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;type-safety&#x2F;" class="block group">
+                    <time
+                        datetime="2024-07-01"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        July 01, 2024
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Type safe(r) R code
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">R</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;file-server&#x2F;" class="block group">
+                    <time
+                        datetime="2024-06-24"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        June 24, 2024
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Static file server in R
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">r</span>
+                        
+                        <span class="badge">plumber</span>
+                        
+                        <span class="badge">api</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;caching-webr&#x2F;" class="block group">
+                    <time
+                        datetime="2024-06-13"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        June 13, 2024
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Caching WebR from CDN
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">webr</span>
+                        
+                        <span class="badge">rust</span>
+                        
+                        <span class="badge">r</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;eval-strings&#x2F;" class="block group">
+                    <time
+                        datetime="2024-06-13"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        June 13, 2024
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Evaluate strings as code
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">r</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;docker-env-vars&#x2F;" class="block group">
+                    <time
+                        datetime="2024-06-11"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        June 11, 2024
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Docker: keep your secrets secret
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">production</span>
+                        
+                        <span class="badge">docker</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;designing-arcgisgeocode&#x2F;" class="block group">
+                    <time
+                        datetime="2024-06-06"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        June 06, 2024
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Making a Ridiculously Fast™ API Client
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">r</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;indexmap-rs&#x2F;" class="block group">
+                    <time
+                        datetime="2024-05-27"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        May 27, 2024
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        IndexMap instead of BTreeMap
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">rust</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;duckdb-and-r&#x2F;" class="block group">
+                    <time
+                        datetime="2024-05-24"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        May 24, 2024
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        {duckdb} or {duckplyr}? 
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">r</span>
+                        
+                        <span class="badge">prod</span>
+                        
+                        <span class="badge">duckdb</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;spatial-ml-prediction&#x2F;" class="block group">
+                    <time
+                        datetime="2024-05-23"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        May 23, 2024
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Spatial ML: Predicting on out-of-sample data
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">spatial</span>
+                        
+                        <span class="badge">ml</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;databases-for-ds&#x2F;" class="block group">
+                    <time
+                        datetime="2024-05-16"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        May 16, 2024
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Databases for Data Scientist
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">production</span>
+                        
+                        <span class="badge">arrow</span>
+                        
+                        <span class="badge">duckdb</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;factor-finagling&#x2F;" class="block group">
+                    <time
+                        datetime="2024-02-15"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        February 15, 2024
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Why do we sleep on factors?
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">r</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;shared-segments&#x2F;" class="block group">
+                    <time
+                        datetime="2024-01-27"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        January 27, 2024
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Shared segment of parallel lines
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">r-spatial</span>
+                        
+                        <span class="badge">spatial</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;2024-01-15&#x2F;" class="block group">
+                    <time
+                        datetime="2024-01-15"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        January 15, 2024
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Leptos &amp; wasm-bindgen
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">rust</span>
+                        
+                        <span class="badge">wasm</span>
+                        
+                        <span class="badge">leptos</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;custom-head-method&#x2F;" class="block group">
+                    <time
+                        datetime="2023-11-27T00:00:00Z"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        November 27, 2023
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Writing S3 `head()` methods
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">pkg-dev</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;dfusionrdr&#x2F;" class="block group">
+                    <time
+                        datetime="2023-11-25T00:00:00Z"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        November 25, 2023
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Building a DataFusion CSV reader with arrow-extendr
+                    </h2>
+                     
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;enums-in-r&#x2F;" class="block group">
+                    <time
+                        datetime="2023-11-10T00:00:00Z"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        November 10, 2023
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Enums in R: towards type safe R
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">r</span>
+                        
+                        <span class="badge">package-dev</span>
+                        
+                        <span class="badge">rust</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;2023-10-28&#x2F;" class="block group">
+                    <time
+                        datetime="2023-10-28T00:00:00Z"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        October 28, 2023
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Where am I in the sky?
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">r</span>
+                        
+                        <span class="badge">spatial</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;python-fns&#x2F;" class="block group">
+                    <time
+                        datetime="2023-10-28T00:00:00Z"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        October 28, 2023
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Export Python functions in R packages
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">r</span>
+                        
+                        <span class="badge">python</span>
+                        
+                        <span class="badge">package-dev</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;sdsl&#x2F;" class="block group">
+                    <time
+                        datetime="2023-09-22T00:00:00Z"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        September 22, 2023
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Spatial Data Science Across Languages
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">r</span>
+                        
+                        <span class="badge">r-spatial</span>
+                        
+                        <span class="badge">spatial</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;valve-for-production&#x2F;" class="block group">
+                    <time
+                        datetime="2023-08-22T00:00:00Z"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        August 22, 2023
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Valve: putting R in production
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">rust</span>
+                        
+                        <span class="badge">r</span>
+                        
+                        <span class="badge">production</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;r-is-still-fast&#x2F;" class="block group">
+                    <time
+                        datetime="2023-07-06T00:00:00Z"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        July 06, 2023
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        R is still fast: a salty reaction to a salty blog post
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">rust</span>
+                        
+                        <span class="badge">r</span>
+                        
+                        <span class="badge">production</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;matrix-bug&#x2F;" class="block group">
+                    <time
+                        datetime="2023-06-11T00:00:00Z"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        June 11, 2023
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        What&#x27;s so special about `array`s?
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">r</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;counting-chars&#x2F;" class="block group">
+                    <time
+                        datetime="2023-04-13T00:00:00Z"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        April 13, 2023
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Feeling rusty: counting characters
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">rust</span>
+                        
+                        <span class="badge">r</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;rust-traits-for-r-programmers&#x2F;" class="block group">
+                    <time
+                        datetime="2023-03-02T00:00:00Z"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        March 02, 2023
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Rust traits for R users
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">rust</span>
+                        
+                        <span class="badge">r</span>
+                        
+                        <span class="badge">package-development</span>
+                        
+                        <span class="badge">tutorial</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;learning-rust&#x2F;" class="block group">
+                    <time
+                        datetime="2023-03-01T00:00:00Z"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        March 01, 2023
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        learning rust
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">rust</span>
+                        
+                        <span class="badge">personal</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;raw-strings-in-r&#x2F;" class="block group">
+                    <time
+                        datetime="2023-01-19T00:00:00Z"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        January 19, 2023
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Raw strings in R
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">r</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;create-formulae&#x2F;" class="block group">
+                    <time
+                        datetime="2023-01-17T00:00:00Z"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        January 17, 2023
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Programatically Create Formulas in R
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">r</span>
+                        
+                        <span class="badge">package-dev</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;youtube-videos&#x2F;" class="block group">
+                    <time
+                        datetime="2022-11-23T00:00:00Z"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        November 23, 2022
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        YouTube Videos &amp; what not
+                    </h2>
+                     
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;overlapping-polys&#x2F;" class="block group">
+                    <time
+                        datetime="2022-11-17T00:00:00Z"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        November 17, 2022
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Fishnets and overlapping polygons
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">r</span>
+                        
+                        <span class="badge">spatial</span>
+                        
+                        <span class="badge">tutorial</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;spacetime-representations&#x2F;" class="block group">
+                    <time
+                        datetime="2022-11-07"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        November 07, 2022
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        spacetime representations aren&#x27;t good—yet
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">sfdep</span>
+                        
+                        <span class="badge">rstats</span>
+                        
+                        <span class="badge">spacetime</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;r-scripts-as-notebooks&#x2F;" class="block group">
+                    <time
+                        datetime="2022-05-11"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        May 11, 2022
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Make your R scripts Databricks notebooks
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">databricks</span>
+                        
+                        <span class="badge">r</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;exploratory-spatial-data-analysis-in-r&#x2F;" class="block group">
+                    <time
+                        datetime="2022-04-28"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        April 28, 2022
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Exploratory Spatial Data Analysis in R
+                    </h2>
+                     
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;my-new-ide-theme-xxemocandylandxx&#x2F;" class="block group">
+                    <time
+                        datetime="2022-04-06"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        April 06, 2022
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        My new IDE theme: xxEmoCandyLandxx
+                    </h2>
+                     
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;an-open-system-requirements-database&#x2F;" class="block group">
+                    <time
+                        datetime="2022-04-05"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        April 05, 2022
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Actually identifying R package System Requirements
+                    </h2>
+                     
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;installing-python-on-my-m1-in-under-10-minutes&#x2F;" class="block group">
+                    <time
+                        datetime="2022-02-12"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        February 12, 2022
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Installing Python on my M1 in under 10 minutes
+                    </h2>
+                     
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;tf-is-a-statistical-moment&#x2F;" class="block group">
+                    <time
+                        datetime="2022-02-12"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        February 12, 2022
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        The heck is a statistical moment??
+                    </h2>
+                     
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;sliced-a-brief-reflection&#x2F;" class="block group">
+                    <time
+                        datetime="2021-06-18"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        June 18, 2021
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        SLICED! a brief reflection
+                    </h2>
+                     
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;2021-04-27-boston-user&#x2F;" class="block group">
+                    <time
+                        datetime="2021-04-28"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        April 28, 2021
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                         {cpcinema} &amp; associated journey
+                    </h2>
+                     
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;osint-youtube&#x2F;" class="block group">
+                    <time
+                        datetime="2021-04-04"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        April 04, 2021
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        OSINT in 7 minutes
+                    </h2>
+                     
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;language-agnostic&#x2F;" class="block group">
+                    <time
+                        datetime="2021-03-28"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        March 28, 2021
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        APIs: the language agnostic love story
+                    </h2>
+                     
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;python-r&#x2F;" class="block group">
+                    <time
+                        datetime="2021-03-28"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        March 28, 2021
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Python &amp; R in production — the API way
+                    </h2>
+                     
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;cpcinema&#x2F;" class="block group">
+                    <time
+                        datetime="2021-03-14"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        March 14, 2021
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Color Palette Cinema
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">R</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;secure-package-environment&#x2F;" class="block group">
+                    <time
+                        datetime="2020-12-09"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        December 09, 2020
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Secure R Package Environments
+                    </h2>
+                     
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;critical-race-theory&#x2F;" class="block group">
+                    <time
+                        datetime="2020-09-14"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        September 14, 2020
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        What is critical race theory, anyways?
+                    </h2>
+                     
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;demographic-change-white-fear-and-social-construction-of-race&#x2F;" class="block group">
+                    <time
+                        datetime="2020-09-07"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        September 07, 2020
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Demographic Change, White Fear, and Social Construction of Race
+                    </h2>
+                     
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;gzip-api&#x2F;" class="block group">
+                    <time
+                        datetime="2020-09-05"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        September 05, 2020
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Medium Data and Production API Pipeline
+                    </h2>
+                     
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;red-queen-effect&#x2F;" class="block group">
+                    <time
+                        datetime="2020-06-12"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        June 12, 2020
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        The Red Queen Effect
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">politics</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;excel-in-prod&#x2F;" class="block group">
+                    <time
+                        datetime="2020-03-01"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        March 01, 2020
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Excel in pRod
+                    </h2>
+                     
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;r-history&#x2F;" class="block group">
+                    <time
+                        datetime="2020-02-19"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        February 19, 2020
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Design Paradigms in R
+                    </h2>
+                     
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;cran-2019&#x2F;" class="block group">
+                    <time
+                        datetime="2020-02-04"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        February 04, 2020
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        R Security Concerns and 2019 CRAN downloads
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">R</span>
+                        
+                        <span class="badge">security</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;gs4-auth&#x2F;" class="block group">
+                    <time
+                        datetime="2020-01-13"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        January 13, 2020
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Non-interactive user tokens with googlesheets4
+                    </h2>
+                     
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;spss-haven&#x2F;" class="block group">
+                    <time
+                        datetime="2019-12-14"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        December 14, 2019
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Finding an SPSS {haven}
+                    </h2>
+                     
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;intro-tidymodels&#x2F;" class="block group">
+                    <time
+                        datetime="2019-09-12"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        September 12, 2019
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Intro to Tidy Modeling
+                    </h2>
+                     
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;epa-waterquality&#x2F;" class="block group">
+                    <time
+                        datetime="2019-08-09"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        August 09, 2019
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Water Quality Analysis
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">R</span>
+                        
+                        <span class="badge">spatial</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;my-parts&#x2F;" class="block group">
+                    <time
+                        datetime="2019-08-04"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        August 04, 2019
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        ∑ { my parts }
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">R</span>
+                        
+                        <span class="badge">politics</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;scraping-4-campaigns&#x2F;" class="block group">
+                    <time
+                        datetime="2019-06-11"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        June 11, 2019
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Web-scraping for Campaigns
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">R</span>
+                        
+                        <span class="badge">politics</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;trendyy-4-campaigns&#x2F;" class="block group">
+                    <time
+                        datetime="2019-06-11"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        June 11, 2019
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Google Trends for Campaigns
+                    </h2>
+                     
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;introducing-trendyy&#x2F;" class="block group">
+                    <time
+                        datetime="2019-05-25"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        May 25, 2019
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Introducing trendyy
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">R</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;genius-learnr-tutorial&#x2F;" class="block group">
+                    <time
+                        datetime="2019-05-08"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        May 08, 2019
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        genius tutorial
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">R</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;genius-api&#x2F;" class="block group">
+                    <time
+                        datetime="2019-03-30"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        March 30, 2019
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        genius Plumber API
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">R</span>
+                        
+                        <span class="badge">Docker</span>
+                        
+                        <span class="badge">Python</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;shutdown-politics&#x2F;" class="block group">
+                    <time
+                        datetime="2019-02-06"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        February 06, 2019
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        The Cost of Gridlock
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">politics</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;xgb-feature-importance&#x2F;" class="block group">
+                    <time
+                        datetime="2018-12-01"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        December 01, 2018
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        xgboost feature importance
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">R</span>
+                        
+                        <span class="badge">machine learning</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;function-methods&#x2F;" class="block group">
+                    <time
+                        datetime="2018-11-28"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        November 28, 2018
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        [Not so] generic functions
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">R</span>
+                        
+                        <span class="badge">tutorial</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;us-representation-i&#x2F;" class="block group">
+                    <time
+                        datetime="2018-11-25"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        November 25, 2018
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        US Representation: Part I
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">politics</span>
+                        
+                        <span class="badge">history</span>
+                        
+                        <span class="badge">sociology</span>
+                        
+                        <span class="badge">US</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;introducing-letters-to-a-layperson&#x2F;" class="block group">
+                    <time
+                        datetime="2018-11-15"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        November 15, 2018
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Introducing: Letters to a layperson
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">letters</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;read-chunked-csv&#x2F;" class="block group">
+                    <time
+                        datetime="2018-10-27"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        October 27, 2018
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Reading Multiple csvs as 1 data frame
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">R</span>
+                        
+                        <span class="badge">tutorial</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;write-chunked-csv&#x2F;" class="block group">
+                    <time
+                        datetime="2018-10-27"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        October 27, 2018
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Chunking your csv
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">R</span>
+                        
+                        <span class="badge">tutorial</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;tidy-coursera-r-programming&#x2F;" class="block group">
+                    <time
+                        datetime="2018-04-14"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        April 14, 2018
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Coursera R-Programming: Week 2 Problems
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">R</span>
+                        
+                        <span class="badge">tutorial</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
+                <a href="https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;introducing-geniusr&#x2F;" class="block group">
+                    <time
+                        datetime="2018-01-27"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        January 27, 2018
+                    </time>
+                    <h2
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
+                    >
+                        Introducing geniusR
+                    </h2>
+                     
+                    <div class="flex flex-wrap gap-2 mt-2">
+                        
+                        <span class="badge">R</span>
+                        
+                        <span class="badge">geniusR</span>
+                        
+                    </div>
+                    
+                </a>
+            </article>
+            
+        </div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <!-- Basecoat sidebar component -->
+        <script
+            src="https://josiah.rs/js/basecoat/sidebar.min.js"
+            defer
+        ></script>
+        <!-- Sidebar toggle for mobile -->
+        <script src="https://josiah.rs/js/sidebar-toggle.js" defer></script>
+        <!-- Custom tabs for panel-tabset -->
+        <script src="https://josiah.rs/js/tabs.js" defer></script>
+        <!-- Search functionality -->
+        <script src="https://josiah.rs/js/search.js" defer></script>
+        <script>
+            (() => {
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+
+                    // Toggle syntax highlighting themes via media attribute
+                    const darkSyntax = document.getElementById("syntax-dark");
+                    const lightSyntax = document.getElementById("syntax-light");
+                    if (darkSyntax && lightSyntax) {
+                        darkSyntax.media = dark ? "all" : "not all";
+                        lightSyntax.media = dark ? "not all" : "all";
+                    }
+
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        ></script>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"
+        ></script>
+        
+    </body>
+</html>

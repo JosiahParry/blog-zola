@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            spacetime representations aren&#x27;t good—yet | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+
+        <!-- Determine theme before loading syntax highlighting -->
+        <script>
+            (() => {
+                const stored = localStorage.getItem("themeMode");
+                // Use stored preference if exists, otherwise always default to dark
+                const isDark = stored ? stored === "dark" : true;
+
+                if (isDark) {
+                    document.documentElement.classList.add("dark");
+                }
+            })();
+        </script>
+
+        <!-- Syntax highlighting themes -->
+        <link rel="stylesheet" href="https://josiah.rs/syntax-dark.css" id="syntax-dark" />
+        <link rel="stylesheet" href="https://josiah.rs/syntax-light.css" id="syntax-light" />
+
+        <!-- KaTeX for math rendering -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        />
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-semibold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4 relative">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-sm bg-muted/50 border border-border"
+                id="search-input"
+            />
+            <div
+                id="search-results"
+                class="hidden absolute top-full left-4 -mt-1 w-96 max-h-96 overflow-y-auto bg-background border border-border rounded-lg shadow-lg z-50 p-2"
+            ></div>
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-2 text-sm pl-3 transition-colors font-medium border-l-2 border-primary -ml-px bg-sidebar-accent"
+                    >
+                        Posts
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Socials -->
+            <div
+                class="mt-4 block py-2 transition-colors font-medium px-3 text-sm bg-sidebar-accent"
+            >
+                <h2
+                    class="text-sm font-medium tracking-tight mb-2 text-muted-foreground border-b border-muted-foreground/20 pb-1"
+                >
+                    Socials
+                </h2>
+                <ul class="space-y-1.5">
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <polygon
+                                points="160 128 112 96 112 160 160 128"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M24,128c0,29.91,3.07,47.45,5.41,56.47A16,16,0,0,0,39,195.42C72.52,208.35,128,208,128,208s55.48.35,89-12.58a16,16,0,0,0,9.63-10.95c2.34-9,5.41-26.56,5.41-56.47s-3.07-47.45-5.41-56.47a16,16,0,0,0-9.63-11C183.48,47.65,128,48,128,48s-55.48-.35-89,12.58a16,16,0,0,0-9.63,11C27.07,80.54,24,98.09,24,128Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://www.youtube.com/@josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >YouTube</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <rect
+                                x="32"
+                                y="32"
+                                width="192"
+                                height="192"
+                                rx="8"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="120"
+                                y1="112"
+                                x2="120"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="88"
+                                y1="112"
+                                x2="88"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M120,140a28,28,0,0,1,56,0v36"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <circle cx="88" cy="84" r="12" />
+                        </svg>
+                        <a
+                            href="https://www.linkedin.com/in/josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >LinkedIn</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M119.83,56A52,52,0,0,0,76,32a51.92,51.92,0,0,0-3.49,44.7A49.28,49.28,0,0,0,64,104v8a48,48,0,0,0,48,48h48a48,48,0,0,0,48-48v-8a49.28,49.28,0,0,0-8.51-27.3A51.92,51.92,0,0,0,196,32a52,52,0,0,0-43.83,24Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,232V192a32,32,0,0,1,32-32h0a32,32,0,0,1,32,32v40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,208H72a32,32,0,0,1-32-32A32,32,0,0,0,8,144"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="http://github.com/josiahparry/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >GitHub</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M160,224H72a32,32,0,0,1-32-32V72A32,32,0,0,1,72,40H184a32,32,0,0,1,32,32v72a32,32,0,0,1-32,32H40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M128,136V104a24,24,0,0,0-48,0v32"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M176,136V104a24,24,0,0,0-48,0"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://fosstodon.org/@josi"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Mastodon</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                            class="w-4 h-4"
+                            fill="currentColor"
+                        >
+                            <path
+                                d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.698-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948"
+                            />
+                        </svg>
+                        <a
+                            href="https://bsky.app/profile/josiahparry.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Bluesky</a
+                        >
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">spacetime representations aren&#x27;t good—yet</h1>
+
+         
+        <div class="flex flex-wrap gap-2 mb-4">
+            
+            <a
+                href="/categories/sfdep"
+                class="badge-secondary cursor pointer"
+                >sfdep</a
+            >
+            
+            <a
+                href="/categories/rstats"
+                class="badge-secondary cursor pointer"
+                >rstats</a
+            >
+            
+            <a
+                href="/categories/spacetime"
+                class="badge-secondary cursor pointer"
+                >spacetime</a
+            >
+            
+        </div>
+         
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >November 07, 2022</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><p>My beliefs can be summarized somewhat succinctly.</p>
+<p>We should not limit space-time data to dates or timestamps.</p>
+<p>The R ecosystem should always utilize a normalized approach as described
+above. Further, a representation should use friendly R objects. The
+friendliest object is a data frame. A new representation should allow
+context switching between geometries and temporal data. That new
+representation should always use time-long formats and the geometries
+should <em>never</em> be repeated.</p>
+<p>A spacetime representation should give users complete and total freedom
+to manipulate their data as they see fit (e.g. dplyr or data.table
+operations).</p>
+<p>The only time to be strict in the format of spacetime data is when
+statstics are going to be derived from the data.</p>
+<h2 id="background">Background</h2>
+<p>While implementing emerging hotspot analysis in <code>sfdep</code> I encountered
+the need for a formalized spacetime class in R. As my focus in sfdep has
+been tidyverse-centric functionality, I desired a “tidy” data frame that
+could be used as a spacetime representation. Moreover, space (in the
+spacetime representation) should be represented as an sf or sfc object.
+In sfdep I introduced the new S3 class <code>spacetime</code> based on Edzer
+Pebesma’s 2012 article <a href="https://www.jstatsoft.org/article/view/v051i07">“spacetime: Spatio-Temporal Data in
+R”</a> and Thomas Lin
+Pederson’s <a href="https://ggraph.data-imaginist.com/articles/tidygraph.html">tidygraph
+package</a>.</p>
+<h2 id="representations-of-spatial-data">Representations of Spatial Data</h2>
+<p>Before describing my preferences in a spacetime representation in R, I
+want to review possible representations of spacetime data.</p>
+<p>Pebesma (2012) outlines three tabular representations of spatio-temporal
+data.</p>
+<ul>
+<li>“<strong>Time-wide</strong>: Where different columns reflect different moments in
+time.</li>
+<li><strong>Space-wide</strong>: Where different columns reflect different measurement
+locations or areas.</li>
+<li><strong>Long formats</strong>: Where each record reflects a single time and space
+combination.</li>
+</ul>
+<p>The “long format” is what we may consider “tidy” per <a href="https://www.jstatsoft.org/article/view/v059i10">Wickham
+(2014)</a>. In this case,
+both time and space are variables with unique combinations as rows.</p>
+<p>Pebesma further qualifies spatial data representation into a “sparse
+grid” and a “full grid.” Say we have a variable X. In a spatio temporal
+full grid we will store all combinations of time (t) and locations (i) .
+If Xi is missing at any of those location and time combinations (Xit is
+missing), the value of X is recorded as a missing value. Whereas in a
+sparse grid, if there is any missing data, the observation is omitted.
+Necessarily, in a full grid there will be i x t number of rows. In a
+sparse grid there will be fewer than i x t rows.</p>
+<p>Very recently in an r-spatial <a href="https://r-spatial.org/r/2022/09/12/vdc.html#multiple-long-table-forms-database-normalization">blog post, “Vector Data
+Cubes”</a>,
+Edzer describes another approach to representing spacetime using a
+database normalization approach. Database normalization is a process
+that reduces redundancy by creating a number of smaller tables
+containing IDs and values. These tables can then be joined only when
+needed. When we consider spacetime data, we have repeating geometries
+across time. It is inefficient to to keep multiple copies of the
+geometry. Instead, we can keep track of the unique ID of a geometry and
+store the geometry in another table.</p>
+<h2 id="sfdep-spacetime-representation">sfdep spacetime representation</h2>
+<p>The spacetime class in <a href="https://sfdep.josiahparry.com">sfdep</a> is in
+essence a database normalization approach (see above blog post). It is
+implemented with the database normalization approach and the ergonomics
+of <a href="https://tidygraph.data-imaginist.com/">tidygraph</a> in mind.</p>
+<p>The objective of the spacetime class in sfdep is to</p>
+<ul>
+<li>allow complete freedom of data manipulation via data.frame objects,</li>
+<li>prevent duplication of geometries,</li>
+<li>and provide leeway in what “time” can be defined as.</li>
+</ul>
+<p>Similar to tidygraph, <code>spacetime</code> provides access to two contexts: data
+and geometry. The data context is a data frame and the geometry context.
+These are linked based on a unqie identifie that is present in both
+contexts.</p>
+<details>
+<summary>
+<p><em>R code</em></p>
+</summary>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">library</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>dplyr<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">times <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">seq</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">Sys.time</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> 
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">Sys.time</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-arithmetic z-r">+</span> lubridate<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">hours</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-constant z-numeric z-float z-decimal z-r">5</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">length.out</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-numeric z-float z-decimal z-r">5</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">locations <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">c</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>001<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>002<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">data_context <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> tidyr<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">crossing</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">location</span> <span class="z-keyword z-operator z-assignment z-r">=</span> locations<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">time</span> <span class="z-keyword z-operator z-assignment z-r">=</span> times
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-logical z-r">|</span><span class="z-keyword z-operator z-logical z-r">&gt;</span> 
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">mutate</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-variable z-parameter z-r">value</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">rnorm</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">n</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-logical z-r">|</span><span class="z-keyword z-operator z-logical z-r">&gt;</span> 
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">arrange</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>location<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">library</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>sf<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">Linking to GEOS 3.13.0, GDAL 3.8.5, PROJ 9.5.1; sf_use_s2() is TRUE
+</span></code></pre>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">geometry_context <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">st_sfc</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-storage z-type z-r">list</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">st_point</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">c</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-constant z-numeric z-float z-decimal z-r">0</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-constant z-numeric z-float z-decimal z-r">1</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">st_point</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">c</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-constant z-numeric z-float z-decimal z-r">1</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-constant z-numeric z-float z-decimal z-r">1</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-logical z-r">|</span><span class="z-keyword z-operator z-logical z-r">&gt;</span> 
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">st_as_sf</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-logical z-r">|</span><span class="z-keyword z-operator z-logical z-r">&gt;</span> 
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">mutate</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-variable z-parameter z-r">location</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">c</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>001<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>002<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<p>Use the spacetime constructor</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">library</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>sfdep<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">spt <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">spacetime</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">.data</span> <span class="z-keyword z-operator z-assignment z-r">=</span> data_context<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">.geometry</span> <span class="z-keyword z-operator z-assignment z-r">=</span> geometry_context<span class="z-punctuation z-separator z-arguments z-r">,</span> 
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">.loc_col</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>location<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> 
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">.time_col</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>time<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<p>Swap contexts with activate</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">activate</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>spt<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>geometry<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">spacetime ────
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Context:`geometry`
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">2 locations `location`
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">5 time periods `time`
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">── geometry context ────────────────────────────────────────────────────────────
+</span></code></pre>
+<p>Simple feature collection with 2 features and 1 field Geometry type:
+POINT Dimension: XY Bounding box: xmin: 0 ymin: 1 xmax: 1 ymax: 1 CRS:
+NA x location 1 POINT (0 1) 001 2 POINT (1 1) 002</p>
+</details>
+<p>One of my very strong beliefs is that temporal data does not, and should
+not, always be represented as a date or a timestamp. This paradigm is
+too limiting. What about panel data where you’re measuring cohorts along
+periods 1 - 10? Should these be represented as dates? No, definitely
+not. Because of this, sfdep allows you to utilize any numeric column
+that can be sorted.</p>
+<blockquote>
+<p><em>Perhaps I’ve just spent too much time listening to ecometricians…</em></p>
+</blockquote>
+<details>
+<summary>
+<p><em>example of using integers</em></p>
+</summary>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">spacetime</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">mutate</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>data_context<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">period</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">row_number</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  geometry_context<span class="z-punctuation z-separator z-arguments z-r">,</span> 
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">.loc_col</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>location<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">.time_col</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>period<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">spacetime ────
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Context:`data`
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">2 locations `location`
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">10 time periods `period`
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">── data context ────────────────────────────────────────────────────────────────
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain"># A tibble: 10 × 4
+</span><span class="z-text z-plain">   location time                  value period
+</span><span class="z-text z-plain"> * &lt;chr&gt;    &lt;dttm&gt;                &lt;dbl&gt;  &lt;int&gt;
+</span><span class="z-text z-plain"> 1 001      2025-12-03 14:46:55  0.469       1
+</span><span class="z-text z-plain"> 2 001      2025-12-03 16:01:55  0.531       2
+</span><span class="z-text z-plain"> 3 001      2025-12-03 17:16:55 -2.30        3
+</span><span class="z-text z-plain"> 4 001      2025-12-03 18:31:55 -0.0152      4
+</span><span class="z-text z-plain"> 5 001      2025-12-03 19:46:55  2.25        5
+</span><span class="z-text z-plain"> 6 002      2025-12-03 14:46:55 -0.0245      6
+</span><span class="z-text z-plain"> 7 002      2025-12-03 16:01:55  0.313       7
+</span><span class="z-text z-plain"> 8 002      2025-12-03 17:16:55 -0.263       8
+</span><span class="z-text z-plain"> 9 002      2025-12-03 18:31:55  0.158       9
+</span><span class="z-text z-plain">10 002      2025-12-03 19:46:55  0.436      10
+</span></code></pre>
+</details>
+<h2 id="qualifiers">Qualifiers</h2>
+<p>I don’t think my spacetime class is the panacea. I don’t have the
+technical chops to make a great data format. I also don’t want to have
+that burden. Additionally, the class is desgned with lattice data in
+mind. I don’t think it is sufficient for trajectories or point pattern
+without repeating locations.</p>
+<p>There’s a new R package called <code>cubble</code> for spatio-temporal data. I’ve
+not explored it. It may be better suited to your tidy-centric
+spatio-temporal data.</p>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <!-- Basecoat sidebar component -->
+        <script
+            src="https://josiah.rs/js/basecoat/sidebar.min.js"
+            defer
+        ></script>
+        <!-- Sidebar toggle for mobile -->
+        <script src="https://josiah.rs/js/sidebar-toggle.js" defer></script>
+        <!-- Custom tabs for panel-tabset -->
+        <script src="https://josiah.rs/js/tabs.js" defer></script>
+        <!-- Search functionality -->
+        <script src="https://josiah.rs/js/search.js" defer></script>
+        <script>
+            (() => {
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+
+                    // Toggle syntax highlighting themes via media attribute
+                    const darkSyntax = document.getElementById("syntax-dark");
+                    const lightSyntax = document.getElementById("syntax-light");
+                    if (darkSyntax && lightSyntax) {
+                        darkSyntax.media = dark ? "all" : "not all";
+                        lightSyntax.media = dark ? "not all" : "all";
+                    }
+
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        ></script>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"
+        ></script>
+        
+    </body>
+</html>

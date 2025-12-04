@@ -1,0 +1,737 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            Apache Arrow, Rust, and cross-langauge data science | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+
+        <!-- Determine theme before loading syntax highlighting -->
+        <script>
+            (() => {
+                const stored = localStorage.getItem("themeMode");
+                // Use stored preference if exists, otherwise always default to dark
+                const isDark = stored ? stored === "dark" : true;
+
+                if (isDark) {
+                    document.documentElement.classList.add("dark");
+                }
+            })();
+        </script>
+
+        <!-- Syntax highlighting themes -->
+        <link rel="stylesheet" href="https://josiah.rs/syntax-dark.css" id="syntax-dark" />
+        <link rel="stylesheet" href="https://josiah.rs/syntax-light.css" id="syntax-light" />
+
+        <!-- KaTeX for math rendering -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        />
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-semibold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4 relative">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-sm bg-muted/50 border border-border"
+                id="search-input"
+            />
+            <div
+                id="search-results"
+                class="hidden absolute top-full left-4 -mt-1 w-96 max-h-96 overflow-y-auto bg-background border border-border rounded-lg shadow-lg z-50 p-2"
+            ></div>
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-2 text-sm pl-3 transition-colors font-medium border-l-2 border-primary -ml-px bg-sidebar-accent"
+                    >
+                        Posts
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Socials -->
+            <div
+                class="mt-4 block py-2 transition-colors font-medium px-3 text-sm bg-sidebar-accent"
+            >
+                <h2
+                    class="text-sm font-medium tracking-tight mb-2 text-muted-foreground border-b border-muted-foreground/20 pb-1"
+                >
+                    Socials
+                </h2>
+                <ul class="space-y-1.5">
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <polygon
+                                points="160 128 112 96 112 160 160 128"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M24,128c0,29.91,3.07,47.45,5.41,56.47A16,16,0,0,0,39,195.42C72.52,208.35,128,208,128,208s55.48.35,89-12.58a16,16,0,0,0,9.63-10.95c2.34-9,5.41-26.56,5.41-56.47s-3.07-47.45-5.41-56.47a16,16,0,0,0-9.63-11C183.48,47.65,128,48,128,48s-55.48-.35-89,12.58a16,16,0,0,0-9.63,11C27.07,80.54,24,98.09,24,128Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://www.youtube.com/@josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >YouTube</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <rect
+                                x="32"
+                                y="32"
+                                width="192"
+                                height="192"
+                                rx="8"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="120"
+                                y1="112"
+                                x2="120"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="88"
+                                y1="112"
+                                x2="88"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M120,140a28,28,0,0,1,56,0v36"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <circle cx="88" cy="84" r="12" />
+                        </svg>
+                        <a
+                            href="https://www.linkedin.com/in/josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >LinkedIn</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M119.83,56A52,52,0,0,0,76,32a51.92,51.92,0,0,0-3.49,44.7A49.28,49.28,0,0,0,64,104v8a48,48,0,0,0,48,48h48a48,48,0,0,0,48-48v-8a49.28,49.28,0,0,0-8.51-27.3A51.92,51.92,0,0,0,196,32a52,52,0,0,0-43.83,24Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,232V192a32,32,0,0,1,32-32h0a32,32,0,0,1,32,32v40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,208H72a32,32,0,0,1-32-32A32,32,0,0,0,8,144"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="http://github.com/josiahparry/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >GitHub</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M160,224H72a32,32,0,0,1-32-32V72A32,32,0,0,1,72,40H184a32,32,0,0,1,32,32v72a32,32,0,0,1-32,32H40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M128,136V104a24,24,0,0,0-48,0v32"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M176,136V104a24,24,0,0,0-48,0"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://fosstodon.org/@josi"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Mastodon</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                            class="w-4 h-4"
+                            fill="currentColor"
+                        >
+                            <path
+                                d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.698-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948"
+                            />
+                        </svg>
+                        <a
+                            href="https://bsky.app/profile/josiahparry.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Bluesky</a
+                        >
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">Apache Arrow, Rust, and cross-langauge data science</h1>
+
+         
+        <div class="flex flex-wrap gap-2 mb-4">
+            
+            <a
+                href="/categories/rust"
+                class="badge-secondary cursor pointer"
+                >rust</a
+            >
+            
+            <a
+                href="/categories/r"
+                class="badge-secondary cursor pointer"
+                >r</a
+            >
+            
+            <a
+                href="/categories/python"
+                class="badge-secondary cursor pointer"
+                >python</a
+            >
+            
+            <a
+                href="/categories/extendr"
+                class="badge-secondary cursor pointer"
+                >extendr</a
+            >
+            
+            <a
+                href="/categories/arrow"
+                class="badge-secondary cursor pointer"
+                >arrow</a
+            >
+            
+        </div>
+         
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >June 04, 2025</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><h2 id="tl-dr">TL;DR</h2>
+<ul>
+<li><a href="https://arrow.apache.org/">Apache Arrow</a> standardized memory layout
+so that memory can be used in any language without (de)serialization.</li>
+<li><a href="https://www.rust-lang.org/">Rust</a> is a great candidate for building
+core algorithm / tool implementations as it has robust <a href="https://doc.rust-lang.org/std/ffi/index.html">foreign
+function interface</a>
+(<a href="https://en.wikipedia.org/wiki/Foreign_function_interface">FFI</a>)
+tooling and bindings tools like <a href="https://extendr.github.io/">extendr</a>,
+<a href="https://pyo3.rs/">PyO3</a>, and
+<a href="https://docs.rs/jlrs/latest/jlrs/">jlrs</a>.</li>
+<li>Use Apache Arrow as inputs and outputs from the tool standardize the
+API across languages.</li>
+</ul>
+<hr />
+<h2 id="the-status-quo">The Status Quo</h2>
+<p>I would categorize the majority of scientific computing libraries as
+either:</p>
+<ul>
+<li>tightly coupled</li>
+<li>loosely coupled</li>
+</ul>
+<h2 id="tightly-coupled">Tightly coupled</h2>
+<p>Many of the most popular scientific computing libraries in R and Python
+are developed in a tightly coupled manner.</p>
+<div class="columns">
+<div class="column">
+<p><img src="https://josiah.rs/posts/cross-language-ds/images/rdatatable.png" alt="" /></p>
+</div>
+<div class="column">
+<p><img src="https://josiah.rs/posts/cross-language-ds/images/numpy.svg" alt="" /></p>
+</div>
+</div>
+<div class="aside">
+<p>Julia is a different beast because it is inherently fast and native
+implementations are exceptionally performant.</p>
+</div>
+<p>For example <a href="https://rdatatable.gitlab.io/data.table/"><code>{data.table}</code></a>
+is one of the fastest data frame libraries in the world—and for a while
+was <em>the</em> fastest. It is developed in C directly with R’s C API.</p>
+<p><a href="https://numpy.org/">NumPy</a> is probably the most numerical computing
+library in the world. It is written directly in C with Cython and is
+intended for use directly with Python.</p>
+<h3 id="pros">Pros</h3>
+<ul>
+<li>Highly efficient</li>
+<li>Ergonomic APIs for the language</li>
+</ul>
+<h3 id="cons">Cons</h3>
+<ul>
+<li>Innovation and development siloed to the language of implementation</li>
+<li>Contributor pool shrinks to the intersection of C developers with
+knowledge of the language-specific C API</li>
+</ul>
+<h2 id="loosely-coupled">Loosely coupled</h2>
+<p>Loose coupling is another common approach to scientific computing and is
+pervasive in the geospatial ecosystem.</p>
+<p>Core libraries such as <a href="https://libgeos.org/">GEOS</a>,
+<a href="https://gdal.org/en/stable/">GDAL</a>, and
+<a href="https://proj.org/en/stable/">PROJ</a> are written in C/++ with bindings to
+them in R, Python, Julia, and others.</p>
+<figure>
+<a href="https://arxiv.org/abs/2503.16686"><img
+src="images/sdsl.png" /></a>
+<figcaption>Pebesma, et al. 2025</figcaption>
+</figure>
+<p>There are many packages that have bindings to these libraries. However,
+due to the lack of standardized interface, the APIs that are developed
+may not work with each other even if they’re implemented in the same
+language.</p>
+<h3 id="pros-1">Pros</h3>
+<ul>
+<li>Innovations and development is not siloed</li>
+<li>Contributions to the core library can be propagated to the client
+bindings</li>
+</ul>
+<h3 id="cons-1">Cons</h3>
+<ul>
+<li>Little / no standardization of data format leads to <em>tons</em> of very
+different and incompatible libraries</li>
+<li>Using output from one library in another requires intermediate
+representation</li>
+</ul>
+<h2 id="using-rust-for-a-core-library">Using Rust for a core library</h2>
+<p>It is not my intention to belabor the point of “why Rust.” But I will
+list out a few bullets for why I believe Rust is the best candidate for
+core implementations.</p>
+<table>
+<colgroup>
+<col style="width: 33%" />
+<col style="width: 66%" />
+</colgroup>
+<thead>
+<tr>
+<th>Pro</th>
+<th>Me belaboring the point</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rust is (fairly) easy to pick up.</td>
+<td>I’ve tried and failed many times to learn C++. I’ve tried to learn
+Java. I’ve tried to learn Go. Nothing has the guide rails that Rust
+does.</td>
+</tr>
+<tr>
+<td>Dependency free</td>
+<td>Rust crates are compiled into a single shared library which has no
+dependencies to other libraries. More often than not there is also no
+system dependency requirement either.</td>
+</tr>
+<tr>
+<td>Stupid fast by default 🚀</td>
+<td>The most naive implementations often out perform even advanced
+implementations in R or Python (and sometimes even Julia)</td>
+</tr>
+<tr>
+<td>Easy parallelization with <a
+href="https://github.com/rayon-rs/rayon"><code>rayon</code></a></td>
+<td><code>rayon</code> allows you to parallelize your code with next to
+no effort. For example changing <code>.iter()</code> ➡️
+<code>.par_iter()</code> is all you need.</td>
+</tr>
+<tr>
+<td>Cross-platform support.</td>
+<td>Rust libraries can support Windows, Mac, x86 and Arm, Linux, and
+WASM, all with no modification of the core library. That’s HUGE!</td>
+</tr>
+</tbody>
+</table>
+<p>Creating a Rust core would still be considered a “loose coupling.”
+Though, you do at least get the above benefits of using Rust. We can
+improve this experience a bit more by incorporating Apache Arrow into
+the picture.</p>
+<h2 id="apache-arrow">Apache Arrow</h2>
+<p>Apache Arrow is a <strong>specification</strong> of what data should look like <em>in
+memory</em> (not stored as a file). Additionally, Apache Arrow <strong>is not</strong>
+the R package <code>{arrow}</code> and it is also not pyarrow. Those package are
+<em>implementations</em> of Arrow with additional goodies.</p>
+<div class="alert-note">
+<p>I really recommend reading Danielle Navarro’s <a href="https://blog.djnavarro.net/posts/2021-11-19_starting-apache-arrow-in-r/#fiiiiiine-ill-keep-reading-tell-me-what-arrow-is">blog post on Apache
+Arrow</a>
+for a very human introduction to the topic.</p>
+</div>
+<h3 id="the-problem">The Problem</h3>
+<p>In this status-quo of cross-language tooling, we have this issue where
+data in R is represented differently than data is represented in Python,
+which is represented differently in Rust or Julia—and so on.</p>
+<p><img src="https://josiah.rs/posts/cross-language-ds/images/paste-7.png" alt="" /></p>
+<p>This process of copying data and converting is <em>expensive</em> and time
+consuming. The canonical example is that of a database.</p>
+<p>We typically work with tabular data that looks like so</p>
+<p><img src="https://josiah.rs/posts/cross-language-ds/images/paste-9.png" alt="" /></p>
+<p>However, these databases typically represent data in a row-oriented
+manner. Where each row is stored in memory followed by the next row etc.</p>
+<h3 id="columnar-data">Columnar data</h3>
+<p>Instead, Apache Arrow is a columnar data format. Instead of each row
+being represented in memory, we have each column. This is a huge
+enhancement particularly for analytical processes where we are working
+with <em>columns</em> of data instead of _rows.</p>
+<p><img src="https://josiah.rs/posts/cross-language-ds/images/paste-13.png" alt="" /></p>
+<p>The above shows the difference between these.</p>
+<p>Apache Arrow is a standized way of saying what data should look like in
+memory. So instead of copying and converting between each tool, we can
+use the same exact arrow data set by each tool .</p>
+<p><img src="https://josiah.rs/posts/cross-language-ds/images/paste-8.png" alt="" /></p>
+<h2 id="arrow-and-cross-langauge-tooling">Arrow and cross-langauge tooling</h2>
+<p>By adopting Apache Arrow as a standard memory format, we can have data
+science workflows that look something like this.</p>
+<p><img src="https://josiah.rs/posts/cross-language-ds/images/paste-4.png" alt="" /></p>
+<p>At step 1, we may call a library that uses Rust under the hood. But when
+we send data to it, it uses Apache Arrow, and it also gives us back
+Arrow. Then in the next step, we use our Arrow data to call out to a C++
+library which <em>also</em> accepts and returns Arrow.</p>
+<p>Doing this will eliminate the overhead of copying and converting data to
+each tool’s desired format. This also helps us move towards a
+standardized API that shouldn’t be too different between language
+binding. Also, by using the same data format, even if there are multiple
+bindings to the same underlying library, if they all accept Arrow, there
+is no cost incurred by sending data to them.</p>
+<h2 id="a-real-example">A real example</h2>
+<p>A real world example of this is the
+<a href="https://github.com/JosiahParry/anime">ANIME</a> algorithm that I developed
+along with <a href="https://www.robinlovelace.net/">Dr. Robin Lovelace</a>.</p>
+<p>Approximate Network Integration, Matching, and Enrichment (ANIME) is a
+partial line matching algorithm that is written in Rust with bindings to
+it in both R and Python—no Julia bindings, so if you’re interested in
+building them, please help!</p>
+<p><img src="https://josiah.rs/posts/cross-language-ds/images/paste-16.png" alt="" /></p>
+<p>The ANIME crate is designed to work <a href="https://geoarrow.org/">GeoArrow</a>
+data.</p>
+<h3 id="repo-structure">Repo structure</h3>
+<p>I use a monorepo structure to accomplish this where the core algorithm
+is implemented in <code>/rust</code> and the R bindings in <code>r/</code> and the python
+bindings in <code>/python</code>.</p>
+<pre class="z-code"><code><span class="z-text z-plain">.
+</span><span class="z-text z-plain">├── rust/
+</span><span class="z-text z-plain">│   └── Cargo.toml
+</span><span class="z-text z-plain">├── r/
+</span><span class="z-text z-plain">│   └── src/rust/Cargo.toml
+</span><span class="z-text z-plain">└── py/
+</span><span class="z-text z-plain">    └── Cargo.toml
+</span></code></pre>
+<p>The result is bindings with a very similar API and <em>identical</em> results:</p>
+<div>
+</div>
+<h2 id="arrow-ffi-helpers">Arrow FFI helpers</h2>
+<p>There still exists a challenge of taking Arrow from R, Python, or Julia
+and getting it across the language barrier.</p>
+<p>To do so from R with extendr is
+<a href="https://github.com/JosiahParry/arrow-extendr"><code>arrow-extendr</code></a>. And
+from Python is <a href="https://kylebarron.dev/arro3/latest/">arro3</a>.</p>
+<h2 id="a-quick-caveat">A quick caveat</h2>
+<p>ANIME is not a perfectly fleshed out example. At present, the core rust
+library does not <em>return</em> Arrow but <em>it is</em> designed to work with the
+geoarrow-rust library. The current bindings are a loose-ish coupling
+approach where on the extendr and PyO3 side the results are processed
+into a data.frame and Arrow Table respectively.</p>
+<p><strong>Call to action</strong> if you’re interested in contributing Julia bindings
+or improving the Python bindings (and maybe publishing them), please do
+make a PR or an issue.</p>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <!-- Basecoat sidebar component -->
+        <script
+            src="https://josiah.rs/js/basecoat/sidebar.min.js"
+            defer
+        ></script>
+        <!-- Sidebar toggle for mobile -->
+        <script src="https://josiah.rs/js/sidebar-toggle.js" defer></script>
+        <!-- Custom tabs for panel-tabset -->
+        <script src="https://josiah.rs/js/tabs.js" defer></script>
+        <!-- Search functionality -->
+        <script src="https://josiah.rs/js/search.js" defer></script>
+        <script>
+            (() => {
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+
+                    // Toggle syntax highlighting themes via media attribute
+                    const darkSyntax = document.getElementById("syntax-dark");
+                    const lightSyntax = document.getElementById("syntax-light");
+                    if (darkSyntax && lightSyntax) {
+                        darkSyntax.media = dark ? "all" : "not all";
+                        lightSyntax.media = dark ? "not all" : "all";
+                    }
+
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        ></script>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"
+        ></script>
+        
+    </body>
+</html>

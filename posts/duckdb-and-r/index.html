@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            {duckdb} or {duckplyr}?  | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+
+        <!-- Determine theme before loading syntax highlighting -->
+        <script>
+            (() => {
+                const stored = localStorage.getItem("themeMode");
+                // Use stored preference if exists, otherwise always default to dark
+                const isDark = stored ? stored === "dark" : true;
+
+                if (isDark) {
+                    document.documentElement.classList.add("dark");
+                }
+            })();
+        </script>
+
+        <!-- Syntax highlighting themes -->
+        <link rel="stylesheet" href="https://josiah.rs/syntax-dark.css" id="syntax-dark" />
+        <link rel="stylesheet" href="https://josiah.rs/syntax-light.css" id="syntax-light" />
+
+        <!-- KaTeX for math rendering -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        />
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-semibold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4 relative">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-sm bg-muted/50 border border-border"
+                id="search-input"
+            />
+            <div
+                id="search-results"
+                class="hidden absolute top-full left-4 -mt-1 w-96 max-h-96 overflow-y-auto bg-background border border-border rounded-lg shadow-lg z-50 p-2"
+            ></div>
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-2 text-sm pl-3 transition-colors font-medium border-l-2 border-primary -ml-px bg-sidebar-accent"
+                    >
+                        Posts
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Socials -->
+            <div
+                class="mt-4 block py-2 transition-colors font-medium px-3 text-sm bg-sidebar-accent"
+            >
+                <h2
+                    class="text-sm font-medium tracking-tight mb-2 text-muted-foreground border-b border-muted-foreground/20 pb-1"
+                >
+                    Socials
+                </h2>
+                <ul class="space-y-1.5">
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <polygon
+                                points="160 128 112 96 112 160 160 128"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M24,128c0,29.91,3.07,47.45,5.41,56.47A16,16,0,0,0,39,195.42C72.52,208.35,128,208,128,208s55.48.35,89-12.58a16,16,0,0,0,9.63-10.95c2.34-9,5.41-26.56,5.41-56.47s-3.07-47.45-5.41-56.47a16,16,0,0,0-9.63-11C183.48,47.65,128,48,128,48s-55.48-.35-89,12.58a16,16,0,0,0-9.63,11C27.07,80.54,24,98.09,24,128Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://www.youtube.com/@josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >YouTube</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <rect
+                                x="32"
+                                y="32"
+                                width="192"
+                                height="192"
+                                rx="8"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="120"
+                                y1="112"
+                                x2="120"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="88"
+                                y1="112"
+                                x2="88"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M120,140a28,28,0,0,1,56,0v36"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <circle cx="88" cy="84" r="12" />
+                        </svg>
+                        <a
+                            href="https://www.linkedin.com/in/josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >LinkedIn</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M119.83,56A52,52,0,0,0,76,32a51.92,51.92,0,0,0-3.49,44.7A49.28,49.28,0,0,0,64,104v8a48,48,0,0,0,48,48h48a48,48,0,0,0,48-48v-8a49.28,49.28,0,0,0-8.51-27.3A51.92,51.92,0,0,0,196,32a52,52,0,0,0-43.83,24Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,232V192a32,32,0,0,1,32-32h0a32,32,0,0,1,32,32v40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,208H72a32,32,0,0,1-32-32A32,32,0,0,0,8,144"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="http://github.com/josiahparry/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >GitHub</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M160,224H72a32,32,0,0,1-32-32V72A32,32,0,0,1,72,40H184a32,32,0,0,1,32,32v72a32,32,0,0,1-32,32H40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M128,136V104a24,24,0,0,0-48,0v32"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M176,136V104a24,24,0,0,0-48,0"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://fosstodon.org/@josi"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Mastodon</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                            class="w-4 h-4"
+                            fill="currentColor"
+                        >
+                            <path
+                                d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.698-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948"
+                            />
+                        </svg>
+                        <a
+                            href="https://bsky.app/profile/josiahparry.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Bluesky</a
+                        >
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">{duckdb} or {duckplyr}? </h1>
+
+         
+        <div class="flex flex-wrap gap-2 mb-4">
+            
+            <a
+                href="/categories/r"
+                class="badge-secondary cursor pointer"
+                >r</a
+            >
+            
+            <a
+                href="/categories/prod"
+                class="badge-secondary cursor pointer"
+                >prod</a
+            >
+            
+            <a
+                href="/categories/duckdb"
+                class="badge-secondary cursor pointer"
+                >duckdb</a
+            >
+            
+        </div>
+         
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >May 24, 2024</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><p>I’ve been diving pretty deep into DuckDB. It has shown that it has great
+utility for the vast majority of mid to large scale data analysis
+tasks—I’m talking Gigabytes not Petabytes. In particular, <a href="https://github.com/krlmlr">Kirill
+Müller</a> of <a href="https://cynkra.com/">Cynkra</a>, has
+been doing great work in bringing DuckDB to the R community.</p>
+<p>Today, this takes the form of two R packages:</p>
+<ul>
+<li><a href="https://r.duckdb.org/"><code>{duckdb}</code></a></li>
+<li><a href="https://duckdblabs.github.io/duckplyr/"><code>{duckplyr}</code></a></li>
+</ul>
+<p>I think the R community would <strong>benefit greatly</strong> by adopting DuckDB
+into their analytic workflows. It can used to make highly performant
+shiny applications or just speed up your workflow.</p>
+<p>For example, here is a demo of a Shiny application filtering, plotting,
+and visualizing 4.5 million records very quickly!</p>
+<p><img src="https://raw.githubusercontent.com/ricochet-rs/flrsh-lessons/main/duckdb-deep-dive/project/final-app.gif" alt="" /></p>
+<h2 id="y-all-keep-asking-me-duckdb-or-duckplyr">Y’all keep asking me <code>{duckdb}</code> or <code>{duckplyr}</code></h2>
+<p>and before I tell you what my answer is, I’ll tell you why I’m bullish
+on DuckDB. I won’t ramble on details.</p>
+<div class="alert-tip" collapse="true">
+<h2 id="jargon-giraffe-giraffe-bullish">Jargon giraffe 🦒: bullish!</h2>
+<p>Bullish is a term that is associated with a growing stock market. Think
+of the upward motion of their horns. People who are “bullish” would
+spend more money in the stock market expecting its prices to continue to
+rise and thus make more moneyyy 💸💸💸</p>
+</div>
+<h2 id="why-duckdb">Why DuckDB?</h2>
+<ul>
+<li>Supports <strong>larger-than-memory</strong> workloads</li>
+<li>Columnar vectorized operations means <strong>operating only on the data you
+need</strong> to and more of it and faster!</li>
+<li>Tight <a href="https://arrow.apache.org/docs/r/">Apache Arrow</a> integration!</li>
+<li>Supports <a href="https://substrait.io/">Substrait</a> for database agnostic
+query plans</li>
+<li>Runs in the browser (think
+<a href="https://shinylive.io/r/examples/">ShinyLive</a> + DuckDB means fast
+compute all running in the browser without a Shiny server)</li>
+<li>_ It is stupid fast_</li>
+</ul>
+<h2 id="my-verdict">My verdict?</h2>
+<p>The thing that is most important, in my opinion, for DuckDBs ability to
+be useful to the R community is its ability to work on data that is
+larger than RAM. <a href="https://duckdb.org/2024/03/29/external-aggregation.html">Read this awesome blog
+post</a>.</p>
+<div class="display-1">
+<blockquote>
+<p>Use <code>{duckdb}</code>!!!</p>
+</blockquote>
+</div>
+<h3 id="duckplyr"><code>{duckplyr}</code></h3>
+<p>The R package <code>{duckplyr}</code> is a <strong>drop in replacement for dplyr</strong>.
+duckplyr operates only on data.frame objects and, as of today, only
+works with in memory data. This means it is limited to the size of your
+machine’s RAM.</p>
+<h3 id="duckdb"><code>{duckdb}</code></h3>
+<p><code>{duckdb}</code>, on the other hand, is a
+<a href="https://dbi.r-dbi.org/reference/index.html"><code>{DBI}</code></a> extension package.
+This means that you can use DBI functions to write standard SQL. But it
+also means that you can use use tables in your DuckDB database with
+dplyr (via dbplyr).</p>
+<p><code>{duckdb}</code> allows you to write standard dplyr code and create lazy
+tables that can be combined to make even lazier code! Moreover, you can
+utilize the <strong>out-of-core</strong> processing capabilities with DuckDB using
+<code>{duckdb}</code> and, to me, that is the whole selling point.</p>
+<p>If performance is your objective and you, for some reason, refuse to use
+the out-of-core capabilities of DuckDB, you should just use <code>data.table</code>
+via <code>dtplyr</code>.</p>
+<h2 id="getting-started-with-duckdb-r">Getting started with DuckDB &amp; R</h2>
+<p>Using DuckDB as a database backend for dplyr is pretty much the same as
+anything other backend you might use. Very similar code to what I’ll
+show you can be used to run code on Apache Spark or Postgres.</p>
+<div class="alert-note" collapse="true">
+<h2 id="sob-crying-just-use-postgres">😭 * crying * just use postgres</h2>
+<blockquote class="twitter-tweet">
+<p lang="en" dir="ltr">
+<p>me, sobbing: just use postgres
+<a href="https://t.co/rJ4JcZJ4Zj">https://t.co/rJ4JcZJ4Zj</a></p>
+</p>
+<p>— Jacob Matson (@matsonj)
+<a href="https://twitter.com/matsonj/status/1793681468134445371?ref_src=twsrc%5Etfw">May
+23, 2024</a></p>
+</blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<pre class="z-code"><code><span class="z-text z-plain">|￣￣￣￣￣￣￣￣￣￣￣￣￣￣|
+</span><span class="z-text z-plain">    Just use Postgres    
+</span><span class="z-text z-plain">|＿＿＿＿＿＿＿＿＿＿＿＿＿＿|
+</span><span class="z-text z-plain">       \ (•◡•) / 
+</span><span class="z-text z-plain">        \     /
+</span></code></pre>
+</div>
+<h3 id="create-a-duckdb-driver">Create a DuckDB driver</h3>
+<ol>
+<li>Load duckdb: <code>library(duckdb)</code></li>
+<li>Create a database driver <code>duckdb()</code></li>
+</ol>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">library</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>duckdb<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">Loading required package: DBI
+</span></code></pre>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> This uses **in memory** database which is limited by RAM
+</span></span><span class="z-source z-r">drv <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">duckdb</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r"><span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> this creates a persistent database which allows DuckDB to
+</span></span><span class="z-source z-r"><span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> perform **larger-than-memory** workloads
+</span></span><span class="z-source z-r">drv <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">duckdb</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">tempfile</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-variable z-parameter z-r">fileext</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>.duckdb<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">drv
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">&lt;duckdb_driver dbdir=&#39;/private/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T/RtmpUFMKNa/file10be84c0a3ff2.duckdb&#39; read_only=FALSE bigint=numeric&gt;
+</span></code></pre>
+<ol start="3">
+<li>Create a database connection object</li>
+</ol>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">con <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">dbConnect</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>drv<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">con
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">&lt;duckdb_connection 4ccd0 driver=&lt;duckdb_driver dbdir=&#39;/private/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T/RtmpUFMKNa/file10be84c0a3ff2.duckdb&#39; read_only=FALSE bigint=numeric&gt;&gt;
+</span></code></pre>
+<ol start="4">
+<li>Import some data from somewhere</li>
+</ol>
+<p>Here we will download a medium sized csv and import it.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">tmp <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">tempfile</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-variable z-parameter z-r">fileext</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>.csv<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">download.file</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>https://raw.githubusercontent.com/ricochet-rs/flrsh-lessons/main/data/houses1990.csv<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  tmp
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">housing <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">tbl_file</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>con<span class="z-punctuation z-separator z-arguments z-r">,</span> tmp<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">housing
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain"># Source:   SQL [?? x 9]
+</span><span class="z-text z-plain"># Database: DuckDB 1.4.1 [josiahparry@Darwin 24.0.0:R 4.6.0//private/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T/RtmpUFMKNa/file10be84c0a3ff2.duckdb]
+</span><span class="z-text z-plain">   houseValue income houseAge rooms bedrooms population households latitude
+</span><span class="z-text z-plain">        &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt;
+</span><span class="z-text z-plain"> 1     452600   8.33       41   880      129        322        126     37.9
+</span><span class="z-text z-plain"> 2     358500   8.30       21  7099     1106       2401       1138     37.9
+</span><span class="z-text z-plain"> 3     352100   7.26       52  1467      190        496        177     37.8
+</span><span class="z-text z-plain"> 4     341300   5.64       52  1274      235        558        219     37.8
+</span><span class="z-text z-plain"> 5     342200   3.85       52  1627      280        565        259     37.8
+</span><span class="z-text z-plain"> 6     269700   4.04       52   919      213        413        193     37.8
+</span><span class="z-text z-plain"> 7     299200   3.66       52  2535      489       1094        514     37.8
+</span><span class="z-text z-plain"> 8     241400   3.12       52  3104      687       1157        647     37.8
+</span><span class="z-text z-plain"> 9     226700   2.08       42  2555      665       1206        595     37.8
+</span><span class="z-text z-plain">10     261100   3.69       52  3549      707       1551        714     37.8
+</span><span class="z-text z-plain"># ℹ more rows
+</span><span class="z-text z-plain"># ℹ 1 more variable: longitude &lt;dbl&gt;
+</span></code></pre>
+<ol start="5">
+<li>Run some dplyr code on the table</li>
+</ol>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">library</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>dplyr<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">avg_price_by_age <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> housing <span class="z-keyword z-operator z-logical z-r">|</span><span class="z-keyword z-operator z-logical z-r">&gt;</span>
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">group_by</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>houseAge<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-logical z-r">|</span><span class="z-keyword z-operator z-logical z-r">&gt;</span>
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">summarise</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-variable z-parameter z-r">avg_val</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">mean</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>houseValue<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">show_query</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>avg_price_by_age<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">&lt;SQL&gt;
+</span><span class="z-text z-plain">SELECT houseAge, AVG(houseValue) AS avg_val
+</span><span class="z-text z-plain">FROM (FROM &#39;/var/folders/wd/xq999jjj3bx2w8cpg7lkfxlm0000gn/T//RtmpUFMKNa/file10be81ebf71cd.csv&#39;) q01
+</span><span class="z-text z-plain">GROUP BY houseAge
+</span></code></pre>
+<ol start="6">
+<li>Bring the results into memory</li>
+</ol>
+<p>Use <code>dplyr::collect()</code> to bring the results into memory as an actual
+tibble!</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">avg_price_df <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">collect</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>avg_price_by_age<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">avg_price_df
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain"># A tibble: 52 × 2
+</span><span class="z-text z-plain">   houseAge avg_val
+</span><span class="z-text z-plain">      &lt;dbl&gt;   &lt;dbl&gt;
+</span><span class="z-text z-plain"> 1       17 190494.
+</span><span class="z-text z-plain"> 2       35 207299.
+</span><span class="z-text z-plain"> 3       37 207361.
+</span><span class="z-text z-plain"> 4       44 216233.
+</span><span class="z-text z-plain"> 5       30 200253.
+</span><span class="z-text z-plain"> 6       14 189597.
+</span><span class="z-text z-plain"> 7        5 208418.
+</span><span class="z-text z-plain"> 8        9 186673.
+</span><span class="z-text z-plain"> 9       49 220336.
+</span><span class="z-text z-plain">10        2 224476.
+</span><span class="z-text z-plain"># ℹ 42 more rows
+</span></code></pre>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <!-- Basecoat sidebar component -->
+        <script
+            src="https://josiah.rs/js/basecoat/sidebar.min.js"
+            defer
+        ></script>
+        <!-- Sidebar toggle for mobile -->
+        <script src="https://josiah.rs/js/sidebar-toggle.js" defer></script>
+        <!-- Custom tabs for panel-tabset -->
+        <script src="https://josiah.rs/js/tabs.js" defer></script>
+        <!-- Search functionality -->
+        <script src="https://josiah.rs/js/search.js" defer></script>
+        <script>
+            (() => {
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+
+                    // Toggle syntax highlighting themes via media attribute
+                    const darkSyntax = document.getElementById("syntax-dark");
+                    const lightSyntax = document.getElementById("syntax-light");
+                    if (darkSyntax && lightSyntax) {
+                        darkSyntax.media = dark ? "all" : "not all";
+                        lightSyntax.media = dark ? "not all" : "all";
+                    }
+
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        ></script>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"
+        ></script>
+        
+    </body>
+</html>

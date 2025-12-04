@@ -1,0 +1,713 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Josiah Parry - production</title>
+    <link rel="self" type="application/atom+xml" href="https://josiah.rs/categories/production/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://josiah.rs"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2024-06-11T00:00:00+00:00</updated>
+    <id>https://josiah.rs/categories/production/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Docker: keep your secrets secret</title>
+        <published>2024-06-11T00:00:00+00:00</published>
+        <updated>2024-06-11T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/docker-env-vars/"/>
+        <id>https://josiah.rs/posts/docker-env-vars/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/docker-env-vars/">&lt;p&gt;You’ve written a shiny app, plumber API, or an ETL process. Your
+orchestrating that work with Docker. In order for the application to
+work, you need to be able to use secret values.&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;How can you use secrets with a Docker image safely?&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;example-dockerfile&quot;&gt;Example Dockerfile&lt;&#x2F;h2&gt;
+&lt;p&gt;Here is a very simple Dockerfile. Say the container is called
+&lt;code&gt;supersecret&lt;&#x2F;code&gt;. When we run the Docker container we print a single
+environment variable.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;dockerfile&quot; class=&quot;language-dockerfile z-code&quot;&gt;&lt;code class=&quot;language-dockerfile&quot; data-lang=&quot;dockerfile&quot;&gt;&lt;span class=&quot;z-source z-dockerfile&quot;&gt;&lt;span class=&quot;z-keyword z-control z-dockerfile&quot;&gt;FROM&lt;&#x2F;span&gt; rhub&#x2F;r-minimal
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-dockerfile&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-dockerfile&quot;&gt;&lt;span class=&quot;z-keyword z-operator z-dockerfile&quot;&gt;CMD &lt;&#x2F;span&gt;[ &lt;span class=&quot;z-string z-quoted z-double z-dockerfile&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-dockerfile&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;R&lt;span class=&quot;z-punctuation z-definition z-string z-end z-dockerfile&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;, &lt;span class=&quot;z-string z-quoted z-double z-dockerfile&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-dockerfile&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;--slave&lt;span class=&quot;z-punctuation z-definition z-string z-end z-dockerfile&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;, &lt;span class=&quot;z-string z-quoted z-double z-dockerfile&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-dockerfile&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;-e&lt;span class=&quot;z-punctuation z-definition z-string z-end z-dockerfile&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;, &lt;span class=&quot;z-string z-quoted z-double z-dockerfile&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-dockerfile&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;cat(Sys.getenv(&amp;#39;SECRET_USER&amp;#39;))&lt;span class=&quot;z-punctuation z-definition z-string z-end z-dockerfile&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Run this with &lt;code&gt;docker run --rm -t supersecret&lt;&#x2F;code&gt; and you’ll see nothing
+printed to the console. This is because the environment variable is not
+actually available to the container.&lt;&#x2F;p&gt;
+&lt;p&gt;How can you set the environment variables used by a container?&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;the-env-instruction&quot;&gt;The &lt;code&gt;ENV&lt;&#x2F;code&gt; instruction&lt;&#x2F;h2&gt;
+&lt;p&gt;The &lt;code&gt;ENV&lt;&#x2F;code&gt; Docker instruction is used to specify environment variables
+You can specify environment variables directly into the Dockerfile like
+so:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;dockerfile&quot; class=&quot;language-dockerfile z-code&quot;&gt;&lt;code class=&quot;language-dockerfile&quot; data-lang=&quot;dockerfile&quot;&gt;&lt;span class=&quot;z-source z-dockerfile&quot;&gt;&lt;span class=&quot;z-keyword z-control z-dockerfile&quot;&gt;FROM&lt;&#x2F;span&gt; rhub&#x2F;r-minimal
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-dockerfile&quot;&gt;&lt;span class=&quot;z-keyword z-control z-dockerfile&quot;&gt;ENV &lt;&#x2F;span&gt;SECRET_USER=josiah
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-dockerfile&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-dockerfile&quot;&gt;&lt;span class=&quot;z-keyword z-operator z-dockerfile&quot;&gt;CMD &lt;&#x2F;span&gt;[ &lt;span class=&quot;z-string z-quoted z-double z-dockerfile&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-dockerfile&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;R&lt;span class=&quot;z-punctuation z-definition z-string z-end z-dockerfile&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;, &lt;span class=&quot;z-string z-quoted z-double z-dockerfile&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-dockerfile&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;--slave&lt;span class=&quot;z-punctuation z-definition z-string z-end z-dockerfile&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;, &lt;span class=&quot;z-string z-quoted z-double z-dockerfile&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-dockerfile&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;-e&lt;span class=&quot;z-punctuation z-definition z-string z-end z-dockerfile&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;, &lt;span class=&quot;z-string z-quoted z-double z-dockerfile&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-dockerfile&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;cat(Sys.getenv(&amp;#39;SECRET_USER&amp;#39;))&lt;span class=&quot;z-punctuation z-definition z-string z-end z-dockerfile&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Running &lt;code&gt;docker run --rm -t supersecret&lt;&#x2F;code&gt; will print &lt;code&gt;josiah&lt;&#x2F;code&gt; to the
+console! So that worked.&lt;&#x2F;p&gt;
+&lt;p&gt;This is fine for things that dont need to be secret. For example maybe
+you have something like &lt;code&gt;ENV DEBUG=true&lt;&#x2F;code&gt; to specify that this is a debug
+build.&lt;&#x2F;p&gt;
+&lt;p&gt;But if you have a secret, &lt;strong&gt;you shouldn’t place your secrets directly in
+the code of the Dockerfile&lt;&#x2F;strong&gt;.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;using-env&quot;&gt;Using &lt;code&gt;--env&lt;&#x2F;code&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;Another way to specify environment variables is to specify the
+environment variables at run time using the &lt;code&gt;--env&lt;&#x2F;code&gt; flag. This accepts
+key-value pairs for the environment variables.&lt;&#x2F;p&gt;
+&lt;p&gt;For example&lt;&#x2F;p&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;docker run --env SECRET_USER=&amp;quot;ricky bobby&amp;quot; --rm -t supersecret
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;will print &lt;code&gt;ricky bobby&lt;&#x2F;code&gt; to the console.&lt;&#x2F;p&gt;
+&lt;p&gt;This will work but it requires that you manually specify the environment
+variables at run time when using &lt;code&gt;docker run&lt;&#x2F;code&gt;. And that can be
+cumbersome and require some finagling.&lt;&#x2F;p&gt;
+&lt;p&gt;And again, you dont want to write a bash script that hard codes those
+values into a &lt;code&gt;docker run&lt;&#x2F;code&gt; call.&lt;&#x2F;p&gt;
+&lt;p&gt;So what else can you do?&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;using-a-separate-file-with-env-file&quot;&gt;Using a separate file with &lt;code&gt;--env-file&lt;&#x2F;code&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;You shouldn’t store secrets in your R code. You should use a &lt;code&gt;.Renviron&lt;&#x2F;code&gt;
+file. This looks like&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;shell&quot; class=&quot;language-shell z-code&quot;&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;KEY=value
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;SECRET_USER=josiah
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;SECRET_USER_PASSWORD=super-duper-very-secret
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;div&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;Tip&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;In many other languages and ecosystem, using a &lt;code&gt;.env&lt;&#x2F;code&gt; file with the
+same structure is used to set environment variables.&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;This would make the environment variables &lt;code&gt;KEY&lt;&#x2F;code&gt;, &lt;code&gt;SECRET_USER&lt;&#x2F;code&gt; and
+&lt;code&gt;SECRET_USER_PASSWORD&lt;&#x2F;code&gt; available to your R session by running
+&lt;code&gt;Sys.getenv()&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Now, you don’t want to actually copy this file into the docker
+container. What if you accidentally made the file available? Yikes!&lt;&#x2F;p&gt;
+&lt;p&gt;Instead, you can pass the file directly using the &lt;code&gt;--env-file&lt;&#x2F;code&gt; flag.
+This will capture the environment variables written in a file as a
+&lt;code&gt;KEY=value&lt;&#x2F;code&gt; pair and make them available in your container.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;docker-run-with-file&quot;&gt;docker run with file&lt;&#x2F;h3&gt;
+&lt;p&gt;Given the following files which define a Docker image called
+&lt;code&gt;supersecret&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;div&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;You will need to run &lt;code&gt;docker run --env-file .env supersecret&lt;&#x2F;code&gt; to set
+your environment variables appropriately.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Databases for Data Scientist</title>
+        <published>2024-05-16T00:00:00+00:00</published>
+        <updated>2024-05-16T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/databases-for-ds/"/>
+        <id>https://josiah.rs/posts/databases-for-ds/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/databases-for-ds/">&lt;p&gt;It’s been coming up a lot recently, or, maybe, I’ve just been focused on
+this a lot more. Data scientists are coming to terms with the fact that
+they have to work with databases if they want their analytics to scale.
+That is pretty normal. But one of the bigger challenges is that these
+data scientists don’t really know how to make that leap. What do they
+need to know to make that transition?&lt;&#x2F;p&gt;
+&lt;p&gt;For many of use in the “know”, we know that there actually isn’t all
+that much different between a database and a data.frame. A data frame is
+in memory but a database table is just &lt;em&gt;over there&lt;&#x2F;em&gt; sitting somewhere
+else.&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;If you know how to write dplyr, you already know how to work with a
+database.&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;what-do-you-need-to-know&quot;&gt;What do you need to know?&lt;&#x2F;h2&gt;
+&lt;p&gt;For those of you who want to begin to use databases in your work and
+want to start scaling your analysis, there are a few topics that would
+be helpful for you to know. I’m not going to teach you them here. But
+list them out so you can google it. And truthfully, you already know
+what these are but you don’t know the terminology.&lt;&#x2F;p&gt;
+&lt;p&gt;Here is my list of things to know:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Learn what &lt;strong&gt;RDBMS&lt;&#x2F;strong&gt; means.&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;ul&gt;
+&lt;li&gt;relational database management system or sometimes just DBMS&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;Understand &lt;strong&gt;primary keys&lt;&#x2F;strong&gt; and &lt;strong&gt;foreign keys&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;Figure out what database &lt;strong&gt;normalization&lt;&#x2F;strong&gt; is and when its useful&lt;&#x2F;li&gt;
+&lt;li&gt;Schemas vs. tables for organizational purposes&lt;&#x2F;li&gt;
+&lt;li&gt;Views vs tables (this is handy for making tables to be consumed by
+BI &#x2F; other things)&lt;&#x2F;li&gt;
+&lt;li&gt;Table indexes and what they are (that way you can know when you
+might need them)&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;why-you-might-not-actually-need-a-full-rdbms&quot;&gt;Why you might not actually need a full RDBMS&lt;&#x2F;h2&gt;
+&lt;p&gt;With the ubiquity of parquet and tools like apache arrow and DuckDB,
+there’s a good chance that for what you want to accomplish in your
+analytical workflow, you don’t need a fully fledged database. Organized
+parquet files into a database-like structure will be sufficient. DuckDB
+and Arrow can allow you to work with these data in a larger than memory
+capacity. You don’t need to read it all into memory, actually.&lt;&#x2F;p&gt;
+&lt;p&gt;Before you say you need Postgres for analytics, instead, try parquet
+(and with hive partitioning if your data are larger) with DuckDB and
+Apache Arrow. It’s likely all you need.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Valve: putting R in production</title>
+        <published>2023-08-22T00:00:00+00:00</published>
+        <updated>2023-08-22T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/valve-for-production/"/>
+        <id>https://josiah.rs/posts/valve-for-production/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/valve-for-production/">&lt;p&gt;This blog post is based on my most recent YouTube video. Please give it
+a watch!&lt;&#x2F;p&gt;
+&lt;iframe width=&quot;560&quot; height=&quot;315&quot; src=&quot;https:&#x2F;&#x2F;www.youtube.com&#x2F;embed&#x2F;11FM-dxxi3M&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&quot; allowfullscreen&gt;
+&lt;&#x2F;iframe&gt;
+&lt;p&gt;I’ve been grinding on a new tool for a few months now. And I’m hyped to
+formally introduce you to it. It’s called
+&lt;a href=&quot;https:&#x2F;&#x2F;valve.josiahparry.com&quot;&gt;Valve&lt;&#x2F;a&gt; And Valve is going to make R in
+production kick a$$.🔥&lt;&#x2F;p&gt;
+&lt;p&gt;We’ve all seen those click bait articles saying “Don’t Put R in
+production” or telling you that R can’t make machine learning models for
+production. Those “hot takes” are uninformed and can be applied to other
+languages such as Python. That’s a bunch of malarkey.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;towardsdatascience.com&#x2F;dont-use-r-in-production-e2f4c9dd4a7b&quot;&gt;&lt;img src=&quot;images&#x2F;paste-1.png&quot; style=&quot;width:50.0%&quot;
+data-fig-align=&quot;center&quot; &#x2F;&gt;&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Let’s get right down to it. Let’s talk “production.” And let me be
+clear: R belongs in production. But we as the R community need to learn
+how to do that and be better advocates.&lt;&#x2F;p&gt;
+&lt;p&gt;When I say “production” I’m talking about making your code work with any
+other system. And that’s where RESTful APIs come in. If I’ve lost you at
+“RESTful”, &lt;a href=&quot;https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=w4yHEQWct20&amp;amp;list=UULFX78SUhrloA6Cn3aW_e8C_A&amp;amp;index=22&quot;&gt;watch my previous video
+here&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;div class=&quot;aside&quot;&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;www.youtube.com&#x2F;watch?v=w4yHEQWct20&amp;amp;list=UULFX78SUhrloA6Cn3aW_e8C_A&amp;amp;index=22&quot;&gt;&lt;img src=&quot;images&#x2F;paste-15.png&quot; style=&quot;width:75.0%&quot;
+data-fig-align=&quot;center&quot; &#x2F;&gt;&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;REST relies on HTTP, which is the foundation of the internet and is a
+common tongue. It’s like if Esperanto actually worked. REST APIs provide
+a language-agnostic way to expose functionality over the web.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;www.rplumber.io&#x2F;&quot;&gt;Plumber&lt;&#x2F;a&gt; is an R package that converts your R
+functions into a RESTful API meaning any tool that can communicate in
+HTTP can call your R functions. It converts R code like this into an
+http endpoint.&lt;&#x2F;p&gt;
+&lt;p&gt;At it’s core Valve is a web server that runs multiple {plumber} APIs in
+parallel. Valve spins up and down plumber APIs as needed.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;images&#x2F;paste-21.png&quot; style=&quot;width:75.0%&quot;
+data-fig-align=&quot;center&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;It’s designed to work with any existing plumber API. And because of that
+it supports {vetiver} out of the box.&lt;&#x2F;p&gt;
+&lt;div class=&quot;aside&quot;&gt;
+&lt;img src=&quot;images&#x2F;paste-22.png&quot; style=&quot;width:50.0%&quot; &#x2F;&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;Vetiver is a framework built by Julia Silge and Isabel Zimmerman from
+Posit that simplifies putting machine learning models built with
+tidymodels into a production setting. And since, the goal is R in
+production, Valve can be easily integrated into Docker containers and
+deployed with DigitalOcean, AWS, Azure, or whatever other orchestration
+tools you have available.&lt;&#x2F;p&gt;
+&lt;p&gt;Valve is akin to Gunicorn for Flask apps and FastAPI.&lt;&#x2F;p&gt;
+&lt;div class=&quot;columns&quot;&gt;
+&lt;div class=&quot;column&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;valve-for-production&#x2F;images&#x2F;gunicor.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;column&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;valve-for-production&#x2F;images&#x2F;flask.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;column&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;valve-for-production&#x2F;images&#x2F;fastapi.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;To understand why Valve is so powerful, we need to first understand how
+plumber works and its limitations. Plumber works by writing a function
+definition and providing annotations using a special comment character
+&lt;code&gt;#*&lt;&#x2F;code&gt;. Let’s take a look at a very simple example.&lt;&#x2F;p&gt;
+&lt;p&gt;The three main components of a plumber API are:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;the function definition&lt;&#x2F;li&gt;
+&lt;li&gt;the request type &lt;code&gt;@post&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;endpoint &lt;code&gt;&#x2F;add-2&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;In a nutshell plumber works by spawning a single web server using the
+{httpuv} R package. The webserver captures incoming http requests,
+captures the provided parameters, body, and requested endpoint. Based on
+the endpoint, it passes the parameters to the function. The result is
+then “serialized” into the correct output type. By default, this is
+&lt;code&gt;json&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;valve-for-production&#x2F;images&#x2F;plumber-nutshell.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;For example, we might be calling the &lt;code&gt;&#x2F;add-2&lt;&#x2F;code&gt; endpoint. The process
+looks a bit like this. We have a GET request. The endpoint is colored
+red. Then the parameters are colored blue. The request is captured by
+the web-server. The endpoints are checked. Then the parameters are
+passed to the function and the user gets the result.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;valve-for-production&#x2F;images&#x2F;request.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;You can see how this is powerful! But there is one major thing holding
+this back. This is all running in a single R process. R, like Python, is
+single threaded. That means each request that comes in has to be added
+to a queue. The next request cannot be processed until the previous one
+has been.&lt;&#x2F;p&gt;
+&lt;p&gt;Valve helps by running multiple plumber APIs concurrently. Valve is
+built specifically for plumber, in Rust, and by leveraging the power
+Tokio framework. Instead of having a single plumber API and a single R
+process handling all requests, there is another web server handling all
+incoming requests. This web server is build using Tokio.&lt;&#x2F;p&gt;
+&lt;div&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;The app has a number of pre-specified worker threads. Each worker is
+capable of taking an incoming request, processing it, and returning a
+response. These worker threads will delegate the request to another
+plumber API. These plumber APIs are sitting in a connection pool waiting
+to be accessed. The APIs will spawn and de-spawn according to the amount
+of incoming traffic.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;valve-for-production&#x2F;images&#x2F;valve.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;What this means is that instead of being able to handle 1 request at a
+time, we can handle as many requests as there are workers concurrently.
+This allows us to take advantage of more than a single R process at a
+time and, as a result, we can utilize more of the compute resources
+available to us.&lt;&#x2F;p&gt;
+&lt;p&gt;So how do you install Valve? There are two ways in which you can install
+Valve. The first is to use the Rust package manager Cargo. This is my
+personal recommendation. If you don’t have Rust and cargo installed,
+don’t worry it is the second easiest language I’ve ever installed.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;valve-for-production&#x2F;images&#x2F;paste-12.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Follow this one liner and it’ll handle the installation for you.&lt;&#x2F;p&gt;
+&lt;p&gt;To install Valve with cargo run&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;shell&quot; class=&quot;language-shell z-code&quot;&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;cargo install valve-rs --no-default-features
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Doing this will install the Valve binary and make it available to you as
+a command line tool. Alternatively, if you want to install valve as an R
+package you can do so via the R-universe. The R-universe version has
+pre-built binaries for Windows, Mac, and Ubuntu which means you do not
+need to have rust installed. But again, its easy, so give it a shot!&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;install.packages&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;    &lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;valve&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; 
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;    &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;repos&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;c&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;https:&#x2F;&#x2F;josiahparry.r-universe.dev&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;https:&#x2F;&#x2F;cloud.r-project.org&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;To follow along with the rest of these demos you can check out code in
+the &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;JosiahParry&#x2F;youtube-tutorials&#x2F;tree&#x2F;main&#x2F;intro-valve&quot;&gt;github
+repository&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Here I want to demo just how easy it is to use Valve and what the
+experience is like. For this simple example we will run a plumber API
+with one endpoint &lt;code&gt;&#x2F;zzz&lt;&#x2F;code&gt; which will sleep for a specified amount of
+time. We’ll create a Valve app with 10 workers and plumber APIs.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;shell&quot; class=&quot;language-shell z-code&quot;&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;valve -n 10 -w 10
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;You’ll notice that only one API is spawned at the start. This is because
+connections are spawned based on incoming demand. As we send more
+requests, the plumber APIs will spawn. If, after a specified amount of
+time, they go stale, they will de-spawn. However, you do have the
+ability to control the minimum number of plumber APIs.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;shell&quot; class=&quot;language-shell z-code&quot;&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Valve starting at: 127.0.0.1:3000
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Spawning plumber API at 127.0.0.1:11094
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;We’re going to create a simple function &lt;code&gt;sleep()&lt;&#x2F;code&gt; which will call the
+zzz endpoint at a specified port for a specified amount of time. We’ll
+use &lt;code&gt;furrr&lt;&#x2F;code&gt; to create 10 sessions and call the function 10 times on
+valve app.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function z-name z-r&quot;&gt;&lt;span class=&quot;z-entity z-name z-function z-r&quot;&gt;sleep&lt;&#x2F;span&gt; &lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-r&quot;&gt;&lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-r&quot;&gt;&lt;span class=&quot;z-storage z-type z-function z-r&quot;&gt;function&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-parameters z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-parameters z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;port&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-parameters z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;secs&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-parameters z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-punctuation z-section z-braces z-begin z-r&quot;&gt;{&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;  httr2&lt;span class=&quot;z-punctuation z-accessor z-colons z-r&quot;&gt;::&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;request&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;        &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;paste0&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;127.0.0.1:&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; port&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&#x2F;sleep?zzz=&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; secs&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;    &lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;|&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;&amp;gt;&lt;&#x2F;span&gt; 
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;    httr2&lt;span class=&quot;z-punctuation z-accessor z-colons z-r&quot;&gt;::&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;req_perform&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;|&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;&amp;gt;&lt;&#x2F;span&gt; 
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;    httr2&lt;span class=&quot;z-punctuation z-accessor z-colons z-r&quot;&gt;::&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;resp_body_string&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-braces z-end z-r&quot;&gt;}&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Now with the function defined we can use furrr to run the function in
+parallel&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;library&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;furrr&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;plan&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;multisession&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;workers&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;10&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;We will call the function 10 times using &lt;code&gt;future_map()&lt;&#x2F;code&gt; . The first time
+this runs we can see that more plumber APIs are being spawned. This
+takes somewhere between 3 and 4 seconds the first time we run it.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;start &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;Sys.time&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;furrr&lt;span class=&quot;z-punctuation z-accessor z-colons z-r&quot;&gt;::&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;future_map&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;1&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-other z-r&quot;&gt;:&lt;&#x2F;span&gt;&lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;10&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-other z-r&quot;&gt;~&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;sleep&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;3000&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;2&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;multi_total &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;Sys.time&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-arithmetic z-r&quot;&gt;-&lt;&#x2F;span&gt; start
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;multi_total 
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-comment z-line z-number-sign z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-comment z-r&quot;&gt;#&lt;&#x2F;span&gt;&amp;gt; Time difference of 3.653488 secs
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;If you watch your terminal, you will see additional plumber connections
+being spawned.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;shell&quot; class=&quot;language-shell z-code&quot;&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Valve starting at: 127.0.0.1:3000
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Spawning plumber API at 127.0.0.1:11094
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Spawning plumber API at 127.0.0.1:35714
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Spawning plumber API at 127.0.0.1:15674
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Spawning plumber API at 127.0.0.1:30746
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Spawning plumber API at 127.0.0.1:26860
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Spawning plumber API at 127.0.0.1:54939
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Spawning plumber API at 127.0.0.1:5592
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Spawning plumber API at 127.0.0.1:46549
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Spawning plumber API at 127.0.0.1:53346
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Spawning plumber API at 127.0.0.1:44956
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;If we run this again, we get something much closer to two seconds total
+for sending all 10 requests.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;start &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;Sys.time&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;furrr&lt;span class=&quot;z-punctuation z-accessor z-colons z-r&quot;&gt;::&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;future_map&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;1&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-other z-r&quot;&gt;:&lt;&#x2F;span&gt;&lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;10&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-other z-r&quot;&gt;~&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;sleep&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;3000&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;2&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;multi_total &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;Sys.time&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-arithmetic z-r&quot;&gt;-&lt;&#x2F;span&gt; start
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;multi_total 
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-comment z-line z-number-sign z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-comment z-r&quot;&gt;#&lt;&#x2F;span&gt;&amp;gt; Time difference of 2.013385 secs
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Now, we can do the same thing with all 10 workers calling just one of
+the spawned plumber APIs.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;start &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;Sys.time&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;furrr&lt;span class=&quot;z-punctuation z-accessor z-colons z-r&quot;&gt;::&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;future_map&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;1&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-other z-r&quot;&gt;:&lt;&#x2F;span&gt;&lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;10&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-other z-r&quot;&gt;~&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;sleep&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;24817&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;2&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-parens z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;total &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;Sys.time&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-arithmetic z-r&quot;&gt;-&lt;&#x2F;span&gt; start&lt;span class=&quot;z-punctuation z-section z-parens z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-comment z-line z-number-sign z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-comment z-r&quot;&gt;#&lt;&#x2F;span&gt;&amp;gt; Time difference of 20.04956 secs
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;That’s a huge different. That is a lot more performance that we are
+squeezing out of this plumber API by creating multiple to run
+concurrently.&lt;&#x2F;p&gt;
+&lt;p&gt;In an R session load {valve}.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;library&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;valve&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Next, we will use the function &lt;code&gt;valve_run()&lt;&#x2F;code&gt; to run our plumber API.
+This function has a lot of handy defaults to moderately scale your
+plumber API. By default it looks for the file &lt;code&gt;plumber.R&lt;&#x2F;code&gt; in your
+working directory.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;valve_run&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;plumber.R&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;n_max&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;10&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-comment z-line z-number-sign z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-comment z-r&quot;&gt;#&lt;&#x2F;span&gt;&amp;gt; Valve app hosted at &amp;lt;http:&#x2F;&#x2F;127.0.0.1:3000&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-comment z-line z-number-sign z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-comment z-r&quot;&gt;#&lt;&#x2F;span&gt;&amp;gt; Spawning plumber API at 127.0.0.1:49015
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The CLI works just like the R function with two differences. We call it
+from the command line and the syntax is a smidgen different.&lt;&#x2F;p&gt;
+&lt;p&gt;From the command line we can run &lt;code&gt;valve –help&lt;&#x2F;code&gt; to see the arguments that
+we can provide. The CLI has the same defaults as the R package.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;shell&quot; class=&quot;language-shell z-code&quot;&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;valve --help
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Usage: valve [-h &amp;lt;host&amp;gt;] [-p &amp;lt;port&amp;gt;] [-n &amp;lt;n-max&amp;gt;] [-w &amp;lt;workers&amp;gt;] [-f &amp;lt;file&amp;gt;] [--check-unused &amp;lt;check-unused&amp;gt;] [--max-age &amp;lt;max-age&amp;gt;] [--n-min &amp;lt;n-min&amp;gt;]
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Distribute your plumber API in parallel.
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Options:
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;  -h, --host        host to serve APIs on
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;  -p, --port        the port to serve the main application on
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;  -n, --n-max       the maximum number of plumber APIs to spawn
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;  -w, --workers     number of Tokio workers to spawn to handle requests
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;  -f, --file        path to the plumber API (default `plumber.R`)
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;  --check-unused    default 10. Interval in seconds when to check for unused
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;                    connections
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;  --max-age         default 5 mins. How long an API can go unused before being
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;                    killed in seconds.
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;  --n-min           the maximum number of plumber APIs to spawn
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;  --help            display usage information
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Now I want to illustrate scaling a machine learning model with {vetiver}
+and valve. They do so by wrapping the model into a plumber API. I’ve
+created a sample plumber API based on &lt;a href=&quot;https:&#x2F;&#x2F;juliasilge.com&#x2F;blog&#x2F;childcare-costs&#x2F;&quot;&gt;Julia’s recent Tidy Tuesday
+screencast in which she creates an XGBoost
+model&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;valve-for-production&#x2F;images&#x2F;paste-14.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;I’ve taken this example and used vetiver to create a plumber API to
+serve predictions from this model. One could deploy this API as is with
+Docker or something like Posit Connect. If going down the Docker
+approach, we can make this a bit more performant by using Valve.&lt;&#x2F;p&gt;
+&lt;div class=&quot;alert-note&quot;&gt;
+&lt;p&gt;The scripts to generate the vetiver model and API are in the &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;JosiahParry&#x2F;youtube-tutorials&#x2F;tree&#x2F;main&#x2F;intro-valve&quot;&gt;Github
+repo&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;To make this into a Valve app all we need to do is pass provide the
+plumber API file to valve and we’re on our way! I’ve written some simple
+bench marks using drill to compare the performance of the two
+approaches. With valve we will use 5 concurrent processes and test it.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;shell&quot; class=&quot;language-shell z-code&quot;&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;valve -f vetiver-api.R -n 5 -w 5
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>R is still fast: a salty reaction to a salty blog post</title>
+        <published>2023-07-06T00:00:00+00:00</published>
+        <updated>2023-07-06T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/r-is-still-fast/"/>
+        <id>https://josiah.rs/posts/r-is-still-fast/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/r-is-still-fast/">&lt;p&gt;There’s this new &lt;a href=&quot;https:&#x2F;&#x2F;matthewrkaye.com&#x2F;blog&#x2F;lessons-learned-from-running-r-in-production&quot;&gt;blog
+post&lt;&#x2F;a&gt;
+making the rounds making some claims about why they won’t put R into
+production. Most notably they’re wheeling the whole “R is slow thing”
+again. And there are few things that grind my gears more than that type
+of sentiment. It’s almost always ill informed. I find that to be the
+case here too.&lt;&#x2F;p&gt;
+&lt;p&gt;I wouldn’t have known about this had it 1) not mentioned my own Rust
+project &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;JosiahParry&#x2F;valve&#x2F;&quot;&gt;Valve&lt;&#x2F;a&gt; and 2) a kind
+stranger inform me about it on mastodon.&lt;&#x2F;p&gt;
+&lt;iframe src=&quot;https:&#x2F;&#x2F;fosstodon.org&#x2F;@jimgar&#x2F;110663477958759961&#x2F;embed&quot; class=&quot;mastodon-embed&quot; style=&quot;max-width: 100%; border: 0&quot; width=&quot;400&quot; allowfullscreen=&quot;allowfullscreen&quot;&gt;
+&lt;&#x2F;iframe&gt;
+&lt;p&gt;I’ve collected my reactions below as notes and sundry bench marks and
+bullet points.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;tl-dr&quot;&gt;TL;DR&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;There is a concurrent web server for R and I made it
+&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;JosiahParry&#x2F;valve&#x2F;&quot;&gt;Valve&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;Python is really fast at serializing json and R is slower&lt;&#x2F;li&gt;
+&lt;li&gt;Python is really slow at parsing json and R is so so soooo much faster&lt;&#x2F;li&gt;
+&lt;li&gt;To handle types appropriately, sometimes you have to program&lt;&#x2F;li&gt;
+&lt;li&gt;There are mock REST API testing libraries
+&lt;a href=&quot;https:&#x2F;&#x2F;enpiar.com&#x2F;r&#x2F;httptest&#x2F;articles&#x2F;httptest.html&quot;&gt;&lt;code&gt;{httptest}&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;
+and &lt;a href=&quot;https:&#x2F;&#x2F;docs.ropensci.org&#x2F;webmockr&#x2F;&quot;&gt;&lt;code&gt;{webmockr}&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;Demand your service providers to make the tools you want&lt;&#x2F;li&gt;
+&lt;li&gt;Ask and you shall receive&lt;&#x2F;li&gt;
+&lt;li&gt;R can go into production&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;strong&gt;PLEASE JUST TRY VALVE YOU’LL LOVE IT&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;production-services&quot;&gt;Production Services&lt;&#x2F;h2&gt;
+&lt;p&gt;There are so many people using R in production in so many ways across
+the world. I wish Posit did a better job getting these stories out. As a
+former RStudio employee, I personally met people putting R in production
+in most amazing ways. From the US Department of State, Defense, Biotech
+companies, marketing agencies, national lotteries, and so much more. The
+one that sticks out the most is that &lt;a href=&quot;https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;pmokhtarian&#x2F;&quot;&gt;Payam
+M.&lt;&#x2F;a&gt;, when at
+&lt;a href=&quot;https:&#x2F;&#x2F;www.tabcorp.com.au&#x2F;&quot;&gt;Tabcorp&lt;&#x2F;a&gt; massively scaled their system
+using Plumber APIs and Posit Connect to such a ridiculous scale I
+couldn’t even believe.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;gunicorn-web-servers-and-concurrency&quot;&gt;Gunicorn, Web Servers, and Concurrency&lt;&#x2F;h3&gt;
+&lt;blockquote&gt;
+&lt;p&gt;“R has no widely-used web server to help it run concurrently.”&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;The premise of this whole blog post stems from the fact that there is no
+easily concurrent web server for R. Which is true and is the reason I
+built Valve. It doesn’t meet the criteria of widely used because no one
+has used it. In part, because of posts like this that discourage people
+from using R in production.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;types-and-conversion&quot;&gt;Types and Conversion&lt;&#x2F;h3&gt;
+&lt;p&gt;There’s this weird bit about how &lt;code&gt;1&lt;&#x2F;code&gt; and &lt;code&gt;c(1, 2)&lt;&#x2F;code&gt; are treated as the
+same class and unboxing of json. They provide the following python code
+as a desirable pattern for processing data.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; class=&quot;language-python z-code&quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;x&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-python&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-python&quot;&gt;1&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;y&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-python&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-sequence z-list z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-sequence z-begin z-python&quot;&gt;[&lt;&#x2F;span&gt;&lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-python&quot;&gt;1&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-sequence z-python&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-python&quot;&gt;2&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-sequence z-end z-python&quot;&gt;]&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;json&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-accessor z-dot z-python&quot;&gt;.&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-variable z-function z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;dump&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;x&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-python&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;sys&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-accessor z-dot z-python&quot;&gt;.&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;stdout&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-comment z-line z-number-sign z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-comment z-python&quot;&gt;#&lt;&#x2F;span&gt;&amp;gt; 1
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;json&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-accessor z-dot z-python&quot;&gt;.&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-variable z-function z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;dump&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;y&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-python&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;sys&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-accessor z-dot z-python&quot;&gt;.&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;stdout&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-comment z-line z-number-sign z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-comment z-python&quot;&gt;#&lt;&#x2F;span&gt;&amp;gt; [1, 2]
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;They want scalars to be unboxed and lists to remain lists. This is the
+same behavior as &lt;code&gt;jsonlite&lt;&#x2F;code&gt;, though.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;jsonlite&lt;span class=&quot;z-punctuation z-accessor z-colons z-r&quot;&gt;::&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;toJSON&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;1&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;auto_unbox&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-language z-r&quot;&gt;TRUE&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;1 
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;jsonlite&lt;span class=&quot;z-punctuation z-accessor z-colons z-r&quot;&gt;::&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;toJSON&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;1&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-other z-r&quot;&gt;:&lt;&#x2F;span&gt;&lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;2&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;auto_unbox&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-language z-r&quot;&gt;TRUE&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;[1,2] 
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;There’s a difference here: one that the author fails to recognize is
+that a length 1 vector is handled appropriately. What the author is
+saying is that they don’t like that R doesn’t behave the same way as
+Python. You, as a developer should be able to guarantee that a value is
+length 1. It’s easy. &lt;code&gt;length(x) == 1&lt;&#x2F;code&gt;, or if you want
+&lt;code&gt;is_scalar &amp;lt;- function(x) length(x) == 1&lt;&#x2F;code&gt;. This is the type system in R
+and json libraries handle the “edge case” appropriately. There is
+nothing wrong here. The reprex is the same as the python library.&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;“R (and Plumber) also do not enforce types of parameters to your API,
+as opposed to FastAPI, for instance, which does via the use of
+pydantic.”&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;Python does not type check nor does FastAPI. You opt in to type checking
+with FastAPI. You can do the same with Plumber. A quick perusal of the
+docs will show you this. Find the
+&lt;a href=&quot;https:&#x2F;&#x2F;www.rplumber.io&#x2F;articles&#x2F;annotations.html&quot;&gt;&lt;code&gt;@param&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; section.
+There is some concessions here, though. The truthful part here is the
+type annotations do type conversion for only dynamic routes. Which, I
+don’t know if FastAPI does. Type handling for static parameters is an
+&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;rstudio&#x2F;plumber&#x2F;issues&#x2F;755&quot;&gt;outstanding issue of mine for plumber since
+2021&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;I’ve followed up on the issue above and within minutes the maintainer
+responded. There is an existing &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;rstudio&#x2F;plumber&#x2F;pull&#x2F;905&quot;&gt;PR to handle this
+issue&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;This just goes to show if that you want something done in the open
+source world, just ask for it. More than likely its already there or
+just waiting for the slight nudge from someone else.&lt;&#x2F;p&gt;
+&lt;p&gt;While I know it’s not “seemless” adding an &lt;code&gt;as.integer()&lt;&#x2F;code&gt; and a
+&lt;code&gt;stopifnot(is.integer(n))&lt;&#x2F;code&gt; isn’t the wildest thing for a developer to
+do.&lt;&#x2F;p&gt;
+&lt;p&gt;There is a comparison between type checking in R and Python with the
+python example using type hints which are, again, opt-in. An unfair
+comparison when you say “if you don’t use the opt-in features of plumber
+but use the opt-in features of FastAPI, FastAPI is better.”&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; class=&quot;language-python z-code&quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-statement z-import z-python&quot;&gt;&lt;span class=&quot;z-keyword z-control z-import z-from z-python&quot;&gt;from&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-statement z-import z-python&quot;&gt;&lt;span class=&quot;z-meta z-import-source z-python&quot;&gt; &lt;span class=&quot;z-meta z-import-path z-python&quot;&gt;&lt;span class=&quot;z-meta z-import-name z-python&quot;&gt;fastapi&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-statement z-import z-python&quot;&gt;&lt;span class=&quot;z-keyword z-control z-import z-python&quot;&gt;import&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-statement z-import z-python&quot;&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-statement z-import z-python&quot;&gt; &lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;FastAPI&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;app&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-python&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-variable z-function z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;FastAPI&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-annotation z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-annotation z-python&quot;&gt;@&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-annotation z-function z-python&quot;&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-annotation z-function z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;app&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-accessor z-dot z-python&quot;&gt;.&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-variable z-annotation z-function z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;get&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-annotation z-function z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-annotation z-arguments z-python&quot;&gt;&lt;span class=&quot;z-meta z-string z-python&quot;&gt;&lt;span class=&quot;z-string z-quoted z-double z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-python&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-string z-python&quot;&gt;&lt;span class=&quot;z-string z-quoted z-double z-python&quot;&gt;&#x2F;types&lt;span class=&quot;z-punctuation z-definition z-string z-end z-python&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-annotation z-function z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-function z-python&quot;&gt;&lt;span class=&quot;z-storage z-modifier z-async z-python&quot;&gt;async&lt;&#x2F;span&gt; &lt;span class=&quot;z-storage z-type z-function z-python&quot;&gt;&lt;span class=&quot;z-keyword z-declaration z-function z-python&quot;&gt;def&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-entity z-name z-function z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;types&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-parameters z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-parameters z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-parameters z-python&quot;&gt;&lt;span class=&quot;z-variable z-parameter z-python&quot;&gt;n&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-parameters z-annotation z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-separator z-annotation z-parameter z-python&quot;&gt;:&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-support z-type z-python&quot;&gt;int&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-parameters z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-parameters z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-python&quot;&gt; &lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-annotation z-return z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-separator z-annotation z-return z-python&quot;&gt;-&amp;gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-support z-type z-python&quot;&gt;int&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-function z-begin z-python&quot;&gt;:&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;  &lt;span class=&quot;z-keyword z-control z-flow z-return z-python&quot;&gt;return&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;n&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-arithmetic z-python&quot;&gt;*&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-python&quot;&gt;2&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h3 id=&quot;clients-and-testing&quot;&gt;Clients and Testing&lt;&#x2F;h3&gt;
+&lt;p&gt;I haven’t done much testing of API endpoints but I do know that there
+are two de facto packages for this:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;enpiar.com&#x2F;r&#x2F;httptest&#x2F;articles&#x2F;httptest.html&quot;&gt;&lt;code&gt;{httptest}&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;
+and&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;docs.ropensci.org&#x2F;webmockr&#x2F;&quot;&gt;&lt;code&gt;{webmockr}&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;.&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;These are pretty easy to find. Not so sure why they weren’t mentioned or
+even tested.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;performance&quot;&gt;Performance&lt;&#x2F;h3&gt;
+&lt;p&gt;JSON serialization is a quite interesting thing to base performance off
+of. I’ve never seen how fast pandas serialization is. Quite impressive!
+But, keep with me, because you’ll see, this is fibbing with benchmarks.&lt;&#x2F;p&gt;
+&lt;p&gt;I do have thoughts on the use of jsonlite and it’s ubiquity. jsonlite is
+slow. I don’t like it. My belief is that everyone should use
+&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;SymbolixAU&#x2F;jsonify&quot;&gt;&lt;code&gt;{jsonify}&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; when creating json.
+It’s damn good.&lt;&#x2F;p&gt;
+&lt;p&gt;So, when I run these bench marks on my machine for parsing I get:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;microbenchmark&lt;span class=&quot;z-punctuation z-accessor z-colons z-r&quot;&gt;::&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;microbenchmark&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;jsonify&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; jsonify&lt;span class=&quot;z-punctuation z-accessor z-colons z-r&quot;&gt;::&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;to_json&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;iris&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;jsonlite&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; jsonlite&lt;span class=&quot;z-punctuation z-accessor z-colons z-r&quot;&gt;::&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;toJSON&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;iris&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;unit&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;ms&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; 
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;times&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;1000&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Warning in microbenchmark::microbenchmark(jsonify = jsonify::to_json(iris), :
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;less accurate nanosecond times to avoid potential integer overflows
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Registered S3 method overwritten by &amp;#39;jsonify&amp;#39;:
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;  method     from    
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;  print.json jsonlite
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Unit: milliseconds
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;     expr     min        lq      mean  median        uq      max neval cld
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;  jsonify 0.34727 0.3534200 0.4627725 0.35711 0.3657405 87.79506  1000   a
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; jsonlite 0.44362 0.4556945 0.5335460 0.46535 0.4918360 23.26147  1000   a
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;A very noticable difference in using jsonify over jsonlite. The same
+benchmark using pandas is holy sh!t fast!&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; class=&quot;language-python z-code&quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-statement z-import z-python&quot;&gt;&lt;span class=&quot;z-keyword z-control z-import z-from z-python&quot;&gt;from&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-statement z-import z-python&quot;&gt;&lt;span class=&quot;z-meta z-import-source z-python&quot;&gt; &lt;span class=&quot;z-meta z-import-path z-python&quot;&gt;&lt;span class=&quot;z-meta z-import-name z-python&quot;&gt;timeit&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-statement z-import z-python&quot;&gt;&lt;span class=&quot;z-keyword z-control z-import z-python&quot;&gt;import&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-statement z-import z-python&quot;&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-statement z-import z-python&quot;&gt; &lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;timeit&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-statement z-import z-python&quot;&gt;&lt;span class=&quot;z-keyword z-control z-import z-python&quot;&gt;import&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;pandas&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-control z-import z-as z-python&quot;&gt;as&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;pd&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;iris&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-python&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;pd&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-accessor z-dot z-python&quot;&gt;.&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-variable z-function z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;read_csv&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-string z-python&quot;&gt;&lt;span class=&quot;z-string z-quoted z-double z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-python&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-string z-python&quot;&gt;&lt;span class=&quot;z-string z-quoted z-double z-python&quot;&gt;fastapi-example&#x2F;iris.csv&lt;span class=&quot;z-punctuation z-definition z-string z-end z-python&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;N&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-python&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-python&quot;&gt;1000&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-variable z-function z-python&quot;&gt;&lt;span class=&quot;z-support z-function z-builtin z-python&quot;&gt;print&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;  &lt;span class=&quot;z-meta z-string z-python&quot;&gt;&lt;span class=&quot;z-string z-quoted z-double z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-python&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-string z-python&quot;&gt;&lt;span class=&quot;z-string z-quoted z-double z-python&quot;&gt;Mean runtime:&lt;span class=&quot;z-punctuation z-definition z-string z-end z-python&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-python&quot;&gt;,&lt;&#x2F;span&gt; 
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-variable z-function z-python&quot;&gt;&lt;span class=&quot;z-support z-function z-builtin z-python&quot;&gt;round&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-python&quot;&gt;1000&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-arithmetic z-python&quot;&gt;*&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-variable z-function z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;timeit&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-string z-python&quot;&gt;&lt;span class=&quot;z-string z-quoted z-single z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-python&quot;&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-string z-python&quot;&gt;&lt;span class=&quot;z-string z-quoted z-single z-python&quot;&gt;iris.to_json(orient = &amp;quot;records&amp;quot;)&lt;span class=&quot;z-punctuation z-definition z-string z-end z-python&quot;&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-python&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-variable z-parameter z-python&quot;&gt;globals&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-python&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-variable z-function z-python&quot;&gt;&lt;span class=&quot;z-support z-function z-builtin z-python&quot;&gt;locals&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-python&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-variable z-parameter z-python&quot;&gt;number&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-python&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;N&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-arithmetic z-python&quot;&gt;&#x2F;&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;N&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-python&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-python&quot;&gt;4&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-python&quot;&gt;,&lt;&#x2F;span&gt; 
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;  &lt;span class=&quot;z-meta z-string z-python&quot;&gt;&lt;span class=&quot;z-string z-quoted z-double z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-python&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-string z-python&quot;&gt;&lt;span class=&quot;z-string z-quoted z-double z-python&quot;&gt;milliseconds&lt;span class=&quot;z-punctuation z-definition z-string z-end z-python&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-comment z-line z-number-sign z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-comment z-python&quot;&gt;#&lt;&#x2F;span&gt;&amp;gt; Mean runtime: 0.0721 milliseconds
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Now, this is only half the story. This is &lt;em&gt;serialization&lt;&#x2F;em&gt;. What about
+the other part? Where you ingest it.&lt;&#x2F;p&gt;
+&lt;p&gt;Here, I will also say, again, that you shouldn’t use jsonlite because it
+is slow. Instead, you should use
+&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;eddelbuettel&#x2F;rcppsimdjson&quot;&gt;&lt;code&gt;{RcppSimdJson}&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;.
+Because its&lt;&#x2F;p&gt;
+&lt;iframe width=&quot;560&quot; height=&quot;315&quot; src=&quot;https:&#x2F;&#x2F;www.youtube.com&#x2F;embed&#x2F;6E7ZGCfruaw&quot; title=&quot;YouTube video player&quot; frameborder=&quot;0&quot; allow=&quot;accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share&quot; allowfullscreen&gt;
+&lt;&#x2F;iframe&gt;
+&lt;p&gt;Let’s run another benchmark&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;jsn &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; jsonify&lt;span class=&quot;z-punctuation z-accessor z-colons z-r&quot;&gt;::&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;to_json&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;iris&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;microbenchmark&lt;span class=&quot;z-punctuation z-accessor z-colons z-r&quot;&gt;::&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;microbenchmark&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;simd&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; RcppSimdJson&lt;span class=&quot;z-punctuation z-accessor z-colons z-r&quot;&gt;::&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;fparse&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;jsn&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;jsonlite&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; jsonlite&lt;span class=&quot;z-punctuation z-accessor z-colons z-r&quot;&gt;::&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;fromJSON&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;jsn&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;unit&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;ms&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;times&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;1000&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Unit: milliseconds
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;     expr      min       lq       mean    median        uq      max neval cld
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;     simd 0.057728 0.059737 0.08452076 0.0619510 0.0692285 8.726399  1000  a 
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; jsonlite 0.413854 0.424596 0.49297699 0.4310945 0.4551205 4.271462  1000   b
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;RcppSimdJson is ~8 times faster than jsonlite.&lt;&#x2F;p&gt;
+&lt;p&gt;Let’s do a similar benchmark in python.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;python&quot; class=&quot;language-python z-code&quot;&gt;&lt;code class=&quot;language-python&quot; data-lang=&quot;python&quot;&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;jsn&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-python&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;iris&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-accessor z-dot z-python&quot;&gt;.&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-variable z-function z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;to_json&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-variable z-parameter z-python&quot;&gt;orient&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-python&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-string z-python&quot;&gt;&lt;span class=&quot;z-string z-quoted z-double z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-python&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-string z-python&quot;&gt;&lt;span class=&quot;z-string z-quoted z-double z-python&quot;&gt;records&lt;span class=&quot;z-punctuation z-definition z-string z-end z-python&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-variable z-function z-python&quot;&gt;&lt;span class=&quot;z-support z-function z-builtin z-python&quot;&gt;print&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;  &lt;span class=&quot;z-meta z-string z-python&quot;&gt;&lt;span class=&quot;z-string z-quoted z-double z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-python&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-string z-python&quot;&gt;&lt;span class=&quot;z-string z-quoted z-double z-python&quot;&gt;Mean runtime:&lt;span class=&quot;z-punctuation z-definition z-string z-end z-python&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-python&quot;&gt;,&lt;&#x2F;span&gt; 
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-variable z-function z-python&quot;&gt;&lt;span class=&quot;z-support z-function z-builtin z-python&quot;&gt;round&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-python&quot;&gt;1000&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-arithmetic z-python&quot;&gt;*&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-variable z-function z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;timeit&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-string z-python&quot;&gt;&lt;span class=&quot;z-string z-quoted z-single z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-python&quot;&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-string z-python&quot;&gt;&lt;span class=&quot;z-string z-quoted z-single z-python&quot;&gt;pd.read_json(jsn)&lt;span class=&quot;z-punctuation z-definition z-string z-end z-python&quot;&gt;&amp;#39;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-python&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-variable z-parameter z-python&quot;&gt;globals&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-python&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-python&quot;&gt;&lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-variable z-function z-python&quot;&gt;&lt;span class=&quot;z-support z-function z-builtin z-python&quot;&gt;locals&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-python&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-variable z-parameter z-python&quot;&gt;number&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-python&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;N&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-arithmetic z-python&quot;&gt;&#x2F;&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-qualified-name z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;N&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-python&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-integer z-decimal z-python&quot;&gt;4&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-python&quot;&gt;,&lt;&#x2F;span&gt; 
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;  &lt;span class=&quot;z-meta z-string z-python&quot;&gt;&lt;span class=&quot;z-string z-quoted z-double z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-python&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-string z-python&quot;&gt;&lt;span class=&quot;z-string z-quoted z-double z-python&quot;&gt;milliseconds&lt;span class=&quot;z-punctuation z-definition z-string z-end z-python&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-comment z-line z-number-sign z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-comment z-python&quot;&gt;#&lt;&#x2F;span&gt;&amp;gt; Mean runtime: 1.2629 milliseconds
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Python is 3x slower than jsonlite in this case and 25x slower than
+RcppSimdJson. Which is very slow. While serializing is an important
+thing to be fast in, so is parsing the incoming json you are receiving.
+How nice it is to show only half the story! Use RcppSimdJson and
+embarrass pandas’ json parsing.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;integration-with-tooling&quot;&gt;Integration with Tooling&lt;&#x2F;h3&gt;
+&lt;p&gt;I have literally no idea about any of these except Launchdarkly because
+one of my close homies worked there for years. These are all paid
+services so I’m not sure how they work :)&lt;&#x2F;p&gt;
+&lt;p&gt;I would say to checkout Posit Connect for deploying R and python into
+production. But if your only use case is to deploy a single model, then
+yeah, I’d say that’s overkill.&lt;&#x2F;p&gt;
+&lt;p&gt;I wish more companies would create tooling for R and their services. The
+way to do this, is to lean into using R in production and demanding (not
+asking) providers to make wrappers for them. When you pay for a service,
+you have leverage. Use it. I think too many people fall over when what
+they need isn’t there immediately. Be sure to be the squeeky wheel that
+makes change.&lt;&#x2F;p&gt;
+&lt;p&gt;I also think that if you’re in the position where you can make a wrapper
+for something, you should. I did this when using Databricks in my last
+role and provided them with a lot of feedback. Have they taken it? I’m
+not sure. I’m not there to harass them anymore.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;workarounds&quot;&gt;Workarounds&lt;&#x2F;h2&gt;
+&lt;p&gt;These are good workarounds. I would suggest looking at
+&lt;a href=&quot;https:&#x2F;&#x2F;ndexr.io&#x2F;&quot;&gt;ndexr.io&lt;&#x2F;a&gt; as a way to scale these R based services
+as well. They utilize the NGINX approach described here.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;addenda&quot;&gt;Addenda&lt;&#x2F;h2&gt;
+&lt;p&gt;Clearly, this is where I care a lot. I am the author of
+&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;JosiahParry&#x2F;valve&#x2F;&quot;&gt;Valve&lt;&#x2F;a&gt;. Valve is exactly what
+the author was clamoring for in the beginning of the blog post. It is a
+web server that runs Plumber APIs in parallel written in Rust using
+Tokio, Axum, and Deadpool. Valve auto-scales on its own up to a maximum
+number of worker threads. So it’s not always taking up space and running
+more compute than it needs.&lt;&#x2F;p&gt;
+&lt;p&gt;Valve overview:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;Concurrent webserver to auto-scale plumber APIs&lt;&#x2F;li&gt;
+&lt;li&gt;written in Rust using Tokio, Axum, and Deadpool&lt;&#x2F;li&gt;
+&lt;li&gt;spawns and kills plumber APIs based on demand&lt;&#x2F;li&gt;
+&lt;li&gt;integration with {vetiver} of of the box&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;First things first, I want to address “it’s not on CRAN.” You’re right.
+That’s because it is a Rust crate. Crates don’t go on CRAN. I’ve made an
+R package around it to lower the bar to entry. But it is a CLI tool at
+the core.&lt;&#x2F;p&gt;
+&lt;p&gt;Obviously, it is new. It is untested. I wish I could tell everyone to
+use it, but I can’t. I think anyone who used it would be floored by its
+performance and ease of use. It is SO simple.&lt;&#x2F;p&gt;
+&lt;p&gt;I’ll push it to crates.io and CRAN in the coming weeks. Nothing like
+h8rs to inspire.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

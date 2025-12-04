@@ -1,0 +1,685 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            Finding an SPSS {haven} | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+
+        <!-- Determine theme before loading syntax highlighting -->
+        <script>
+            (() => {
+                const stored = localStorage.getItem("themeMode");
+                // Use stored preference if exists, otherwise always default to dark
+                const isDark = stored ? stored === "dark" : true;
+
+                if (isDark) {
+                    document.documentElement.classList.add("dark");
+                }
+            })();
+        </script>
+
+        <!-- Syntax highlighting themes -->
+        <link rel="stylesheet" href="https://josiah.rs/syntax-dark.css" id="syntax-dark" />
+        <link rel="stylesheet" href="https://josiah.rs/syntax-light.css" id="syntax-light" />
+
+        <!-- KaTeX for math rendering -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        />
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-semibold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4 relative">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-sm bg-muted/50 border border-border"
+                id="search-input"
+            />
+            <div
+                id="search-results"
+                class="hidden absolute top-full left-4 -mt-1 w-96 max-h-96 overflow-y-auto bg-background border border-border rounded-lg shadow-lg z-50 p-2"
+            ></div>
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-2 text-sm pl-3 transition-colors font-medium border-l-2 border-primary -ml-px bg-sidebar-accent"
+                    >
+                        Posts
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Socials -->
+            <div
+                class="mt-4 block py-2 transition-colors font-medium px-3 text-sm bg-sidebar-accent"
+            >
+                <h2
+                    class="text-sm font-medium tracking-tight mb-2 text-muted-foreground border-b border-muted-foreground/20 pb-1"
+                >
+                    Socials
+                </h2>
+                <ul class="space-y-1.5">
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <polygon
+                                points="160 128 112 96 112 160 160 128"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M24,128c0,29.91,3.07,47.45,5.41,56.47A16,16,0,0,0,39,195.42C72.52,208.35,128,208,128,208s55.48.35,89-12.58a16,16,0,0,0,9.63-10.95c2.34-9,5.41-26.56,5.41-56.47s-3.07-47.45-5.41-56.47a16,16,0,0,0-9.63-11C183.48,47.65,128,48,128,48s-55.48-.35-89,12.58a16,16,0,0,0-9.63,11C27.07,80.54,24,98.09,24,128Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://www.youtube.com/@josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >YouTube</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <rect
+                                x="32"
+                                y="32"
+                                width="192"
+                                height="192"
+                                rx="8"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="120"
+                                y1="112"
+                                x2="120"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="88"
+                                y1="112"
+                                x2="88"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M120,140a28,28,0,0,1,56,0v36"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <circle cx="88" cy="84" r="12" />
+                        </svg>
+                        <a
+                            href="https://www.linkedin.com/in/josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >LinkedIn</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M119.83,56A52,52,0,0,0,76,32a51.92,51.92,0,0,0-3.49,44.7A49.28,49.28,0,0,0,64,104v8a48,48,0,0,0,48,48h48a48,48,0,0,0,48-48v-8a49.28,49.28,0,0,0-8.51-27.3A51.92,51.92,0,0,0,196,32a52,52,0,0,0-43.83,24Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,232V192a32,32,0,0,1,32-32h0a32,32,0,0,1,32,32v40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,208H72a32,32,0,0,1-32-32A32,32,0,0,0,8,144"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="http://github.com/josiahparry/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >GitHub</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M160,224H72a32,32,0,0,1-32-32V72A32,32,0,0,1,72,40H184a32,32,0,0,1,32,32v72a32,32,0,0,1-32,32H40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M128,136V104a24,24,0,0,0-48,0v32"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M176,136V104a24,24,0,0,0-48,0"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://fosstodon.org/@josi"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Mastodon</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                            class="w-4 h-4"
+                            fill="currentColor"
+                        >
+                            <path
+                                d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.698-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948"
+                            />
+                        </svg>
+                        <a
+                            href="https://bsky.app/profile/josiahparry.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Bluesky</a
+                        >
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">Finding an SPSS {haven}</h1>
+
+          
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >December 14, 2019</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><blockquote>
+<p>Note (2022-11-14): the dataset that was used can no longer be access from the url I provided in this blog post. I have found it at a zip file in a blog post at <a href="https://blog.faradars.org/wp-content/uploads/2020/07/noisedata.zip">https://blog.faradars.org/wp-content/uploads/2020/07/noisedata.zip</a> if you want to try downloading it from there.</p>
+</blockquote>
+<p>My education as a social scientist---undergratuate studies in sociology and anthropology---was largely focused on theory and the application of theory to social problems. For the most part, I taught myself how to apply those methods through R. I was fortunate enough to have avoided ever using SPSS. Perhaps that is good. Perhaps it is not. The use of R in the social sciences is increasing and I will go as far as to say that that is great news. However, there are still holdouts.</p>
+<p>Very recently I came across data exported from SPSS in the wild. In the work that I get to engage in at the Boston Area Research Initiative (<a href="https://www.northeastern.edu/csshresearch/bostonarearesearchinitiative/">BARI</a>) we receive data from various sources, whether these be municipal organizations, the police department, or non-profits, and as Tolstoy said:</p>
+<blockquote class="twitter-tweet">
+<p lang="en" dir="ltr">
+"All clean datasets are alike; every messy dataset is messy in its own way.", Leo Tolstoy. <a href="https://t.co/Z70eXgKRaK">https://t.co/Z70eXgKRaK</a>
+</p>
+--- Maria Khalusova (@mariaKhalusova) <a href="https://twitter.com/mariaKhalusova/status/1204853611743842304?ref_src=twsrc%5Etfw">December 11, 2019</a>
+</blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+<p>In this post I want to illustrate two of the main pain points I encountered while working with data from SPSS.I also go rather deep into the weeds about R data structures and how we can manipulate them. While this is "about" SPSS data, folks looking for a better understanding of R object may benefit from this as well (specifically Gripe 2).</p>
+<h2 id=""></h2>
+<p>I am not sure where the inspiration for the name "haven" came from. But I am sure that its name does indeed speak for itself. haven enables R programmers that are SPSS---Stata and SAS as well---illiterate to work with data that is not naturally intended for R use. There are two key behaviors of SPSS data that I was unaware of and that plagued me. I break these down into three gripes below.</p>
+<h2 id="gripes">Gripes</h2>
+<p>I maintain three gripes about SPSS data.</p>
+<ol>
+<li>Factor values are represented numerically and the values that they represent are stored in metadata.</li>
+<li>Column names are vague. The values they represent are stored as a label (metadata).</li>
+<li>Missing values can be represented innumerably. Each column can have user defined missing values, i.e. <code>9999</code>.</li>
+</ol>
+<p>Now, I must say that I have found it best practice to try and combat my own gripes.</p>
+<p>In regards to the former two gripes, this is not unheard of behavior nor is it rare. Associating numeric values with <em>related</em> values---oh, I don't know...think of a user ID and an email address---is in essence the core of relational database systems (RDBMS). One may even have the gall to argue that RDBMS power many of the tools I use and take for granted. I would most likely be willing to concede that point.</p>
+<p>The third gripe can be quite easily countered if I am to be frank. Missing data is in of itself data. An <code>NA</code> is an <code>NA</code> is an <code>NA</code> may not be a generalizable statement. Providing values such as <code>9999</code> in place of a missing value in some cases may be a relic of antiquity where missingness could not be handled by software. Or, perhaps we can frame missingness other ways. Let's imagine we are conducting a study and we want to keep track of why there was missing data. This could have been from a non-response, or a withdrawal, or erroneously entered data, or any other number of reasons. Keeping a record of that missing data may useful.</p>
+<h3 id="gripe-1-numbers-representing-characters-or-labels">Gripe 1: numbers representing characters (or labels)</h3>
+<p>Sometimes I really would like <code>stringsAsFactors = TRUE</code>. Working with survey data tends to be one of those times. R has a robust method of creating, handling, and manipulating factors<sup class="footnote-reference"><a href="#1">1</a></sup> and because of this, we aren't required to numerically encode our data. This may be a personal preference, but I really like to be reminded of <em>what</em> I am working with and seeing the factor levels clearly spelled out for me is quite nice.</p>
+<p>Since the data I am working with at BARI is confidential, I've found some SPSS data hosted by the <a href="https://www.bath.ac.uk/">University of Bath</a><sup class="footnote-reference"><a href="#2">2</a></sup> to illustrate this with.</p>
+<p>Reading in data is rather straightforward. SPSS data come with a <code>.sav</code> file extension. Following standard <a href="https://readr.tidyverse.org/"><code>readr</code></a> convention we can read a .sav file with <a href="https://haven.tidyverse.org/reference/read_spss.html"><code>haven::read_sav()</code></a>.</p>
+<p><em>Note: the syntax above is used for referencing an exported function from a namespace (package name). The syntax is <code>pkgname::function()</code>.</em></p>
+<p>The below line reads in the sav file from the University of Bath.</p>
+<p><em>Note: by wrapping an object assignment expression, such as the below, in parentheses the object is then printed (I just recently figured this out).</em></p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='kr'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='o'>(</span><span class='nv'><a href='https://haven.tidyverse.org'>haven</a></span><span class='o'>)</span>
+
+<span class='c'># read in sav file</span>
+<span class='o'>(</span><span class='nv'>noise</span> <span class='o'>&lt;-</span> <span class='nf'>haven</span><span class='nf'>::</span><span class='nf'><a href='https://haven.tidyverse.org/reference/read_spss.html'>read_sav</a></span><span class='o'>(</span><span class='s'>"http://staff.bath.ac.uk/pssiw/stats2/noisedata.sav"</span><span class='o'>)</span><span class='o'>)</span></code></pre>
+</div>
+<p>The above shows <code>GENDER</code> codes as a numeric value. But if you print out the tibble to your console you will see labels. So in this case, where there is a <code>1</code> under <code>GENDER</code>, the printed console shows <code>[male]</code>, and the same is true for <code>2</code> and <code>[female]</code>. We can get a sense of this by viewing the structure of the tibble.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'><a href='https://rdrr.io/r/utils/str.html'>str</a></span><span class='o'>(</span><span class='nv'>noise</span><span class='o'>)</span></code></pre>
+</div>
+<p>Above we can see that <code>GENDER</code> has an attribute <code>labels</code> which is a named numeric vector. The unique values are 1 and 2 representing "male" and "female" respectively. I struggle to keep this mental association. I'd prefer to have this shown explicitly. Fortunately, haven provides the function <a href="https://haven.tidyverse.org/reference/as_factor.html"><code>haven::as_factor()</code></a> which will convert these pesky integer columns to their respective factor values. We just need to pass the data frame as the only argument---sure, there are other arguments if you want to get fancy.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'># selecting just 2 columns and 2 rows for simlicity.</span>
+<span class='nv'>small_lil_df</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://dplyr.tidyverse.org/reference/slice.html'>slice</a></span><span class='o'>(</span><span class='nv'>noise</span>, <span class='m'>1</span>, <span class='m'>20</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='o'>(</span><span class='m'>1</span>, <span class='m'>2</span><span class='o'>)</span>
+
+<span class='c'># convert coded response to response text</span>
+<span class='nf'>haven</span><span class='nf'>::</span><span class='nf'><a href='https://haven.tidyverse.org/reference/as_factor.html'>as_factor</a></span><span class='o'>(</span><span class='nv'>small_lil_df</span><span class='o'>)</span></code></pre>
+</div>
+<p>And now we can just forget those integers ever existed in the firstplace!</p>
+<h3 id="gripe-2-uninformative-column-names">Gripe 2: uninformative column names</h3>
+<p>There are three key rules to <a href="https://vita.had.co.nz/papers/tidy-data.pdf">tidy data</a>.</p>
+<ol>
+<li>Each variable forms a column.</li>
+<li>Each observation forms a row.</li>
+<li>Each type of observational unit forms a table.</li>
+</ol>
+<p>Each variable forms a column. Got it. So this means that any thing that can help describe our observation should be a column. Say we have a table of survey respondents. In this case each row should be a respondent and each column should be a variable (or feature, or predictor, or x, or whatever) associate with that respondent. This could be something like age, birth date, or the respondents response to a survey question.</p>
+<p>In the <a href="https://style.tidyverse.org/index.html">tidyverse style guide</a> Hadley Wickham writes</p>
+<blockquote>
+<p>Generally, variable names should be nouns and function names should be verbs. Strive for names that are concise and meaningful (this is not easy!).</p>
+</blockquote>
+<p>I personaly try to extend this to column names as well. Feature names are important so I, as a researcher, can remember what is what. From my encounters with SPSS data, I've found that feature names can be rather uninformative e.g. "Q12." Much like factors, columns may have associated information hidden somewhere within them.</p>
+<p>We read in the personality data set from the Universit of Bath below.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'># read in sav file with column labels</span>
+<span class='o'>(</span><span class='nv'>personality</span> <span class='o'>&lt;-</span> <span class='nf'>haven</span><span class='nf'>::</span><span class='nf'><a href='https://haven.tidyverse.org/reference/read_spss.html'>read_sav</a></span><span class='o'>(</span><span class='s'>"http://staff.bath.ac.uk/pssiw/stats2/personality.sav"</span><span class='o'>)</span><span class='o'>)</span></code></pre>
+</div>
+<p>The first thing that I notice is rather apalling: each <em>column</em> represents a <em>person</em>. oof, untidy. But this issue isn't what brought me to these data. If you print the data to the console, you see something similar as what is above. If you <em>view</em> (<code>View(df)</code>) the data, the story is different. There is associated information underneath each column header.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'><a href='https://rdrr.io/r/utils/str.html'>str</a></span><span class='o'>(</span><span class='nv'>personality</span><span class='o'>[</span>,<span class='m'>1</span><span class='o'>:</span><span class='m'>5</span><span class='o'>]</span><span class='o'>)</span></code></pre>
+</div>
+<p>Yikes. These labels seem to be character judgements! Whatever the labels represent, I want them, and I want them as the column headers.</p>
+<p>From looking at the structure of the data frame we can glean that each column has a label.</p>
+<p><strong>Warning</strong>: I'm going to walk through a fair bit of the theory and under the hood work to make these labels column names. Scroll to the bottom of this section to find the function definition.</p>
+<h4 id="aside-r-theory">Aside: R theory:</h4>
+<ul>
+<li>Each column of a data frame is actually just a vector. Each vector can have it's own attributes (as above).</li>
+<li>A data frame is actually just a list of equal length vectors (same number of observations).<sup class="footnote-reference"><a href="#3">3</a></sup></li>
+<li>"All objects can have arbitrary additional attributes, used to store metadata about the object."<sup class="footnote-reference"><a href="#4">4</a></sup></li>
+<li>We can fetch list elements using <code>[[</code> notation, e.g. <code>my_list[[1]]</code>
+<ul>
+<li><a href="https://purrr.tidyverse.org/reference/pluck.html"><code>purrr::pluck()</code></a> is an alternative to using <code>[[</code> for grabbing the underlying elements inside of a data structure. This means we can use <code>pluck(my_list, 1)</code> in place of <code>my_list[[1]]</code></li>
+</ul>
+</li>
+</ul>
+<p>Okay, but <em>how</em> does one actually get the label from the vector? The first step is to actually grab the vector. Below I use <a href="https://purrr.tidyverse.org/reference/pluck.html"><code>purrr::pluck()</code></a>to pull the first column. Note that <a href="https://dplyr.tidyverse.org/reference/slice.html"><code>slice()</code></a> is used for grabing specific row indexes. The below code is equivalent to <code>personality[1:10,][[1]]</code>. I prefer using the purrr functions because they are more legible.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>col_1</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://dplyr.tidyverse.org/reference/slice.html'>slice</a></span><span class='o'>(</span><span class='nv'>personality</span>, <span class='m'>1</span><span class='o'>:</span><span class='m'>10</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://purrr.tidyverse.org/reference/pluck.html'>pluck</a></span><span class='o'>(</span><span class='m'>1</span><span class='o'>)</span></code></pre>
+</div>
+<p>We can access all of the vectors attributes with, you guessed it, the <a href="https://rdrr.io/r/base/attributes.html"><code>attributes()</code></a> function.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'><a href='https://rdrr.io/r/base/attributes.html'>attributes</a></span><span class='o'>(</span><span class='nv'>col_1</span><span class='o'>)</span></code></pre>
+</div>
+<p>This returns a named list. We can access (or set) specific attributes using the <a href="https://rdrr.io/r/base/attr.html"><code>attr()</code></a> function. The two arguments we must supply are <code>x</code>, the object, and <code>which</code>, which attribute we seek. In this case the values are <code>col_1</code> and <code>label</code> respectively.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'><a href='https://rdrr.io/r/base/attr.html'>attr</a></span><span class='o'>(</span><span class='nv'>col_1</span>, <span class='s'>"label"</span><span class='o'>)</span></code></pre>
+</div>
+<p>purrr yet again makes working with list objects easy. purrr exports a function factory<sup class="footnote-reference"><a href="#5">5</a></sup> called <a href="https://purrr.tidyverse.org/reference/attr_getter.html"><code>purrr::attr_getter()</code></a>. This function generates a function which accesses specific attributes. We can create a function <code>get_label()</code> using <a href="https://purrr.tidyverse.org/reference/attr_getter.html"><code>attr_getter()</code></a> all we have to do is tell it <em>which</em> attribute we would like.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'># generate a get_label f(x) via purr</span>
+<span class='nv'>get_label</span> <span class='o'>&lt;-</span> <span class='nf'>purrr</span><span class='nf'>::</span><span class='nf'><a href='https://purrr.tidyverse.org/reference/attr_getter.html'>attr_getter</a></span><span class='o'>(</span><span class='s'>"label"</span><span class='o'>)</span>
+
+<span class='nf'>get_label</span><span class='o'>(</span><span class='nv'>col_1</span><span class='o'>)</span></code></pre>
+</div>
+<p>Well, lovely. Let's just use this on our <code>personality</code> data frame.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'>get_label</span><span class='o'>(</span><span class='nv'>personality</span><span class='o'>)</span></code></pre>
+</div>
+<p>Ope. Welp. That didn't work. We should just give up 🤷.</p>
+<p><img src="https://media.giphy.com/media/O5xChSjqUIxsk/giphy.gif" alt="" /></p>
+<p>The reason this didn't work is because we tried to use <code>get_label()</code> on a tibble which didn't have the "label" attribute. We can verify this by looking at the list names of the attributes of <code>personality</code>.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='o'>(</span><span class='nf'><a href='https://rdrr.io/r/base/attributes.html'>attributes</a></span><span class='o'>(</span><span class='nv'>personality</span><span class='o'>)</span><span class='o'>)</span></code></pre>
+</div>
+<p>But what about the attribtues of each column? We can iterate over each column using <a href="https://purrr.tidyverse.org/reference/map.html"><code>map()</code></a> to look at the attributes. Below I iterate over the first five columns. More on <a href="https://purrr.tidyverse.org/reference/map.html"><code>map()</code></a><sup class="footnote-reference"><a href="#6">6</a></sup>.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'><a href='https://purrr.tidyverse.org/reference/map.html'>map</a></span><span class='o'>(</span><span class='nf'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='o'>(</span><span class='nv'>personality</span>, <span class='m'>1</span><span class='o'>:</span><span class='m'>5</span><span class='o'>)</span>, <span class='o'>~</span><span class='nf'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='o'>(</span><span class='nf'><a href='https://rdrr.io/r/base/attributes.html'>attributes</a></span><span class='o'>(</span><span class='nv'>.</span><span class='o'>)</span><span class='o'>)</span><span class='o'>)</span></code></pre>
+</div>
+<p>Well, now that we've iterated over the columns and illustrated that the attributes live there, why not iterate over the columns and use <code>get_label()</code>?</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'># use get_label to retrieve column labels</span>
+<span class='nf'><a href='https://purrr.tidyverse.org/reference/map.html'>map_chr</a></span><span class='o'>(</span><span class='nf'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='o'>(</span><span class='nv'>personality</span>, <span class='m'>1</span><span class='o'>:</span><span class='m'>5</span><span class='o'>)</span>, <span class='nv'>get_label</span><span class='o'>)</span></code></pre>
+</div>
+<p>Again, yikes @ the labels. Let's store these results into a vector so we can rename the original columns.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>pers_labels</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://purrr.tidyverse.org/reference/map.html'>map_chr</a></span><span class='o'>(</span><span class='nv'>personality</span>, <span class='nv'>get_label</span><span class='o'>)</span></code></pre>
+</div>
+<p>We can now change the names using <a href="https://rdrr.io/r/stats/setNames.html"><code>setNames()</code></a> from base R. We will then make the column headers tidy (personal definition of tidy column names) using <a href="https://rdrr.io/pkg/janitor/man/clean_names.html"><code>janitor::clean_names()</code></a>.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'><a href='https://rdrr.io/r/stats/setNames.html'>setNames</a></span><span class='o'>(</span><span class='nv'>personality</span>, <span class='nv'>pers_labels</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'>janitor</span><span class='nf'>::</span><span class='nf'><a href='https://rdrr.io/pkg/janitor/man/clean_names.html'>clean_names</a></span><span class='o'>(</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='o'>(</span><span class='m'>1</span><span class='o'>:</span><span class='m'>5</span><span class='o'>)</span></code></pre>
+</div>
+<p>In the case that a column doesn't have a label, <code>get_label()</code> will return <code>NULL</code> and then <a href="https://rdrr.io/r/stats/setNames.html"><code>setNames()</code></a> will fail. To work around this, you can use the name of the column rather than the label value. Below is a function definition which handles this for you and, optionally, lets you specify which columns to rename based on a regex pattern. I think we've done enough list manipulation for the day. If you have questions about the function definition I'd be happy to work through it one on one with you via twitter DMs.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>label_to_colname</span> <span class='o'>&lt;-</span> <span class='kr'>function</span><span class='o'>(</span><span class='nv'>df</span>, <span class='nv'>pattern</span><span class='o'>)</span> <span class='o'>&#123;</span>
+  <span class='nv'>get_label</span> <span class='o'>&lt;-</span> <span class='nf'>purrr</span><span class='nf'>::</span><span class='nf'><a href='https://purrr.tidyverse.org/reference/attr_getter.html'>attr_getter</a></span><span class='o'>(</span><span class='s'>"label"</span><span class='o'>)</span>
+  <span class='nv'>col_labels</span> <span class='o'>&lt;-</span> <span class='nf'>purrr</span><span class='nf'>::</span><span class='nf'><a href='https://purrr.tidyverse.org/reference/map.html'>map</a></span><span class='o'>(</span><span class='nv'>df</span>, <span class='nv'>get_label</span><span class='o'>)</span>
+
+  <span class='nv'>col_labels</span><span class='o'>[</span><span class='nf'><a href='https://rdrr.io/r/base/unlist.html'>unlist</a></span><span class='o'>(</span><span class='nf'><a href='https://purrr.tidyverse.org/reference/map.html'>map</a></span><span class='o'>(</span><span class='nv'>col_labels</span>, <span class='nv'>is.null</span><span class='o'>)</span><span class='o'>)</span><span class='o'>]</span>  <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='o'>(</span><span class='nv'>col_labels</span><span class='o'>[</span><span class='nf'><a href='https://rdrr.io/r/base/unlist.html'>unlist</a></span><span class='o'>(</span><span class='nf'>purrr</span><span class='nf'>::</span><span class='nf'><a href='https://purrr.tidyverse.org/reference/map.html'>map</a></span><span class='o'>(</span><span class='nv'>col_labels</span>, <span class='nv'>is.null</span><span class='o'>)</span><span class='o'>)</span><span class='o'>]</span><span class='o'>)</span>
+
+  <span class='kr'>if</span> <span class='o'>(</span><span class='nf'><a href='https://rdrr.io/r/base/missing.html'>missing</a></span><span class='o'>(</span><span class='nv'>pattern</span><span class='o'>)</span><span class='o'>)</span> <span class='o'>&#123;</span>
+    <span class='nv'>names_to_replace</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='o'>(</span><span class='kc'>TRUE</span>, <span class='nf'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='o'>(</span><span class='nv'>df</span><span class='o'>)</span><span class='o'>)</span>
+  <span class='o'>&#125;</span> <span class='kr'>else</span> <span class='o'>&#123;</span>
+    <span class='nv'>names_to_replace</span> <span class='o'>&lt;-</span> <span class='nf'>stringr</span><span class='nf'>::</span><span class='nf'><a href='https://stringr.tidyverse.org/reference/str_detect.html'>str_detect</a></span><span class='o'>(</span><span class='nf'><a href='https://rdrr.io/r/base/names.html'>names</a></span><span class='o'>(</span><span class='nv'>col_labels</span><span class='o'>)</span>, <span class='nv'>pattern</span><span class='o'>)</span>
+  <span class='o'>&#125;</span>
+  
+  <span class='nf'><a href='https://rdrr.io/r/base/colnames.html'>colnames</a></span><span class='o'>(</span><span class='nv'>df</span><span class='o'>)</span><span class='o'>[</span><span class='nv'>names_to_replace</span><span class='o'>]</span> <span class='o'>&lt;-</span> <span class='nf'>janitor</span><span class='nf'>::</span><span class='nf'><a href='https://rdrr.io/pkg/janitor/man/make_clean_names.html'>make_clean_names</a></span><span class='o'>(</span><span class='nf'><a href='https://rdrr.io/r/base/unlist.html'>unlist</a></span><span class='o'>(</span><span class='nv'>col_labels</span><span class='o'>[</span><span class='nv'>names_to_replace</span><span class='o'>]</span><span class='o'>)</span><span class='o'>)</span>
+
+  <span class='nf'>haven</span><span class='nf'>::</span><span class='nf'><a href='https://haven.tidyverse.org/reference/zap_label.html'>zap_label</a></span><span class='o'>(</span><span class='nv'>df</span><span class='o'>)</span>
+<span class='o'>&#125;</span>
+
+<span class='nf'>label_to_colname</span><span class='o'>(</span><span class='nv'>personality</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='o'>(</span><span class='m'>1</span><span class='o'>:</span><span class='m'>5</span><span class='o'>)</span>
+
+<span class='c'># heh.</span>
+<span class='nf'>label_to_colname</span><span class='o'>(</span><span class='nv'>personality</span>, <span class='s'>"PERS37"</span><span class='o'>)</span> <span class='o'><a href='https://magrittr.tidyverse.org/reference/pipe.html'>%&gt;%</a></span> 
+  <span class='nf'><a href='https://dplyr.tidyverse.org/reference/select.html'>select</a></span><span class='o'>(</span><span class='m'>37</span><span class='o'>)</span></code></pre>
+</div>
+<h3 id="gripe-3-user-defined-missing-values">Gripe 3: user defined missing values</h3>
+<p>I'll keep this one short. If there are user defined missing values in a <code>.sav</code> file, you can encode these as <code>NA</code> by setting the <code>user_na</code> arugment to <code>TRUE</code>.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'># there aren't any missing values but you get the idea</span>
+<span class='nv'>noise</span> <span class='o'>&lt;-</span> <span class='nf'>haven</span><span class='nf'>::</span><span class='nf'><a href='https://haven.tidyverse.org/reference/read_spss.html'>read_sav</a></span><span class='o'>(</span><span class='s'>"http://staff.bath.ac.uk/pssiw/stats2/noisedata.sav"</span>,
+                         user_na <span class='o'>=</span> <span class='kc'>TRUE</span><span class='o'>)</span></code></pre>
+</div>
+<p>And if for any reason that did not suffice, you can replace missing values with <a href="https://tidyr.tidyverse.org/reference/replace_na.html"><code>replace_na()</code></a><sup class="footnote-reference"><a href="#7">7</a></sup>.</p>
+<h2 id="take-aways">Take aways</h2>
+<ul>
+<li>All data is messy in it's own way.</li>
+<li><a href="https://haven.tidyverse.org/reference/read_spss.html"><code>haven::read_sav()</code></a> will read SPSS data.</li>
+<li><a href="https://haven.tidyverse.org/reference/as_factor.html"><code>haven::as_factor()</code></a> will apply column labels in place of the numeric values (if present).</li>
+<li>Replace user defined NA values by setting <code>user_na = TRUE</code> i.e. <code>haven::read_sav("filepath.sav", user_na = TRUE)</code></li>
+<li>All R objects can have attributes.</li>
+<li>You can access attributes using <a href="https://rdrr.io/r/base/attributes.html"><code>attributes()</code></a> or <a href="https://rdrr.io/r/base/attr.html"><code>attr()</code></a>.</li>
+<li>Data frames are made of vectors.</li>
+<li>Data frames are actually just lists masquerading as rectangles.</li>
+</ul>
+<div class="footnote-definition" id="1"><sup class="footnote-definition-label">1</sup>
+<p>Check out <a href="https://forcats.tidyverse.org/">forcats</a> for working with factors.</p>
+</div>
+<div class="footnote-definition" id="2"><sup class="footnote-definition-label">2</sup>
+<p>Anthony Horowitz wrote a rather fun murder mystery novel titled <a href="https://www.amazon.com/Magpie-Murders-Novel-Anthony-Horowitz/dp/0062645226">Magpie Murders</a> which takes place in a small town outside of bath. I recommend it.</p>
+</div>
+<div class="footnote-definition" id="3"><sup class="footnote-definition-label">3</sup>
+<p><a href="http://adv-r.had.co.nz/Data-structures.html#data-frames">http://adv-r.had.co.nz/Data-structures.html#data-frames</a></p>
+</div>
+<div class="footnote-definition" id="4"><sup class="footnote-definition-label">4</sup>
+<p><a href="http://adv-r.had.co.nz/Data-structures.html#attributes">http://adv-r.had.co.nz/Data-structures.html#attributes</a></p>
+</div>
+<div class="footnote-definition" id="5"><sup class="footnote-definition-label">5</sup>
+<p>A function factory is an object which creates other function objects.</p>
+</div>
+<div class="footnote-definition" id="6"><sup class="footnote-definition-label">6</sup>
+<p><a href="https://adv-r.hadley.nz/functionals.html#map">https://adv-r.hadley.nz/functionals.html#map</a></p>
+</div>
+<div class="footnote-definition" id="7"><sup class="footnote-definition-label">7</sup>
+<p><a href="https://tidyr.tidyverse.org/reference/replace_na.html">https://tidyr.tidyverse.org/reference/replace_na.html</a></p>
+</div>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <!-- Basecoat sidebar component -->
+        <script
+            src="https://josiah.rs/js/basecoat/sidebar.min.js"
+            defer
+        ></script>
+        <!-- Sidebar toggle for mobile -->
+        <script src="https://josiah.rs/js/sidebar-toggle.js" defer></script>
+        <!-- Custom tabs for panel-tabset -->
+        <script src="https://josiah.rs/js/tabs.js" defer></script>
+        <!-- Search functionality -->
+        <script src="https://josiah.rs/js/search.js" defer></script>
+        <script>
+            (() => {
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+
+                    // Toggle syntax highlighting themes via media attribute
+                    const darkSyntax = document.getElementById("syntax-dark");
+                    const lightSyntax = document.getElementById("syntax-light");
+                    if (darkSyntax && lightSyntax) {
+                        darkSyntax.media = dark ? "all" : "not all";
+                        lightSyntax.media = dark ? "not all" : "all";
+                    }
+
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        ></script>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"
+        ></script>
+        
+    </body>
+</html>

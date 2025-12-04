@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            genius Plumber API | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+
+        <!-- Determine theme before loading syntax highlighting -->
+        <script>
+            (() => {
+                const stored = localStorage.getItem("themeMode");
+                // Use stored preference if exists, otherwise always default to dark
+                const isDark = stored ? stored === "dark" : true;
+
+                if (isDark) {
+                    document.documentElement.classList.add("dark");
+                }
+            })();
+        </script>
+
+        <!-- Syntax highlighting themes -->
+        <link rel="stylesheet" href="https://josiah.rs/syntax-dark.css" id="syntax-dark" />
+        <link rel="stylesheet" href="https://josiah.rs/syntax-light.css" id="syntax-light" />
+
+        <!-- KaTeX for math rendering -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        />
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-semibold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4 relative">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-sm bg-muted/50 border border-border"
+                id="search-input"
+            />
+            <div
+                id="search-results"
+                class="hidden absolute top-full left-4 -mt-1 w-96 max-h-96 overflow-y-auto bg-background border border-border rounded-lg shadow-lg z-50 p-2"
+            ></div>
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-2 text-sm pl-3 transition-colors font-medium border-l-2 border-primary -ml-px bg-sidebar-accent"
+                    >
+                        Posts
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Socials -->
+            <div
+                class="mt-4 block py-2 transition-colors font-medium px-3 text-sm bg-sidebar-accent"
+            >
+                <h2
+                    class="text-sm font-medium tracking-tight mb-2 text-muted-foreground border-b border-muted-foreground/20 pb-1"
+                >
+                    Socials
+                </h2>
+                <ul class="space-y-1.5">
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <polygon
+                                points="160 128 112 96 112 160 160 128"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M24,128c0,29.91,3.07,47.45,5.41,56.47A16,16,0,0,0,39,195.42C72.52,208.35,128,208,128,208s55.48.35,89-12.58a16,16,0,0,0,9.63-10.95c2.34-9,5.41-26.56,5.41-56.47s-3.07-47.45-5.41-56.47a16,16,0,0,0-9.63-11C183.48,47.65,128,48,128,48s-55.48-.35-89,12.58a16,16,0,0,0-9.63,11C27.07,80.54,24,98.09,24,128Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://www.youtube.com/@josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >YouTube</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <rect
+                                x="32"
+                                y="32"
+                                width="192"
+                                height="192"
+                                rx="8"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="120"
+                                y1="112"
+                                x2="120"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="88"
+                                y1="112"
+                                x2="88"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M120,140a28,28,0,0,1,56,0v36"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <circle cx="88" cy="84" r="12" />
+                        </svg>
+                        <a
+                            href="https://www.linkedin.com/in/josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >LinkedIn</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M119.83,56A52,52,0,0,0,76,32a51.92,51.92,0,0,0-3.49,44.7A49.28,49.28,0,0,0,64,104v8a48,48,0,0,0,48,48h48a48,48,0,0,0,48-48v-8a49.28,49.28,0,0,0-8.51-27.3A51.92,51.92,0,0,0,196,32a52,52,0,0,0-43.83,24Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,232V192a32,32,0,0,1,32-32h0a32,32,0,0,1,32,32v40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,208H72a32,32,0,0,1-32-32A32,32,0,0,0,8,144"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="http://github.com/josiahparry/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >GitHub</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M160,224H72a32,32,0,0,1-32-32V72A32,32,0,0,1,72,40H184a32,32,0,0,1,32,32v72a32,32,0,0,1-32,32H40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M128,136V104a24,24,0,0,0-48,0v32"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M176,136V104a24,24,0,0,0-48,0"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://fosstodon.org/@josi"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Mastodon</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                            class="w-4 h-4"
+                            fill="currentColor"
+                        >
+                            <path
+                                d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.698-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948"
+                            />
+                        </svg>
+                        <a
+                            href="https://bsky.app/profile/josiahparry.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Bluesky</a
+                        >
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">genius Plumber API</h1>
+
+         
+        <div class="flex flex-wrap gap-2 mb-4">
+            
+            <a
+                href="/categories/R"
+                class="badge-secondary cursor pointer"
+                >R</a
+            >
+            
+            <a
+                href="/categories/Docker"
+                class="badge-secondary cursor pointer"
+                >Docker</a
+            >
+            
+            <a
+                href="/categories/Python"
+                class="badge-secondary cursor pointer"
+                >Python</a
+            >
+            
+        </div>
+         
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >March 30, 2019</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><p><em>get started <a href="https://github.com/JosiahParry/genius-api">here</a></em></p>
+<p>Since I created <code>genius</code>, I've wanted to make a version for python. But frankly, that's a daunting task for me seeing as my python skills are intermediate at best. But recently I've been made aware of the package <code>plumber</code>. To put it plainly, <code>plumber</code> takes your R code and makes it accessible via an API.</p>
+<p>I thought this would be difficult. I was so wrong.</p>
+<p><img src="https://media.giphy.com/media/l0MYOMxG9ijrXhF3q/giphy.gif" alt="" /></p>
+<h2 id="using-plumber">Using plumber</h2>
+<p>Plumber works by using <code>roxygen</code> like comments (<code>#*</code>). Using a single comment, you can define the request type and the end point. Following that you define a function. The arguments to the funciton become the query parameters.</p>
+<p>The main <code>genius</code> functions only require two main arguments <code>artist</code> and <code>album</code> or <code>song</code>. Making these accessible by API is as simple as:</p>
+<pre class="z-code"><code><span class="z-text z-plain">#* @get /track
+</span><span class="z-text z-plain">function(artist, song) {
+</span><span class="z-text z-plain">  genius::genius_lyrics(artist, song)
+</span><span class="z-text z-plain">}
+</span></code></pre>
+<p>With this line of code I created an endpoint called <code>track</code> to retrieve song lyrics. The two parameters as defined by the anonymous function are <code>artist</code> and <code>song</code>. This means that song lyrics are accessible with a query looking like <code>http://hostname/track?artist=artist_name&amp;song=song_name</code>.</p>
+<p>But as it stands, this isn't enough to host the API locally. Save your functions with plumber documentation into a file (I named mine <code>plumber.R</code>).</p>
+<h3 id="creating-the-api">Creating the API</h3>
+<p>Creating the API is probably the easiest part. It takes quite literally, two lines of code. The function <code>plumb()</code> takes two arguments, the <code>file</code> which contains your plumber commented code, and the <code>dir</code>ectory that houses it.</p>
+<p><code>plumb()</code> creates a router which is "responsible for taking an incoming request, submitting it through the appropriate filters."</p>
+<p>I created a plumber router which would be used to route income queries.</p>
+<pre class="z-code"><code><span class="z-text z-plain">pr &lt;- plumb(&quot;plumber.R&quot;)
+</span></code></pre>
+<p>The next step is to actually run the router. Again, this is quite simple by calling the <code>run()</code> method of the <code>pr</code> object. All I need to do is specify the <code>port</code> that the API will listen on, and optionally the <code>host</code> address.</p>
+<pre class="z-code"><code><span class="z-text z-plain">pr$run(port = 80, host = &quot;0.0.0.0&quot;)
+</span></code></pre>
+<p>Now I can construct queries in my browser. An example query is <code>http://localhost/track?artist=andrew%20bird&amp;song=proxy%20war</code>. Sending this request produces a very friendly <code>json</code> output.</p>
+<pre class="z-code"><code><span class="z-text z-plain">[
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:1,&quot;lyric&quot;:&quot;He don&#39;t have to get over her&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:2,&quot;lyric&quot;:&quot;She don&#39;t to have get over him&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:3,&quot;lyric&quot;:&quot;With all their words preserved forevermore&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:4,&quot;lyric&quot;:&quot;You don&#39;t have to get over her&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:5,&quot;lyric&quot;:&quot;She don&#39;t have to get over you&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:6,&quot;lyric&quot;:&quot;It&#39;s true these two have never met before&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:7,&quot;lyric&quot;:&quot;At least not in real life&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:8,&quot;lyric&quot;:&quot;Where your words cut like a knife&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:9,&quot;lyric&quot;:&quot;Conjuring blood, biblical floods&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:10,&quot;lyric&quot;:&quot;Looks that stop time&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:11,&quot;lyric&quot;:&quot;You don&#39;t have to remember&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:12,&quot;lyric&quot;:&quot;We forget what memories are for&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:13,&quot;lyric&quot;:&quot;Now we store them in the atmosphere&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:14,&quot;lyric&quot;:&quot;If you don&#39;t want to get too close&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:15,&quot;lyric&quot;:&quot;You don&#39;t have to get too close&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:16,&quot;lyric&quot;:&quot;It&#39;s just what we&#39;re calling peer-to-peer&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:17,&quot;lyric&quot;:&quot;You don&#39;t want to get over&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:18,&quot;lyric&quot;:&quot;You don&#39;t have to get over&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:19,&quot;lyric&quot;:&quot;We store them in the atmosphere&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:20,&quot;lyric&quot;:&quot;If you don&#39;t want to get over her&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:21,&quot;lyric&quot;:&quot;She don&#39;t have to get over you&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:22,&quot;lyric&quot;:&quot;It&#39;s true these two have never met before&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:23,&quot;lyric&quot;:&quot;At least not in real life&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:24,&quot;lyric&quot;:&quot;Where your words cut like a knife&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:25,&quot;lyric&quot;:&quot;Conjuring blood, biblical floods&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:26,&quot;lyric&quot;:&quot;Looks that stop time&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:27,&quot;lyric&quot;:&quot;If you don&#39;t want to get over her&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:28,&quot;lyric&quot;:&quot;You don&#39;t have to get over her&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:29,&quot;lyric&quot;:&quot;If you don&#39;t want to get too close&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:30,&quot;lyric&quot;:&quot;You don&#39;t have to get too close&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:31,&quot;lyric&quot;:&quot;If you want to remember&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:32,&quot;lyric&quot;:&quot;If you don&#39;t want to get over&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:33,&quot;lyric&quot;:&quot;If you don&#39;t want to get over&quot;},
+</span><span class="z-text z-plain">{&quot;track_title&quot;:&quot;Proxy War&quot;,&quot;line&quot;:34,&quot;lyric&quot;:&quot;If you don&#39;t want to get over&quot;}
+</span><span class="z-text z-plain">]
+</span></code></pre>
+<h2 id="writing-a-python-wrapper">Writing a Python Wrapper</h2>
+<p>One of the appeals of writing an API is that it can be accessed from any language. This was the inspiriation of creating this API. I want to be able to call R using Python. Creating an API is a great intermediary as writing an API wrapper is much easier for me than recreating all of the code that I wrote in R.</p>
+<p>I want to be able to recreate the three main functions of <code>genius</code>. These are <code>genius_lyrics()</code>, <code>genius_album()</code>, and <code>genius_tracklist()</code>. In doing this there are two steps I have to consider. The first is creating query urls, and the second is parsing json.</p>
+<p>To create the urls, the <code>requests</code> library is used. Next, I created a template for the urls.</p>
+<pre class="z-code"><code><span class="z-text z-plain">import requests
+</span><span class="z-text z-plain">url_template = &quot;http://localhost:80/track?artist={}&amp;song={}&quot;
+</span></code></pre>
+<p>The idea here is that the <a href="https://rdrr.io/r/base/Paren.html"><code>{}</code></a> characters will be filled with provided parameters by using the <code>.format()</code> method.</p>
+<p>For example, if I wanted to get lyrics for Proxy War by Andrew Bird, I would supply <code>"Andrew Bird"</code> and <code>"Proxy War"</code> as the arguments to <a href="https://rdrr.io/r/base/format.html"><code>format()</code></a>. It's important to note that these arguments are taken positionally. The url is created using this method.</p>
+<pre class="z-code"><code><span class="z-text z-plain">url = url_template.format(&quot;andrew bird&quot;, &quot;proxy war&quot;)
+</span></code></pre>
+<p>Now I am at the point where I can ping the server to receive the json. This is accomplished by using the <code>.get()</code> method from <code>requests</code>.</p>
+<pre class="z-code"><code><span class="z-text z-plain">response = requests.get(url)
+</span></code></pre>
+<p>This returns an object that contains the json response. Next, in order to get this into a format that can be analysed, it needs to be parsed. I prefer a Pandas <code>DataFrame</code>, and fortunately Pandas has a lovely <code>read_json</code> function. I will call the <code>.content</code> attribute of the <code>response</code> objectm and feed that into the <code>read_json()</code> function.</p>
+<pre class="z-code"><code><span class="z-text z-plain">import pandas as pd
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">proxy_war = pd.read_json(response.content)
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">proxy_war.head()
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">    line    lyric                                   track_title
+</span><span class="z-text z-plain">0   1   He don&#39;t have to get over her               Proxy War
+</span><span class="z-text z-plain">1   2   She don&#39;t to have get over him              Proxy War
+</span><span class="z-text z-plain">2   3   With all their words preserved forevermore  Proxy War
+</span><span class="z-text z-plain">3   4   You don&#39;t have to get over her              Proxy War
+</span><span class="z-text z-plain">4   5   She don&#39;t have to get over you              Proxy War
+</span></code></pre>
+<p>Beautiful. Song lyrics are available through this API and can easily be accessed via python. The next step is to generalize this and the other two functions. The below is the code to create the <code>genius_lyrics()</code> function in python. It works almost identically as in R. However, at this moment it does not have the ability to set the <code>info</code> argument. But this can be changed easily in the original <code>plumber.R</code> file.</p>
+<pre class="z-code"><code><span class="z-text z-plain"># Define genius_lyrics()
+</span><span class="z-text z-plain">def genius_lyrics(artist, song):
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">    url_template = &quot;http://localhost:80/track?artist={}&amp;song={}&quot;
+</span><span class="z-text z-plain">    
+</span><span class="z-text z-plain">    url = url_template.format(artist, song)
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">    response = requests.get(url)
+</span><span class="z-text z-plain">    
+</span><span class="z-text z-plain">    song = pd.read_json(response.content)
+</span><span class="z-text z-plain">    
+</span><span class="z-text z-plain">    return(song)
+</span></code></pre>
+<p>At this point I'm feeling extremely stoked on the fact that I can use <code>genius</code> with python. Who says R and python practitioners can't work together?</p>
+<p><img src="https://media.giphy.com/media/l2JJyDYEX1tXFmCd2/giphy.gif" alt="" /></p>
+<h2 id="containerize-with-docker">Containerize with Docker</h2>
+<p><img src="https://media.giphy.com/media/cUMNWzWZ5n75LvcCIe/giphy.gif" alt="" /></p>
+<p>To make the process of setting up this genius API up easier for those who don't necessarily interact with R, I created a lightweight-ish Docker container. The idea for this was to be able to pull a Docker image, run a command, and then the API will be available on a local port without having to interact with R at all.</p>
+<p>I'm not the most experience person with creating Docker containers but I can borrow code quite well. Fortunately I came across some wonderful <a href="https://nolisllc.com/assets/presentations/r-tensorflow-api.pdf">slides</a> from <code>rstudio::conf 2019</code>. <a href="https://twitter.com/heatherklus">Heather Nollis</a> and <a href="https://twitter.com/skyetetra">Jacqueline Nolis</a> presented on "API development with R and TensorFlow at T-Mobile".</p>
+<p>This container needs two things: a linux environment and an installation of R with plumber, genius, and its dependencies. An organization called <a href="https://www.rocker-project.org/">The Rocker Project</a> has created a number of Docker images that are stable and easy to install.</p>
+<p>Since <code>genius</code> relies on many packages from the <a href="https://tidyverse.org">tidyverse</a>, the <a href="https://hub.docker.com/r/rocker/tidyverse"><code>rocker/tidyverse</code></a> image was used. To use their wonderful image, only one line is needed in my <code>Dockerfile</code>.</p>
+<pre class="z-code"><code><span class="z-text z-plain"># Import existing Docker image
+</span><span class="z-text z-plain">FROM rocker/tidyverse:3.5.2
+</span></code></pre>
+<p>Now, not knowing exactly what I was doing, I copied code from Jacqueline and Heather's sample <code>Dockerfile</code> in their slides. Their comment says that this is necessary to have the <em>"needed linux libraries for plumber"</em>, I went with it.</p>
+<pre class="z-code"><code><span class="z-text z-plain"># install needed linux libraries for plumber
+</span><span class="z-text z-plain">RUN apt-get update -qq &amp;&amp; apt-get install -y \
+</span><span class="z-text z-plain">  libssl-dev \
+</span><span class="z-text z-plain">  libcurl4-gnutls-dev
+</span></code></pre>
+<p><code>genius</code> and <code>plumber</code> are not part of the tidyverse image and have to be installed manually. The following lines tell Docker to run the listed R commands. For some unknown reason there was an issue with installing <code>genius</code> from CRAN so the <code>repos</code> argument was stated explicitly.</p>
+<pre class="z-code"><code><span class="z-text z-plain"># Install R packages
+</span><span class="z-text z-plain">RUN R -e &quot;install.packages(&#39;genius&#39;, repos = &#39;http://cran.rstudio.com/&#39;)&quot;
+</span><span class="z-text z-plain">RUN R -e &quot;install.packages(&#39;plumber&#39;)&quot;
+</span></code></pre>
+<p>In addition to the <code>Dockerfile</code> there are two files in my directory which are used to launch the API. The <code>plumber.R</code> and <code>launch_api.R</code> files. These need to be copied into the container. The line <code>COPY / /</code> copies from the location <code>/</code> in my directory to the location <code>/</code> in the container.</p>
+<p>The Docker image has the libraries and files needed, but it needs to be able to actually launch the API. Since the <code>plumber.R</code> file specifies that the API will be listening on port <code>80</code>, I need to expose that port in my Docker image using <code>EXPOSE 80</code>.</p>
+<p>The last part of this is to run the <code>launch_api.R</code> so the API is available. The <code>ENTRYPOINT</code> command tells Docker what to run when the container is launched. In this case <code>ENTRYPOINT ["Rscript", "launch_api.R"]</code> tells Docker to run the <code>Rscript</code> command with the argument <code>launch_api.R</code>. And with that, the <code>Dockerfile</code> is complete and read to run.</p>
+<p>The image needs to be built and ran. The simplest way to do this for me was to work from <a href="https://cloud.docker.com/repository/docker/josiahparry/genius-api">Dockerhub</a>. Thus to run this container only three lines of code are needed!</p>
+<pre class="z-code"><code><span class="z-text z-plain">docker pull josiahparry/genius-api:working
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">docker build -t josiahparry/genius-api .
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">docker run --rm -p 80:80 josiahparry/genius-api
+</span></code></pre>
+<p><img src="https://media.giphy.com/media/3o7qDEq2bMbcbPRQ2c/giphy.gif" alt="" /></p>
+<p>Boom, now you have an API that will be able to use the functionality of <code>genius</code>. If you wish to use Python with the API, I wrote a simple script which creates a nice tidy <a href="https://github.com/JosiahParry/genius-api/blob/master/genius.py">wrapper</a> around it.</p>
+<hr />
+<p>If anyone is interested in writing a more stable Python library that can call the functionality described above I'd love your help to make <code>genius</code> more readily available to the python community.</p>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <!-- Basecoat sidebar component -->
+        <script
+            src="https://josiah.rs/js/basecoat/sidebar.min.js"
+            defer
+        ></script>
+        <!-- Sidebar toggle for mobile -->
+        <script src="https://josiah.rs/js/sidebar-toggle.js" defer></script>
+        <!-- Custom tabs for panel-tabset -->
+        <script src="https://josiah.rs/js/tabs.js" defer></script>
+        <!-- Search functionality -->
+        <script src="https://josiah.rs/js/search.js" defer></script>
+        <script>
+            (() => {
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+
+                    // Toggle syntax highlighting themes via media attribute
+                    const darkSyntax = document.getElementById("syntax-dark");
+                    const lightSyntax = document.getElementById("syntax-light");
+                    if (darkSyntax && lightSyntax) {
+                        darkSyntax.media = dark ? "all" : "not all";
+                        lightSyntax.media = dark ? "not all" : "all";
+                    }
+
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        ></script>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"
+        ></script>
+        
+    </body>
+</html>

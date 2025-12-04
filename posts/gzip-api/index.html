@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            Medium Data and Production API Pipeline | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+
+        <!-- Determine theme before loading syntax highlighting -->
+        <script>
+            (() => {
+                const stored = localStorage.getItem("themeMode");
+                // Use stored preference if exists, otherwise always default to dark
+                const isDark = stored ? stored === "dark" : true;
+
+                if (isDark) {
+                    document.documentElement.classList.add("dark");
+                }
+            })();
+        </script>
+
+        <!-- Syntax highlighting themes -->
+        <link rel="stylesheet" href="https://josiah.rs/syntax-dark.css" id="syntax-dark" />
+        <link rel="stylesheet" href="https://josiah.rs/syntax-light.css" id="syntax-light" />
+
+        <!-- KaTeX for math rendering -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        />
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-semibold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4 relative">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-sm bg-muted/50 border border-border"
+                id="search-input"
+            />
+            <div
+                id="search-results"
+                class="hidden absolute top-full left-4 -mt-1 w-96 max-h-96 overflow-y-auto bg-background border border-border rounded-lg shadow-lg z-50 p-2"
+            ></div>
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-2 text-sm pl-3 transition-colors font-medium border-l-2 border-primary -ml-px bg-sidebar-accent"
+                    >
+                        Posts
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Socials -->
+            <div
+                class="mt-4 block py-2 transition-colors font-medium px-3 text-sm bg-sidebar-accent"
+            >
+                <h2
+                    class="text-sm font-medium tracking-tight mb-2 text-muted-foreground border-b border-muted-foreground/20 pb-1"
+                >
+                    Socials
+                </h2>
+                <ul class="space-y-1.5">
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <polygon
+                                points="160 128 112 96 112 160 160 128"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M24,128c0,29.91,3.07,47.45,5.41,56.47A16,16,0,0,0,39,195.42C72.52,208.35,128,208,128,208s55.48.35,89-12.58a16,16,0,0,0,9.63-10.95c2.34-9,5.41-26.56,5.41-56.47s-3.07-47.45-5.41-56.47a16,16,0,0,0-9.63-11C183.48,47.65,128,48,128,48s-55.48-.35-89,12.58a16,16,0,0,0-9.63,11C27.07,80.54,24,98.09,24,128Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://www.youtube.com/@josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >YouTube</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <rect
+                                x="32"
+                                y="32"
+                                width="192"
+                                height="192"
+                                rx="8"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="120"
+                                y1="112"
+                                x2="120"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="88"
+                                y1="112"
+                                x2="88"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M120,140a28,28,0,0,1,56,0v36"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <circle cx="88" cy="84" r="12" />
+                        </svg>
+                        <a
+                            href="https://www.linkedin.com/in/josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >LinkedIn</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M119.83,56A52,52,0,0,0,76,32a51.92,51.92,0,0,0-3.49,44.7A49.28,49.28,0,0,0,64,104v8a48,48,0,0,0,48,48h48a48,48,0,0,0,48-48v-8a49.28,49.28,0,0,0-8.51-27.3A51.92,51.92,0,0,0,196,32a52,52,0,0,0-43.83,24Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,232V192a32,32,0,0,1,32-32h0a32,32,0,0,1,32,32v40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,208H72a32,32,0,0,1-32-32A32,32,0,0,0,8,144"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="http://github.com/josiahparry/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >GitHub</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M160,224H72a32,32,0,0,1-32-32V72A32,32,0,0,1,72,40H184a32,32,0,0,1,32,32v72a32,32,0,0,1-32,32H40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M128,136V104a24,24,0,0,0-48,0v32"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M176,136V104a24,24,0,0,0-48,0"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://fosstodon.org/@josi"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Mastodon</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                            class="w-4 h-4"
+                            fill="currentColor"
+                        >
+                            <path
+                                d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.698-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948"
+                            />
+                        </svg>
+                        <a
+                            href="https://bsky.app/profile/josiahparry.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Bluesky</a
+                        >
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">Medium Data and Production API Pipeline</h1>
+
+          
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >September 05, 2020</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><p>"[P]arsing huge json strings is difficult and inefficient."<sup class="footnote-reference"><a href="#1">1</a></sup> If you have an API that needs to receive a large amount of json, sending that over will be slow.</p>
+<p>Q: How can we improve that? A: Compression.</p>
+<h2 id="background">Background</h2>
+<p>An API is an application programming interface. APIs are how machines talk to other machines. APIs are useful because they are language agnostic meaning that the same API request from Python, or R, or JavaScript will work and return the same results. To send data to an API we use a POST request. The data that we send is usually required to be in json format.</p>
+<h2 id="context">Context</h2>
+<p><strong>Problem</strong>: With large data API POST requests can become extremely slow and take up a lot of storage space. This can cause a bottleneck.</p>
+<p><strong>Solution</strong>: Compress your data and send a file instead of sending plain text json.</p>
+<h2 id="standard-approach">Standard approach</h2>
+<p>Interacting with an API from R is usually done with the <code>{httr}</code> package. Imagine you want to send a dataframe to an API as json. We can do that by using the <a href="https://httr.r-lib.org/reference/POST.html"><code>httr::POST()</code></a>, providing a dataframe to the body, and encoding it to json by setting <code>encode = "json"</code>.</p>
+<p>First let's load our libraries:</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='kr'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='o'>(</span><span class='nv'><a href='https://httr.r-lib.org/'>httr</a></span><span class='o'>)</span>          <span class='c'># interacts with apis</span>
+<span class='kr'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='o'>(</span><span class='nv'><a href='https://arxiv.org/abs/1403.2805'>jsonlite</a></span><span class='o'>)</span>      <span class='c'># works with json (for later)</span>
+<span class='kr'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='o'>(</span><span class='nv'><a href='https://github.com/hadley/nycflights13'>nycflights13</a></span><span class='o'>)</span>  <span class='c'># data for posting </span></code></pre>
+</div>
+<p>Next, let's create a sample <a href="https://httr.r-lib.org/reference/POST.html"><code>POST()</code></a> request to illustrate how posting a dataframe as json works.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'>
+<span class='nv'>b_url</span> <span class='o'>&lt;-</span> <span class='s'>"http://httpbin.org/post"</span> <span class='c'># an easy to work with sample API POST endpoint</span>
+
+<span class='nf'><a href='https://httr.r-lib.org/reference/POST.html'>POST</a></span><span class='o'>(</span>url <span class='o'>=</span> <span class='nv'>b_url</span>, 
+     body <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='o'>(</span>x <span class='o'>=</span> <span class='nv'>cars</span><span class='o'>)</span>,
+     encode <span class='o'>=</span> <span class='s'>"json"</span><span class='o'>)</span>
+<span class='c'>#&gt; Response [http://httpbin.org/post]</span>
+<span class='c'>#&gt;   Date: 2022-11-14 22:14</span>
+<span class='c'>#&gt;   Status: 200</span>
+<span class='c'>#&gt;   Content-Type: application/json</span>
+<span class='c'>#&gt;   Size: 4.81 kB</span>
+<span class='c'>#&gt; &#123;</span>
+<span class='c'>#&gt;   "args": &#123;&#125;, </span>
+<span class='c'>#&gt;   "data": "&#123;\"x\":[&#123;\"speed\":4,\"dist\":2&#125;,&#123;\"speed\":4,\"dist\":10&#125;,&#123;\"speed\":7,\"...</span>
+<span class='c'>#&gt;   "files": &#123;&#125;, </span>
+<span class='c'>#&gt;   "form": &#123;&#125;, </span>
+<span class='c'>#&gt;   "headers": &#123;</span>
+<span class='c'>#&gt;     "Accept": "application/json, text/xml, application/xml, */*", </span>
+<span class='c'>#&gt;     "Accept-Encoding": "deflate, gzip", </span>
+<span class='c'>#&gt;     "Content-Length": "1150", </span>
+<span class='c'>#&gt;     "Content-Type": "application/json", </span>
+<span class='c'>#&gt; ...</span></code></pre>
+</div>
+<h2 id="alternative-approach">Alternative approach</h2>
+<p>An alternative approach would be to write our dataframe as json to a compressed gzip file. The process will be to:</p>
+<ol>
+<li>Create a temporary file which will store our compressed json.</li>
+<li>Create a gzip file connection to write the temporary file as a gzip.</li>
+<li>Upload the temporary file to the API.</li>
+<li>Remove the temporary file.</li>
+</ol>
+<p>Writing to a temporary gzipped file looks like:</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'># create the tempfile </span>
+<span class='nv'>tmp</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='o'>(</span><span class='o'>)</span>
+
+<span class='c'># create a gzfile connection (to enable writing gz)</span>
+<span class='nv'>gz_tmp</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/r/base/connections.html'>gzfile</a></span><span class='o'>(</span><span class='nv'>tmp</span><span class='o'>)</span>
+
+<span class='c'># write json to the gz file connection</span>
+<span class='nf'><a href='https://rdrr.io/pkg/jsonlite/man/read_json.html'>write_json</a></span><span class='o'>(</span><span class='nv'>cars</span>, <span class='nv'>gz_tmp</span><span class='o'>)</span>
+
+<span class='c'># close the gz file connection</span>
+<span class='nf'><a href='https://rdrr.io/r/base/connections.html'>close</a></span><span class='o'>(</span><span class='nv'>gz_tmp</span><span class='o'>)</span></code></pre>
+</div>
+<p>Let's read the temp file to see what it contains.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='c'># read the temp file for illustration </span>
+<span class='nf'><a href='https://rdrr.io/r/base/readLines.html'>readLines</a></span><span class='o'>(</span><span class='nv'>tmp</span><span class='o'>)</span>
+<span class='c'>#&gt; [1] "[&#123;\"speed\":4,\"dist\":2&#125;,&#123;\"speed\":4,\"dist\":10&#125;,&#123;\"speed\":7,\"dist\":4&#125;,&#123;\"speed\":7,\"dist\":22&#125;,&#123;\"speed\":8,\"dist\":16&#125;,&#123;\"speed\":9,\"dist\":10&#125;,&#123;\"speed\":10,\"dist\":18&#125;,&#123;\"speed\":10,\"dist\":26&#125;,&#123;\"speed\":10,\"dist\":34&#125;,&#123;\"speed\":11,\"dist\":17&#125;,&#123;\"speed\":11,\"dist\":28&#125;,&#123;\"speed\":12,\"dist\":14&#125;,&#123;\"speed\":12,\"dist\":20&#125;,&#123;\"speed\":12,\"dist\":24&#125;,&#123;\"speed\":12,\"dist\":28&#125;,&#123;\"speed\":13,\"dist\":26&#125;,&#123;\"speed\":13,\"dist\":34&#125;,&#123;\"speed\":13,\"dist\":34&#125;,&#123;\"speed\":13,\"dist\":46&#125;,&#123;\"speed\":14,\"dist\":26&#125;,&#123;\"speed\":14,\"dist\":36&#125;,&#123;\"speed\":14,\"dist\":60&#125;,&#123;\"speed\":14,\"dist\":80&#125;,&#123;\"speed\":15,\"dist\":20&#125;,&#123;\"speed\":15,\"dist\":26&#125;,&#123;\"speed\":15,\"dist\":54&#125;,&#123;\"speed\":16,\"dist\":32&#125;,&#123;\"speed\":16,\"dist\":40&#125;,&#123;\"speed\":17,\"dist\":32&#125;,&#123;\"speed\":17,\"dist\":40&#125;,&#123;\"speed\":17,\"dist\":50&#125;,&#123;\"speed\":18,\"dist\":42&#125;,&#123;\"speed\":18,\"dist\":56&#125;,&#123;\"speed\":18,\"dist\":76&#125;,&#123;\"speed\":18,\"dist\":84&#125;,&#123;\"speed\":19,\"dist\":36&#125;,&#123;\"speed\":19,\"dist\":46&#125;,&#123;\"speed\":19,\"dist\":68&#125;,&#123;\"speed\":20,\"dist\":32&#125;,&#123;\"speed\":20,\"dist\":48&#125;,&#123;\"speed\":20,\"dist\":52&#125;,&#123;\"speed\":20,\"dist\":56&#125;,&#123;\"speed\":20,\"dist\":64&#125;,&#123;\"speed\":22,\"dist\":66&#125;,&#123;\"speed\":23,\"dist\":54&#125;,&#123;\"speed\":24,\"dist\":70&#125;,&#123;\"speed\":24,\"dist\":92&#125;,&#123;\"speed\":24,\"dist\":93&#125;,&#123;\"speed\":24,\"dist\":120&#125;,&#123;\"speed\":25,\"dist\":85&#125;]"</span></code></pre>
+</div>
+<h3 id="posting-a-file">POSTing a file</h3>
+<p>To post a file we use the function <a href="https://httr.r-lib.org/reference/upload_file.html"><code>httr::upload_file()</code></a>. The argument we provide is the path, in this case the file path is stored in the <code>tmp</code> object.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'><a href='https://httr.r-lib.org/reference/POST.html'>POST</a></span><span class='o'>(</span><span class='nv'>b_url</span>, body <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='o'>(</span>x <span class='o'>=</span> <span class='nf'><a href='https://httr.r-lib.org/reference/upload_file.html'>upload_file</a></span><span class='o'>(</span><span class='nv'>tmp</span><span class='o'>)</span><span class='o'>)</span><span class='o'>)</span>
+<span class='c'>#&gt; Response [http://httpbin.org/post]</span>
+<span class='c'>#&gt;   Date: 2022-11-14 22:14</span>
+<span class='c'>#&gt;   Status: 200</span>
+<span class='c'>#&gt;   Content-Type: application/json</span>
+<span class='c'>#&gt;   Size: 874 B</span>
+<span class='c'>#&gt; &#123;</span>
+<span class='c'>#&gt;   "args": &#123;&#125;, </span>
+<span class='c'>#&gt;   "data": "", </span>
+<span class='c'>#&gt;   "files": &#123;</span>
+<span class='c'>#&gt;     "x": "data:text/plain;base64,H4sIAAAAAAAAA4XSPQ6DMAwF4L3HyMyQ+C8JV6m6wdCtEt0q7t6p...</span>
+<span class='c'>#&gt;   &#125;, </span>
+<span class='c'>#&gt;   "form": &#123;&#125;, </span>
+<span class='c'>#&gt;   "headers": &#123;</span>
+<span class='c'>#&gt;     "Accept": "application/json, text/xml, application/xml, */*", </span>
+<span class='c'>#&gt;     "Accept-Encoding": "deflate, gzip", </span>
+<span class='c'>#&gt; ...</span></code></pre>
+</div>
+<h3 id="comparing-r-object-to-gzip">Comparing R object to gzip</h3>
+<p>Now, you may be asking, is this really that big of a difference? It actually is. If you'll notice from the first response where we POSTed the <code>cars</code> dataframe the response size was 4.81kB. This response with the compressed file was only 870B. Thats a whole lot smaller.</p>
+<p>We can compare the object size to the file size for another look. The below is in bytes.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'><a href='https://rdrr.io/r/base/cat.html'>cat</a></span><span class='o'>(</span><span class='s'>" cars: "</span>, <span class='nf'><a href='https://rdrr.io/r/utils/object.size.html'>object.size</a></span><span class='o'>(</span><span class='nv'>cars</span><span class='o'>)</span>, <span class='s'>"\n"</span>,
+    <span class='s'>"compressed cars: "</span>, <span class='nf'><a href='https://rdrr.io/r/base/file.info.html'>file.size</a></span><span class='o'>(</span><span class='nv'>tmp</span><span class='o'>)</span><span class='o'>)</span>
+<span class='c'>#&gt;  cars:  1648 </span>
+<span class='c'>#&gt;  compressed cars:  210</span></code></pre>
+</div>
+<h2 id="benchmarking">Benchmarking</h2>
+<p>Let's extend this example to some larger datasets as well as benchmark the results. We'll use data from <code>nycflights13</code>. In this example we'll send two dataset to an API as the parameters <code>metadata</code> and <code>data</code>. Generally metadata is smaller than the data. So for this example we'll send 1,000 rows as the metadata and 10,000 rows as the data. We'll call on the <code>weather</code> and <code>flights</code> datasets from <code>nycflights13</code>.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>small_weather</span> <span class='o'>&lt;-</span> <span class='nf'>dplyr</span><span class='nf'>::</span><span class='nf'><a href='https://dplyr.tidyverse.org/reference/sample_n.html'>sample_n</a></span><span class='o'>(</span><span class='nv'>weather</span>, <span class='m'>1000</span><span class='o'>)</span>
+<span class='nv'>small_flights</span> <span class='o'>&lt;-</span> <span class='nf'>dplyr</span><span class='nf'>::</span><span class='nf'><a href='https://dplyr.tidyverse.org/reference/sample_n.html'>sample_n</a></span><span class='o'>(</span><span class='nv'>flights</span>, <span class='m'>10000</span><span class='o'>)</span></code></pre>
+</div>
+<h3 id="making-it-functional">Making it functional</h3>
+<p>As always, I recommend making your repetitive tasks into functions. Here we will create two functions. One for posting the data as gzip files and the second as pure json. These will be labeled <code>post_gz()</code> and <code>post_json()</code> respectively.</p>
+<p>These functions will take two parameters: <code>metadata</code> and <code>data</code>.</p>
+<p>Define <code>post_gz()</code></p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>post_gz</span> <span class='o'>&lt;-</span> <span class='kr'>function</span><span class='o'>(</span><span class='nv'>metadata</span>, <span class='nv'>data</span><span class='o'>)</span> <span class='o'>&#123;</span>
+  
+  <span class='c'># write metadata to temp file</span>
+  <span class='nv'>tmp_meta</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='o'>(</span><span class='s'>"metadata"</span><span class='o'>)</span>
+  <span class='nv'>gz_temp_meta</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/r/base/connections.html'>gzfile</a></span><span class='o'>(</span><span class='nv'>tmp_meta</span><span class='o'>)</span>
+  <span class='nf'><a href='https://rdrr.io/pkg/jsonlite/man/read_json.html'>write_json</a></span><span class='o'>(</span><span class='nv'>metadata</span>, <span class='nv'>gz_temp_meta</span><span class='o'>)</span>
+  <span class='nf'><a href='https://rdrr.io/r/base/connections.html'>close</a></span><span class='o'>(</span><span class='nv'>gz_temp_meta</span><span class='o'>)</span>
+  
+  <span class='c'># write data to temp file</span>
+  <span class='nv'>tmp_data</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/r/base/tempfile.html'>tempfile</a></span><span class='o'>(</span><span class='s'>"data"</span><span class='o'>)</span>
+  <span class='nv'>gz_temp_data</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://rdrr.io/r/base/connections.html'>gzfile</a></span><span class='o'>(</span><span class='nv'>tmp_data</span><span class='o'>)</span>
+  <span class='nf'><a href='https://rdrr.io/pkg/jsonlite/man/read_json.html'>write_json</a></span><span class='o'>(</span><span class='nv'>data</span>, <span class='nv'>gz_temp_data</span><span class='o'>)</span>
+  <span class='nf'><a href='https://rdrr.io/r/base/connections.html'>close</a></span><span class='o'>(</span><span class='nv'>gz_temp_data</span><span class='o'>)</span>
+  
+  <span class='c'># post </span>
+  <span class='nv'>q</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://httr.r-lib.org/reference/POST.html'>POST</a></span><span class='o'>(</span><span class='nv'>b_url</span>, 
+       body <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='o'>(</span>
+         metadata <span class='o'>=</span> <span class='nf'><a href='https://httr.r-lib.org/reference/upload_file.html'>upload_file</a></span><span class='o'>(</span><span class='nv'>tmp_meta</span><span class='o'>)</span>,
+         data <span class='o'>=</span> <span class='nf'><a href='https://httr.r-lib.org/reference/upload_file.html'>upload_file</a></span><span class='o'>(</span><span class='nv'>tmp_data</span><span class='o'>)</span>
+       <span class='o'>)</span><span class='o'>)</span>
+  
+  <span class='c'># remove temp files</span>
+  <span class='nf'><a href='https://rdrr.io/r/base/unlink.html'>unlink</a></span><span class='o'>(</span><span class='nv'>tmp_meta</span><span class='o'>)</span>
+  <span class='nf'><a href='https://rdrr.io/r/base/unlink.html'>unlink</a></span><span class='o'>(</span><span class='nv'>tmp_data</span><span class='o'>)</span>
+  
+  <span class='c'># return a character for purposes of bench marking</span>
+  <span class='s'>"Posted..."</span>
+<span class='o'>&#125;</span></code></pre>
+</div>
+<p>Define <code>post_json()</code>.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>post_json</span> <span class='o'>&lt;-</span> <span class='kr'>function</span><span class='o'>(</span><span class='nv'>metadata</span>, <span class='nv'>data</span><span class='o'>)</span> <span class='o'>&#123;</span>
+  <span class='nv'>q</span> <span class='o'>&lt;-</span> <span class='nf'><a href='https://httr.r-lib.org/reference/POST.html'>POST</a></span><span class='o'>(</span><span class='nv'>b_url</span>, 
+       body <span class='o'>=</span> <span class='nf'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='o'>(</span>
+         metadata <span class='o'>=</span> <span class='nv'>metadata</span>,
+         data <span class='o'>=</span> <span class='nv'>data</span>
+       <span class='o'>)</span>,
+       encode <span class='o'>=</span> <span class='s'>"json"</span><span class='o'>)</span> 
+  
+  <span class='s'>"Posted..."</span>
+<span class='o'>&#125;</span></code></pre>
+</div>
+<p>Now that these functions have been defined, let's compare their performance using the package <code>bench</code>. We'll run each function 50 times to get a good understanding of their respective performance.</p>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nv'>bm</span> <span class='o'>&lt;-</span> <span class='nf'>bench</span><span class='nf'>::</span><span class='nf'><a href='http://bench.r-lib.org/reference/mark.html'>mark</a></span><span class='o'>(</span>
+  <span class='nf'>post_gz</span><span class='o'>(</span><span class='nv'>small_weather</span>, <span class='nv'>small_flights</span><span class='o'>)</span>,
+  <span class='nf'>post_json</span><span class='o'>(</span><span class='nv'>small_weather</span>, <span class='nv'>small_flights</span><span class='o'>)</span>,
+  iterations <span class='o'>=</span> <span class='m'>5</span>
+  <span class='o'>)</span>
+
+<span class='nv'>bm</span></code></pre>
+</div>
+<div class="highlight">
+<pre class='chroma'><code class='language-r' data-lang='r'><span class='nf'>ggplot2</span><span class='nf'>::</span><span class='nf'><a href='https://ggplot2.tidyverse.org/reference/autoplot.html'>autoplot</a></span><span class='o'>(</span><span class='nv'>bm</span><span class='o'>)</span></code></pre>
+</div>
+<div class="footnote-definition" id="1"><sup class="footnote-definition-label">1</sup>
+<p><a href="https://www.opencpu.org/posts/jsonlite-streaming/">https://www.opencpu.org/posts/jsonlite-streaming/</a></p>
+</div>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <!-- Basecoat sidebar component -->
+        <script
+            src="https://josiah.rs/js/basecoat/sidebar.min.js"
+            defer
+        ></script>
+        <!-- Sidebar toggle for mobile -->
+        <script src="https://josiah.rs/js/sidebar-toggle.js" defer></script>
+        <!-- Custom tabs for panel-tabset -->
+        <script src="https://josiah.rs/js/tabs.js" defer></script>
+        <!-- Search functionality -->
+        <script src="https://josiah.rs/js/search.js" defer></script>
+        <script>
+            (() => {
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+
+                    // Toggle syntax highlighting themes via media attribute
+                    const darkSyntax = document.getElementById("syntax-dark");
+                    const lightSyntax = document.getElementById("syntax-light");
+                    if (darkSyntax && lightSyntax) {
+                        darkSyntax.media = dark ? "all" : "not all";
+                        lightSyntax.media = dark ? "not all" : "all";
+                    }
+
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        ></script>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"
+        ></script>
+        
+    </body>
+</html>

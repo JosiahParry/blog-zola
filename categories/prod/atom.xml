@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Josiah Parry - prod</title>
+    <link rel="self" type="application/atom+xml" href="https://josiah.rs/categories/prod/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://josiah.rs"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2025-05-12T00:00:00+00:00</updated>
+    <id>https://josiah.rs/categories/prod/atom.xml</id>
+    <entry xml:lang="en">
+        <title>https with `{plumber}` using Caddy</title>
+        <published>2025-05-12T00:00:00+00:00</published>
+        <updated>2025-05-12T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/plumber-caddy-https/"/>
+        <id>https://josiah.rs/posts/plumber-caddy-https/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/plumber-caddy-https/">&lt;p&gt;Say you have a plumber API and you need to serve it over https. You can
+do this by spinning up a Docker container in something like
+&lt;a href=&quot;https:&#x2F;&#x2F;digitalocean.com&#x2F;&quot;&gt;DigitalOcean&lt;&#x2F;a&gt;, &lt;a href=&quot;https:&#x2F;&#x2F;render.com&quot;&gt;Render&lt;&#x2F;a&gt;,
+&lt;a href=&quot;https:&#x2F;&#x2F;heroku.com&quot;&gt;Heroku&lt;&#x2F;a&gt;, or &lt;a href=&quot;https:&#x2F;&#x2F;aws.amazon.com&#x2F;ecs&quot;&gt;AWS ECS&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;If you have you own server, you may want to use that instead. The most
+common way to do this is by using a &lt;a href=&quot;https:&#x2F;&#x2F;www.cloudflare.com&#x2F;learning&#x2F;cdn&#x2F;glossary&#x2F;reverse-proxy&#x2F;&quot;&gt;&lt;strong&gt;reverse
+proxy&lt;&#x2F;strong&gt;&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;caddyserver.com&#x2F;&quot;&gt;Caddy&lt;&#x2F;a&gt; is the simplest reverse proxy I am
+aware of.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;the-plumber-api&quot;&gt;The Plumber API&lt;&#x2F;h2&gt;
+&lt;p&gt;Below we define a simple plumber API. Save this file to &lt;code&gt;plumber.R&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;library&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;plumber&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;pr&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;|&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;pr_get&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&#x2F;echo&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function z-r&quot;&gt;&lt;span class=&quot;z-storage z-type z-function z-r&quot;&gt;function&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-parameters z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-parameters z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;msg&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-parameters z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-punctuation z-section z-braces z-begin z-r&quot;&gt;{&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;    &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-storage z-type z-r&quot;&gt;list&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;msg&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;paste0&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;The message is: &amp;#39;&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; msg&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&amp;#39;&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-punctuation z-section z-braces z-end z-r&quot;&gt;}&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;|&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;pr_get&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&#x2F;sum&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function z-r&quot;&gt;&lt;span class=&quot;z-storage z-type z-function z-r&quot;&gt;function&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-parameters z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-parameters z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;a&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-parameters z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;b&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-parameters z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-punctuation z-section z-braces z-begin z-r&quot;&gt;{&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;    &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;as.numeric&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;a&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-arithmetic z-r&quot;&gt;+&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;as.numeric&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;b&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-punctuation z-section z-braces z-end z-r&quot;&gt;}&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;|&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;pr_run&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;port&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;8888&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;serving-with-https&quot;&gt;Serving with https&lt;&#x2F;h2&gt;
+&lt;p&gt;Reverse proxies are typically the most common way of adding https to a
+site. Many organization use &lt;a href=&quot;https:&#x2F;&#x2F;nginx.org&#x2F;&quot;&gt;nginx&lt;&#x2F;a&gt;. Though for
+simplicity I recommend Caddy.&lt;&#x2F;p&gt;
+&lt;p&gt;Caddy automatically implements https by default.&lt;&#x2F;p&gt;
+&lt;p&gt;The below &lt;code&gt;Caddyfile&lt;&#x2F;code&gt; will serve the plumber API over https. It takes
+any requests to &lt;code&gt;localhost&lt;&#x2F;code&gt; and passes the request to the plumber API on
+port &lt;code&gt;8888&lt;&#x2F;code&gt;, captures the response and sends it back to the client.&lt;&#x2F;p&gt;
+&lt;div class=&quot;alert-tip&quot;&gt;
+&lt;p&gt;The https protocol requires binding to port 443.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;Save this as &lt;code&gt;Caddyfile&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;caddy&quot; class=&quot;language-caddy z-code&quot;&gt;&lt;code class=&quot;language-caddy&quot; data-lang=&quot;caddy&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;# serve the plumber API over HTTPS
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;localhost:443 {
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    reverse_proxy localhost:8888
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;running-the-api-proxy&quot;&gt;Running the API &amp;amp; proxy&lt;&#x2F;h2&gt;
+&lt;p&gt;To serve the plumber API via Caddy you need to start both processes.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;shell&quot; class=&quot;language-shell z-code&quot;&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;(R -f plumber.R) &amp;amp; caddy run
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;This will run the plumber API in the background and then the caddy
+process.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;generalizing&quot;&gt;Generalizing&lt;&#x2F;h2&gt;
+&lt;p&gt;Note that these are instructions specifically for using Caddy. However
+this point genealizes to all reverse proxies. They likely require more
+boiler plate, but will work just as well.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;resources&quot;&gt;Resources&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;www.andrewheiss.com&#x2F;&quot;&gt;Andrew Heiss&lt;&#x2F;a&gt; has a really great &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;andrewheiss&#x2F;docker-plumber-caddy&quot;&gt;demo
+repository&lt;&#x2F;a&gt; that is
+a much more advanced version of this that uses
+&lt;a href=&quot;https:&#x2F;&#x2F;www.docker.com&#x2F;&quot;&gt;Docker&lt;&#x2F;a&gt; and &lt;a href=&quot;https:&#x2F;&#x2F;docs.docker.com&#x2F;compose&#x2F;&quot;&gt;Docker
+Compose&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Use &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;JosiahParry&#x2F;valve&quot;&gt;Valve&lt;&#x2F;a&gt; to scale your plumber
+API and apply the same principles.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>{duckdb} or {duckplyr}? </title>
+        <published>2024-05-24T00:00:00+00:00</published>
+        <updated>2024-05-24T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/duckdb-and-r/"/>
+        <id>https://josiah.rs/posts/duckdb-and-r/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/duckdb-and-r/">&lt;p&gt;I’ve been diving pretty deep into DuckDB. It has shown that it has great
+utility for the vast majority of mid to large scale data analysis
+tasks—I’m talking Gigabytes not Petabytes. In particular, &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;krlmlr&quot;&gt;Kirill
+Müller&lt;&#x2F;a&gt; of &lt;a href=&quot;https:&#x2F;&#x2F;cynkra.com&#x2F;&quot;&gt;Cynkra&lt;&#x2F;a&gt;, has
+been doing great work in bringing DuckDB to the R community.&lt;&#x2F;p&gt;
+&lt;p&gt;Today, this takes the form of two R packages:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;r.duckdb.org&#x2F;&quot;&gt;&lt;code&gt;{duckdb}&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;duckdblabs.github.io&#x2F;duckplyr&#x2F;&quot;&gt;&lt;code&gt;{duckplyr}&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;I think the R community would &lt;strong&gt;benefit greatly&lt;&#x2F;strong&gt; by adopting DuckDB
+into their analytic workflows. It can used to make highly performant
+shiny applications or just speed up your workflow.&lt;&#x2F;p&gt;
+&lt;p&gt;For example, here is a demo of a Shiny application filtering, plotting,
+and visualizing 4.5 million records very quickly!&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;ricochet-rs&#x2F;flrsh-lessons&#x2F;main&#x2F;duckdb-deep-dive&#x2F;project&#x2F;final-app.gif&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;y-all-keep-asking-me-duckdb-or-duckplyr&quot;&gt;Y’all keep asking me &lt;code&gt;{duckdb}&lt;&#x2F;code&gt; or &lt;code&gt;{duckplyr}&lt;&#x2F;code&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;and before I tell you what my answer is, I’ll tell you why I’m bullish
+on DuckDB. I won’t ramble on details.&lt;&#x2F;p&gt;
+&lt;div class=&quot;alert-tip&quot; collapse=&quot;true&quot;&gt;
+&lt;h2 id=&quot;jargon-giraffe-giraffe-bullish&quot;&gt;Jargon giraffe 🦒: bullish!&lt;&#x2F;h2&gt;
+&lt;p&gt;Bullish is a term that is associated with a growing stock market. Think
+of the upward motion of their horns. People who are “bullish” would
+spend more money in the stock market expecting its prices to continue to
+rise and thus make more moneyyy 💸💸💸&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;h2 id=&quot;why-duckdb&quot;&gt;Why DuckDB?&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Supports &lt;strong&gt;larger-than-memory&lt;&#x2F;strong&gt; workloads&lt;&#x2F;li&gt;
+&lt;li&gt;Columnar vectorized operations means &lt;strong&gt;operating only on the data you
+need&lt;&#x2F;strong&gt; to and more of it and faster!&lt;&#x2F;li&gt;
+&lt;li&gt;Tight &lt;a href=&quot;https:&#x2F;&#x2F;arrow.apache.org&#x2F;docs&#x2F;r&#x2F;&quot;&gt;Apache Arrow&lt;&#x2F;a&gt; integration!&lt;&#x2F;li&gt;
+&lt;li&gt;Supports &lt;a href=&quot;https:&#x2F;&#x2F;substrait.io&#x2F;&quot;&gt;Substrait&lt;&#x2F;a&gt; for database agnostic
+query plans&lt;&#x2F;li&gt;
+&lt;li&gt;Runs in the browser (think
+&lt;a href=&quot;https:&#x2F;&#x2F;shinylive.io&#x2F;r&#x2F;examples&#x2F;&quot;&gt;ShinyLive&lt;&#x2F;a&gt; + DuckDB means fast
+compute all running in the browser without a Shiny server)&lt;&#x2F;li&gt;
+&lt;li&gt;_ It is stupid fast_&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;my-verdict&quot;&gt;My verdict?&lt;&#x2F;h2&gt;
+&lt;p&gt;The thing that is most important, in my opinion, for DuckDBs ability to
+be useful to the R community is its ability to work on data that is
+larger than RAM. &lt;a href=&quot;https:&#x2F;&#x2F;duckdb.org&#x2F;2024&#x2F;03&#x2F;29&#x2F;external-aggregation.html&quot;&gt;Read this awesome blog
+post&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;div class=&quot;display-1&quot;&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Use &lt;code&gt;{duckdb}&lt;&#x2F;code&gt;!!!&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;&#x2F;div&gt;
+&lt;h3 id=&quot;duckplyr&quot;&gt;&lt;code&gt;{duckplyr}&lt;&#x2F;code&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;The R package &lt;code&gt;{duckplyr}&lt;&#x2F;code&gt; is a &lt;strong&gt;drop in replacement for dplyr&lt;&#x2F;strong&gt;.
+duckplyr operates only on data.frame objects and, as of today, only
+works with in memory data. This means it is limited to the size of your
+machine’s RAM.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;duckdb&quot;&gt;&lt;code&gt;{duckdb}&lt;&#x2F;code&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;code&gt;{duckdb}&lt;&#x2F;code&gt;, on the other hand, is a
+&lt;a href=&quot;https:&#x2F;&#x2F;dbi.r-dbi.org&#x2F;reference&#x2F;index.html&quot;&gt;&lt;code&gt;{DBI}&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; extension package.
+This means that you can use DBI functions to write standard SQL. But it
+also means that you can use use tables in your DuckDB database with
+dplyr (via dbplyr).&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;{duckdb}&lt;&#x2F;code&gt; allows you to write standard dplyr code and create lazy
+tables that can be combined to make even lazier code! Moreover, you can
+utilize the &lt;strong&gt;out-of-core&lt;&#x2F;strong&gt; processing capabilities with DuckDB using
+&lt;code&gt;{duckdb}&lt;&#x2F;code&gt; and, to me, that is the whole selling point.&lt;&#x2F;p&gt;
+&lt;p&gt;If performance is your objective and you, for some reason, refuse to use
+the out-of-core capabilities of DuckDB, you should just use &lt;code&gt;data.table&lt;&#x2F;code&gt;
+via &lt;code&gt;dtplyr&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;getting-started-with-duckdb-r&quot;&gt;Getting started with DuckDB &amp;amp; R&lt;&#x2F;h2&gt;
+&lt;p&gt;Using DuckDB as a database backend for dplyr is pretty much the same as
+anything other backend you might use. Very similar code to what I’ll
+show you can be used to run code on Apache Spark or Postgres.&lt;&#x2F;p&gt;
+&lt;div class=&quot;alert-note&quot; collapse=&quot;true&quot;&gt;
+&lt;h2 id=&quot;sob-crying-just-use-postgres&quot;&gt;😭 * crying * just use postgres&lt;&#x2F;h2&gt;
+&lt;blockquote class=&quot;twitter-tweet&quot;&gt;
+&lt;p lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;
+&lt;p&gt;me, sobbing: just use postgres
+&lt;a href=&quot;https:&#x2F;&#x2F;t.co&#x2F;rJ4JcZJ4Zj&quot;&gt;https:&#x2F;&#x2F;t.co&#x2F;rJ4JcZJ4Zj&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;p&gt;
+&lt;p&gt;— Jacob Matson (@matsonj)
+&lt;a href=&quot;https:&#x2F;&#x2F;twitter.com&#x2F;matsonj&#x2F;status&#x2F;1793681468134445371?ref_src=twsrc%5Etfw&quot;&gt;May
+23, 2024&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;script async src=&quot;https:&#x2F;&#x2F;platform.twitter.com&#x2F;widgets.js&quot; charset=&quot;utf-8&quot;&gt;&lt;&#x2F;script&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;|￣￣￣￣￣￣￣￣￣￣￣￣￣￣|
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    Just use Postgres    
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;|＿＿＿＿＿＿＿＿＿＿＿＿＿＿|
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;       \ (•◡•) &#x2F; 
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;        \     &#x2F;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;h3 id=&quot;create-a-duckdb-driver&quot;&gt;Create a DuckDB driver&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;Load duckdb: &lt;code&gt;library(duckdb)&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;Create a database driver &lt;code&gt;duckdb()&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;library&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;duckdb&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Loading required package: DBI
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-comment z-line z-number-sign z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-comment z-r&quot;&gt;#&lt;&#x2F;span&gt; This uses **in memory** database which is limited by RAM
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;drv &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;duckdb&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-comment z-line z-number-sign z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-comment z-r&quot;&gt;#&lt;&#x2F;span&gt; this creates a persistent database which allows DuckDB to
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-comment z-line z-number-sign z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-comment z-r&quot;&gt;#&lt;&#x2F;span&gt; perform **larger-than-memory** workloads
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;drv &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;duckdb&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;tempfile&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;fileext&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;.duckdb&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;drv
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;&amp;lt;duckdb_driver dbdir=&amp;#39;&#x2F;private&#x2F;var&#x2F;folders&#x2F;wd&#x2F;xq999jjj3bx2w8cpg7lkfxlm0000gn&#x2F;T&#x2F;RtmpUFMKNa&#x2F;file10be84c0a3ff2.duckdb&amp;#39; read_only=FALSE bigint=numeric&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;3&quot;&gt;
+&lt;li&gt;Create a database connection object&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;con &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;dbConnect&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;drv&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;con
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;&amp;lt;duckdb_connection 4ccd0 driver=&amp;lt;duckdb_driver dbdir=&amp;#39;&#x2F;private&#x2F;var&#x2F;folders&#x2F;wd&#x2F;xq999jjj3bx2w8cpg7lkfxlm0000gn&#x2F;T&#x2F;RtmpUFMKNa&#x2F;file10be84c0a3ff2.duckdb&amp;#39; read_only=FALSE bigint=numeric&amp;gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;4&quot;&gt;
+&lt;li&gt;Import some data from somewhere&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;Here we will download a medium sized csv and import it.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;tmp &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;tempfile&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;fileext&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;.csv&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;download.file&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;ricochet-rs&#x2F;flrsh-lessons&#x2F;main&#x2F;data&#x2F;houses1990.csv&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  tmp
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;housing &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;tbl_file&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;con&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; tmp&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;housing
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;# Source:   SQL [?? x 9]
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;# Database: DuckDB 1.4.1 [josiahparry@Darwin 24.0.0:R 4.6.0&#x2F;&#x2F;private&#x2F;var&#x2F;folders&#x2F;wd&#x2F;xq999jjj3bx2w8cpg7lkfxlm0000gn&#x2F;T&#x2F;RtmpUFMKNa&#x2F;file10be84c0a3ff2.duckdb]
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;   houseValue income houseAge rooms bedrooms population households latitude
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;        &amp;lt;dbl&amp;gt;  &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt; &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;      &amp;lt;dbl&amp;gt;      &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 1     452600   8.33       41   880      129        322        126     37.9
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 2     358500   8.30       21  7099     1106       2401       1138     37.9
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 3     352100   7.26       52  1467      190        496        177     37.8
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 4     341300   5.64       52  1274      235        558        219     37.8
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 5     342200   3.85       52  1627      280        565        259     37.8
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 6     269700   4.04       52   919      213        413        193     37.8
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 7     299200   3.66       52  2535      489       1094        514     37.8
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 8     241400   3.12       52  3104      687       1157        647     37.8
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 9     226700   2.08       42  2555      665       1206        595     37.8
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;10     261100   3.69       52  3549      707       1551        714     37.8
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;# ℹ more rows
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;# ℹ 1 more variable: longitude &amp;lt;dbl&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;5&quot;&gt;
+&lt;li&gt;Run some dplyr code on the table&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;library&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;dplyr&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;avg_price_by_age &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; housing &lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;|&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;group_by&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;houseAge&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;|&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;summarise&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;    &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;avg_val&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;mean&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;houseValue&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;show_query&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;avg_price_by_age&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;&amp;lt;SQL&amp;gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;SELECT houseAge, AVG(houseValue) AS avg_val
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;FROM (FROM &amp;#39;&#x2F;var&#x2F;folders&#x2F;wd&#x2F;xq999jjj3bx2w8cpg7lkfxlm0000gn&#x2F;T&#x2F;&#x2F;RtmpUFMKNa&#x2F;file10be81ebf71cd.csv&amp;#39;) q01
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;GROUP BY houseAge
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;6&quot;&gt;
+&lt;li&gt;Bring the results into memory&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;Use &lt;code&gt;dplyr::collect()&lt;&#x2F;code&gt; to bring the results into memory as an actual
+tibble!&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;avg_price_df &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;collect&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;avg_price_by_age&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;avg_price_df
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;# A tibble: 52 × 2
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;   houseAge avg_val
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;      &amp;lt;dbl&amp;gt;   &amp;lt;dbl&amp;gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 1       17 190494.
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 2       35 207299.
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 3       37 207361.
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 4       44 216233.
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 5       30 200253.
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 6       14 189597.
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 7        5 208418.
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 8        9 186673.
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 9       49 220336.
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;10        2 224476.
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;# ℹ 42 more rows
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+</content>
+        
+    </entry>
+</feed>

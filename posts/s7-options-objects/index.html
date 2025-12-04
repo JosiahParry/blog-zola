@@ -1,0 +1,987 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            S7 &amp; Options objects | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+
+        <!-- Determine theme before loading syntax highlighting -->
+        <script>
+            (() => {
+                const stored = localStorage.getItem("themeMode");
+                // Use stored preference if exists, otherwise always default to dark
+                const isDark = stored ? stored === "dark" : true;
+
+                if (isDark) {
+                    document.documentElement.classList.add("dark");
+                }
+            })();
+        </script>
+
+        <!-- Syntax highlighting themes -->
+        <link rel="stylesheet" href="https://josiah.rs/syntax-dark.css" id="syntax-dark" />
+        <link rel="stylesheet" href="https://josiah.rs/syntax-light.css" id="syntax-light" />
+
+        <!-- KaTeX for math rendering -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        />
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-semibold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4 relative">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-sm bg-muted/50 border border-border"
+                id="search-input"
+            />
+            <div
+                id="search-results"
+                class="hidden absolute top-full left-4 -mt-1 w-96 max-h-96 overflow-y-auto bg-background border border-border rounded-lg shadow-lg z-50 p-2"
+            ></div>
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-2 text-sm pl-3 transition-colors font-medium border-l-2 border-primary -ml-px bg-sidebar-accent"
+                    >
+                        Posts
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Socials -->
+            <div
+                class="mt-4 block py-2 transition-colors font-medium px-3 text-sm bg-sidebar-accent"
+            >
+                <h2
+                    class="text-sm font-medium tracking-tight mb-2 text-muted-foreground border-b border-muted-foreground/20 pb-1"
+                >
+                    Socials
+                </h2>
+                <ul class="space-y-1.5">
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <polygon
+                                points="160 128 112 96 112 160 160 128"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M24,128c0,29.91,3.07,47.45,5.41,56.47A16,16,0,0,0,39,195.42C72.52,208.35,128,208,128,208s55.48.35,89-12.58a16,16,0,0,0,9.63-10.95c2.34-9,5.41-26.56,5.41-56.47s-3.07-47.45-5.41-56.47a16,16,0,0,0-9.63-11C183.48,47.65,128,48,128,48s-55.48-.35-89,12.58a16,16,0,0,0-9.63,11C27.07,80.54,24,98.09,24,128Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://www.youtube.com/@josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >YouTube</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <rect
+                                x="32"
+                                y="32"
+                                width="192"
+                                height="192"
+                                rx="8"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="120"
+                                y1="112"
+                                x2="120"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="88"
+                                y1="112"
+                                x2="88"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M120,140a28,28,0,0,1,56,0v36"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <circle cx="88" cy="84" r="12" />
+                        </svg>
+                        <a
+                            href="https://www.linkedin.com/in/josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >LinkedIn</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M119.83,56A52,52,0,0,0,76,32a51.92,51.92,0,0,0-3.49,44.7A49.28,49.28,0,0,0,64,104v8a48,48,0,0,0,48,48h48a48,48,0,0,0,48-48v-8a49.28,49.28,0,0,0-8.51-27.3A51.92,51.92,0,0,0,196,32a52,52,0,0,0-43.83,24Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,232V192a32,32,0,0,1,32-32h0a32,32,0,0,1,32,32v40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,208H72a32,32,0,0,1-32-32A32,32,0,0,0,8,144"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="http://github.com/josiahparry/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >GitHub</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M160,224H72a32,32,0,0,1-32-32V72A32,32,0,0,1,72,40H184a32,32,0,0,1,32,32v72a32,32,0,0,1-32,32H40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M128,136V104a24,24,0,0,0-48,0v32"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M176,136V104a24,24,0,0,0-48,0"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://fosstodon.org/@josi"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Mastodon</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                            class="w-4 h-4"
+                            fill="currentColor"
+                        >
+                            <path
+                                d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.698-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948"
+                            />
+                        </svg>
+                        <a
+                            href="https://bsky.app/profile/josiahparry.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Bluesky</a
+                        >
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">S7 &amp; Options objects</h1>
+
+         
+        <div class="flex flex-wrap gap-2 mb-4">
+            
+            <a
+                href="/categories/pkg-dev"
+                class="badge-secondary cursor pointer"
+                >pkg-dev</a
+            >
+            
+            <a
+                href="/categories/r"
+                class="badge-secondary cursor pointer"
+                >r</a
+            >
+            
+            <a
+                href="/categories/s7"
+                class="badge-secondary cursor pointer"
+                >s7</a
+            >
+            
+        </div>
+         
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >November 21, 2024</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><p>One scenario I have encountered is the case case of
+<code>readr::read_delim()</code>. The argument <code>col_names = TRUE</code> by default, can
+be <code>FALSE</code>, or it can be a character vector of the names to provide to
+the columns it is reading.</p>
+<p>This is a bit stinky 😷. But it actually makes a lot of sense.</p>
+<ul>
+<li><code>col_names = TRUE</code> (default): the file provides you with headers and
+you should use them</li>
+<li><code>col_names = FALSE</code>: there are no column names we should make some
+placeholders for the data frame (because column names are necessary)</li>
+<li><code>col_names = character()</code>: we want to provide column names directly
+(makes the most sense when there are no headers in the file)</li>
+</ul>
+<p>This is a little confusing when we think deeply about the character
+vector option.</p>
+<p>There are two scenarios here:</p>
+<ol>
+<li>the file has column headers but we want to give it different ones</li>
+<li>the file has no column headers but we want to give it different ones</li>
+</ol>
+<p>Lets explore how this works in practice a bit. Here we write <code>iris</code> to a
+temporary file.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">tmp <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">tempfile</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-variable z-parameter z-r">fileext</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>.csv<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">readr<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">write_csv</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>iris<span class="z-punctuation z-separator z-arguments z-r">,</span> tmp<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<h3 id="scenario-1-has-headers-give-it-different-once">Scenario 1: has headers give it different once</h3>
+<p>In the first scenario we can provide a character vector to <code>col_names</code>.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">readr<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">read_csv</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>tmp<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">col_names</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">c</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>a<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>b<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>c<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>d<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>e<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain"># A tibble: 151 × 5
+</span><span class="z-text z-plain">   a            b           c            d           e      
+</span><span class="z-text z-plain">   &lt;chr&gt;        &lt;chr&gt;       &lt;chr&gt;        &lt;chr&gt;       &lt;chr&gt;  
+</span><span class="z-text z-plain"> 1 Sepal.Length Sepal.Width Petal.Length Petal.Width Species
+</span><span class="z-text z-plain"> 2 5.1          3.5         1.4          0.2         setosa 
+</span><span class="z-text z-plain"> 3 4.9          3           1.4          0.2         setosa 
+</span><span class="z-text z-plain"> 4 4.7          3.2         1.3          0.2         setosa 
+</span><span class="z-text z-plain"> 5 4.6          3.1         1.5          0.2         setosa 
+</span><span class="z-text z-plain"> 6 5            3.6         1.4          0.2         setosa 
+</span><span class="z-text z-plain"> 7 5.4          3.9         1.7          0.4         setosa 
+</span><span class="z-text z-plain"> 8 4.6          3.4         1.4          0.3         setosa 
+</span><span class="z-text z-plain"> 9 5            3.4         1.5          0.2         setosa 
+</span><span class="z-text z-plain">10 4.4          2.9         1.4          0.2         setosa 
+</span><span class="z-text z-plain"># ℹ 141 more rows
+</span></code></pre>
+<p>Here we can see that <code>col_names = character()</code> assumes that there isn’t
+any header. To accomplish this we need to set <code>skip = 1</code> to not read the
+first line where the header actually is.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">readr<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">read_csv</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    tmp<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-variable z-parameter z-r">col_names</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">c</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>a<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>b<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>c<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>d<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>e<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-variable z-parameter z-r">skip</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-numeric z-float z-decimal z-r">1</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain"># A tibble: 150 × 5
+</span><span class="z-text z-plain">       a     b     c     d e     
+</span><span class="z-text z-plain">   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; 
+</span><span class="z-text z-plain"> 1   5.1   3.5   1.4   0.2 setosa
+</span><span class="z-text z-plain"> 2   4.9   3     1.4   0.2 setosa
+</span><span class="z-text z-plain"> 3   4.7   3.2   1.3   0.2 setosa
+</span><span class="z-text z-plain"> 4   4.6   3.1   1.5   0.2 setosa
+</span><span class="z-text z-plain"> 5   5     3.6   1.4   0.2 setosa
+</span><span class="z-text z-plain"> 6   5.4   3.9   1.7   0.4 setosa
+</span><span class="z-text z-plain"> 7   4.6   3.4   1.4   0.3 setosa
+</span><span class="z-text z-plain"> 8   5     3.4   1.5   0.2 setosa
+</span><span class="z-text z-plain"> 9   4.4   2.9   1.4   0.2 setosa
+</span><span class="z-text z-plain">10   4.9   3.1   1.5   0.1 setosa
+</span><span class="z-text z-plain"># ℹ 140 more rows
+</span></code></pre>
+<h3 id="scenario-2-has-no-headers-give-it-names">Scenario 2: has no headers give it names</h3>
+<p>Create a csv without the headers:</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">tmp <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">tempfile</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-variable z-parameter z-r">fileext</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>.csv<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">readr<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">write_csv</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>iris<span class="z-punctuation z-separator z-arguments z-r">,</span> tmp<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">col_names</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-language z-r">FALSE</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<div class="aside">
+<p>In the case of <code>write_csv()</code> the argument <code>col_names</code> is <em>always</em> a
+logical scalar</p>
+</div>
+<p>In this case, the <code>col_names = character()</code> works well!</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">readr<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">read_csv</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    tmp<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-variable z-parameter z-r">col_names</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">c</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>a<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>b<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>c<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>d<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>e<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain"># A tibble: 150 × 5
+</span><span class="z-text z-plain">       a     b     c     d e     
+</span><span class="z-text z-plain">   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; 
+</span><span class="z-text z-plain"> 1   5.1   3.5   1.4   0.2 setosa
+</span><span class="z-text z-plain"> 2   4.9   3     1.4   0.2 setosa
+</span><span class="z-text z-plain"> 3   4.7   3.2   1.3   0.2 setosa
+</span><span class="z-text z-plain"> 4   4.6   3.1   1.5   0.2 setosa
+</span><span class="z-text z-plain"> 5   5     3.6   1.4   0.2 setosa
+</span><span class="z-text z-plain"> 6   5.4   3.9   1.7   0.4 setosa
+</span><span class="z-text z-plain"> 7   4.6   3.4   1.4   0.3 setosa
+</span><span class="z-text z-plain"> 8   5     3.4   1.5   0.2 setosa
+</span><span class="z-text z-plain"> 9   4.4   2.9   1.4   0.2 setosa
+</span><span class="z-text z-plain">10   4.9   3.1   1.5   0.1 setosa
+</span><span class="z-text z-plain"># ℹ 140 more rows
+</span></code></pre>
+<p>Here are the other two scenarios:</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">readr<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">read_csv</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>tmp<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain"># A tibble: 149 × 5
+</span><span class="z-text z-plain">   `5.1` `3.5` `1.4` `0.2` setosa
+</span><span class="z-text z-plain">   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; 
+</span><span class="z-text z-plain"> 1   4.9   3     1.4   0.2 setosa
+</span><span class="z-text z-plain"> 2   4.7   3.2   1.3   0.2 setosa
+</span><span class="z-text z-plain"> 3   4.6   3.1   1.5   0.2 setosa
+</span><span class="z-text z-plain"> 4   5     3.6   1.4   0.2 setosa
+</span><span class="z-text z-plain"> 5   5.4   3.9   1.7   0.4 setosa
+</span><span class="z-text z-plain"> 6   4.6   3.4   1.4   0.3 setosa
+</span><span class="z-text z-plain"> 7   5     3.4   1.5   0.2 setosa
+</span><span class="z-text z-plain"> 8   4.4   2.9   1.4   0.2 setosa
+</span><span class="z-text z-plain"> 9   4.9   3.1   1.5   0.1 setosa
+</span><span class="z-text z-plain">10   5.4   3.7   1.5   0.2 setosa
+</span><span class="z-text z-plain"># ℹ 139 more rows
+</span></code></pre>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">readr<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">read_csv</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>tmp<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">col_names</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-language z-r">FALSE</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain"># A tibble: 150 × 5
+</span><span class="z-text z-plain">      X1    X2    X3    X4 X5    
+</span><span class="z-text z-plain">   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; 
+</span><span class="z-text z-plain"> 1   5.1   3.5   1.4   0.2 setosa
+</span><span class="z-text z-plain"> 2   4.9   3     1.4   0.2 setosa
+</span><span class="z-text z-plain"> 3   4.7   3.2   1.3   0.2 setosa
+</span><span class="z-text z-plain"> 4   4.6   3.1   1.5   0.2 setosa
+</span><span class="z-text z-plain"> 5   5     3.6   1.4   0.2 setosa
+</span><span class="z-text z-plain"> 6   5.4   3.9   1.7   0.4 setosa
+</span><span class="z-text z-plain"> 7   4.6   3.4   1.4   0.3 setosa
+</span><span class="z-text z-plain"> 8   5     3.4   1.5   0.2 setosa
+</span><span class="z-text z-plain"> 9   4.4   2.9   1.4   0.2 setosa
+</span><span class="z-text z-plain">10   4.9   3.1   1.5   0.1 setosa
+</span><span class="z-text z-plain"># ℹ 140 more rows
+</span></code></pre>
+<h2 id="rethinking-the-arguments">Rethinking the arguments</h2>
+<p>To me, I think these arguments can be made less
+<a href="https://www.infoq.com/presentations/Simple-Made-Easy/">complected</a>.</p>
+<p>To me, there are two arguments burried in <code>col_names</code>:</p>
+<ol>
+<li><code>header = TRUE</code></li>
+<li><code>col_names = NULL</code></li>
+</ol>
+<p>The imaginary <code>header</code> argument should be used to determine if there is
+a header line to be used.</p>
+<p>The <code>col_names</code>, which defaults to <code>NULL</code> can be used to provide an
+alternative set of column names.</p>
+<p>This approach would reduce the cognitive overload of <code>col_names</code>
+argument.</p>
+<p>However, there are</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">length</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">formals</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>readr<span class="z-punctuation z-accessor z-colons z-r">::</span>read_csv<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">[1] 20
+</span></code></pre>
+<p>arguments already….so… additional ones? That could be quite a bit.</p>
+<h2 id="options-objects-with-s7">Options objects with S7</h2>
+<p>One alternative to having every option as a function argument is to
+create an options object.</p>
+<p>This is very common in the Rust ecosystem. There is a struct that is
+used to define common settings. That object is then passed into methods
+and functions.</p>
+<p>We could consider doing something similar for the <code>readr::read_csv()</code>
+function.</p>
+<p>Lets take a look at the arguments for <code>readr::read_csv()</code></p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">fn_fmls_names</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>readr<span class="z-punctuation z-accessor z-colons z-r">::</span>read_csv<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain"> [1] &quot;file&quot;            &quot;col_names&quot;       &quot;col_types&quot;       &quot;col_select&quot;     
+</span><span class="z-text z-plain"> [5] &quot;id&quot;              &quot;locale&quot;          &quot;na&quot;              &quot;quoted_na&quot;      
+</span><span class="z-text z-plain"> [9] &quot;quote&quot;           &quot;comment&quot;         &quot;trim_ws&quot;         &quot;skip&quot;           
+</span><span class="z-text z-plain">[13] &quot;n_max&quot;           &quot;guess_max&quot;       &quot;name_repair&quot;     &quot;num_threads&quot;    
+</span><span class="z-text z-plain">[17] &quot;progress&quot;        &quot;show_col_types&quot;  &quot;skip_empty_rows&quot; &quot;lazy&quot;           
+</span></code></pre>
+<p>Many of these are booleans or scalars. I think we can improve this by
+using S7 to store our options as a standalone object.</p>
+<p>Looking at the arguments for <code>read_csv()</code> I think our options object can
+be used for the following options:</p>
+<ul>
+<li><code>locale</code></li>
+<li><code>na</code></li>
+<li><code>quote</code></li>
+<li><code>comment</code></li>
+<li><code>trim_ws</code></li>
+<li><code>skip</code></li>
+<li><code>n_max</code></li>
+<li><code>guess_max</code></li>
+<li><code>name_repair</code></li>
+<li><code>num_threads</code></li>
+<li><code>progress</code></li>
+<li><code>show_col_types</code></li>
+<li><code>skip_empty_rows</code></li>
+<li><code>lazy</code></li>
+</ul>
+<p>This will take 14 of the less commonly used arguments out of the
+function!</p>
+<p>The first thing we will do is define properties for each of these
+values. It looks like a lot of code, but it is not so bad! This
+boilerplate is going to give us a strongly typed object that will catch
+errors early!</p>
+<h2 id="s7-object-properties">S7 object properties</h2>
+<p>For each of the arguments we want to ensure that we:</p>
+<ul>
+<li>have a good default</li>
+<li>validate any input</li>
+</ul>
+<p>First we’re looking at the <code>locale</code>. This one is quite a lot of
+checking.</p>
+<h3 id="property-validation">Property validation</h3>
+<p>Ideally, the <code>locale</code> would be an S7 object so we could provide a
+<code>class_locale</code> as our propery but we don’t have that luxury. So here, we
+validate each of the components of the locale object.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">library</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>S7<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">.locale <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">new_property</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  class_list<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">default</span> <span class="z-keyword z-operator z-assignment z-r">=</span> readr<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">default_locale</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">validator</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function z-r"><span class="z-storage z-type z-function z-r">function</span></span><span class="z-meta z-function z-parameters z-r"><span class="z-punctuation z-section z-parameters z-begin z-r">(</span><span class="z-variable z-parameter z-r">value</span><span class="z-punctuation z-section z-parameters z-end z-r">)</span></span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    dnames <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> value<span class="z-keyword z-accessor z-dollar z-r">$</span>date_names
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    invalid <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-keyword z-operator z-logical z-r">!</span>rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">is_character</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>dnames<span class="z-keyword z-accessor z-dollar z-r">$</span>mon<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">n</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-numeric z-float z-decimal z-r">12</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-logical z-r">||</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-keyword z-operator z-logical z-r">!</span>rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">is_character</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>dnames<span class="z-keyword z-accessor z-dollar z-r">$</span>mon_ab<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">n</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-numeric z-float z-decimal z-r">12</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-logical z-r">||</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-keyword z-operator z-logical z-r">!</span>rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">is_character</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>dnames<span class="z-keyword z-accessor z-dollar z-r">$</span>day<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">n</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-numeric z-float z-decimal z-r">7</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-logical z-r">||</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-keyword z-operator z-logical z-r">!</span>rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">is_character</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>dnames<span class="z-keyword z-accessor z-dollar z-r">$</span>day_ab<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">n</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-numeric z-float z-decimal z-r">7</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-logical z-r">||</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-keyword z-operator z-logical z-r">!</span>rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">is_character</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>dnames<span class="z-keyword z-accessor z-dollar z-r">$</span>am_pm<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">n</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-numeric z-float z-decimal z-r">2</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-logical z-r">||</span> <span class="z-keyword z-operator z-logical z-r">!</span>rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">is_scalar_character</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>value<span class="z-keyword z-accessor z-dollar z-r">$</span>date_format<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-logical z-r">||</span> <span class="z-keyword z-operator z-logical z-r">!</span>rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">is_scalar_character</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>value<span class="z-keyword z-accessor z-dollar z-r">$</span>time_format<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-logical z-r">||</span> <span class="z-keyword z-operator z-logical z-r">!</span>rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">is_scalar_character</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>value<span class="z-keyword z-accessor z-dollar z-r">$</span>decimal_mark<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-logical z-r">||</span> <span class="z-keyword z-operator z-logical z-r">!</span>rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">is_scalar_character</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>value<span class="z-keyword z-accessor z-dollar z-r">$</span>grouping_mark<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-logical z-r">||</span> <span class="z-keyword z-operator z-logical z-r">!</span>rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">is_scalar_character</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>value<span class="z-keyword z-accessor z-dollar z-r">$</span>tz<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-logical z-r">||</span> <span class="z-keyword z-operator z-logical z-r">!</span>rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">is_scalar_character</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>value<span class="z-keyword z-accessor z-dollar z-r">$</span>encoding<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-keyword z-control z-conditional z-if z-r">if</span> <span class="z-punctuation z-section z-parens z-begin z-r">(</span>invalid<span class="z-punctuation z-section z-parens z-end z-r">)</span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>expected `locale` object<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<p>Similarly, the argument for <code>name_repair</code> is not at all straight
+forward. It can be one of any known strategy <em>or</em> it can be a function
+that is applied to the names via <code>vctrs::vec_as_names()</code>.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">.name_repair <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">new_property</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  class_any<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">default</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>unique<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">validator</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function z-r"><span class="z-storage z-type z-function z-r">function</span></span><span class="z-meta z-function z-parameters z-r"><span class="z-punctuation z-section z-parameters z-begin z-r">(</span><span class="z-variable z-parameter z-r">value</span><span class="z-punctuation z-section z-parameters z-end z-r">)</span></span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    known_strategies <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">c</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>minimal<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>unique<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>check_unique<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>unique_quiet<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>universal<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>universal_quiet<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-keyword z-control z-conditional z-if z-r">if</span> <span class="z-punctuation z-section z-parens z-begin z-r">(</span>rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">is_function</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>value<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-parens z-end z-r">)</span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      fmls <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">fn_fmls</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>value<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-keyword z-control z-conditional z-if z-r">if</span> <span class="z-punctuation z-section z-parens z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">sum</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">vapply</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>fmls<span class="z-punctuation z-separator z-arguments z-r">,</span>inherits<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-meta z-function-call z-name z-r"><span class="z-storage z-type z-r">logical</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-constant z-numeric z-float z-decimal z-r">1</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>  <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>name<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-logical z-r">&gt;</span> <span class="z-constant z-numeric z-float z-decimal z-r">1</span><span class="z-punctuation z-section z-parens z-end z-r">)</span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">        <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>name repair function must only have one required argument<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-keyword z-control z-flow z-return z-r">return</span><span class="z-punctuation z-section z-parens z-begin z-r">(</span><span class="z-constant z-language z-r">NULL</span><span class="z-punctuation z-section z-parens z-end z-r">)</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-keyword z-control z-conditional z-if z-r">if</span> <span class="z-punctuation z-section z-parens z-begin z-r">(</span><span class="z-keyword z-operator z-logical z-r">!</span>rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">is_scalar_character</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>value<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-parens z-end z-r">)</span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>`name_repair` must be one of minimal, unique, check_unique, unique_quiet, universal, universal_quiet or a function<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-keyword z-control z-conditional z-if z-r">if</span> <span class="z-punctuation z-section z-parens z-begin z-r">(</span><span class="z-keyword z-operator z-logical z-r">!</span>value <span class="z-keyword z-operator z-other z-r">%in%</span> known_strategies<span class="z-punctuation z-section z-parens z-end z-r">)</span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">sprintf</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>%s is not a valid `name_repair` value<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<p>Here we define the validators for the rest of the options. These are all
+quite straight forward and are mostly scalars.</p>
+<details open class="code-fold">
+<summary>Code</summary>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">.na <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">new_property</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  class_character<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">default</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">c</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span><span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>NA<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">.quote <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">new_property</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  class_logical<span class="z-punctuation z-separator z-arguments z-r">,</span> 
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">default</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-language z-r">TRUE</span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">validator</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function z-r"><span class="z-storage z-type z-function z-r">function</span></span><span class="z-meta z-function z-parameters z-r"><span class="z-punctuation z-section z-parameters z-begin z-r">(</span><span class="z-variable z-parameter z-r">value</span><span class="z-punctuation z-section z-parameters z-end z-r">)</span></span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-keyword z-control z-conditional z-if z-r">if</span> <span class="z-punctuation z-section z-parens z-begin z-r">(</span><span class="z-keyword z-operator z-logical z-r">!</span>rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">is_scalar_logical</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>value<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-parens z-end z-r">)</span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">          <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>`quote` must be a scalar character<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">.comment <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">new_property</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  class_character<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">default</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span><span class="z-constant z-character z-escape z-r">\&quot;</span><span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">validator</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function z-r"><span class="z-storage z-type z-function z-r">function</span></span><span class="z-meta z-function z-parameters z-r"><span class="z-punctuation z-section z-parameters z-begin z-r">(</span><span class="z-variable z-parameter z-r">value</span><span class="z-punctuation z-section z-parameters z-end z-r">)</span></span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-keyword z-control z-conditional z-if z-r">if</span> <span class="z-punctuation z-section z-parens z-begin z-r">(</span><span class="z-keyword z-operator z-logical z-r">!</span>rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">is_scalar_character</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>value<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-parens z-end z-r">)</span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>`comment` must be a scalar character<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">.trim_ws <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">new_property</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  class_logical<span class="z-punctuation z-separator z-arguments z-r">,</span> 
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">default</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-language z-r">TRUE</span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">validator</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function z-r"><span class="z-storage z-type z-function z-r">function</span></span><span class="z-meta z-function z-parameters z-r"><span class="z-punctuation z-section z-parameters z-begin z-r">(</span><span class="z-variable z-parameter z-r">value</span><span class="z-punctuation z-section z-parameters z-end z-r">)</span></span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-keyword z-control z-conditional z-if z-r">if</span> <span class="z-punctuation z-section z-parens z-begin z-r">(</span><span class="z-keyword z-operator z-logical z-r">!</span>rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">is_scalar_logical</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>value<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-parens z-end z-r">)</span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">          <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>`trim_ws` must be a scalar character<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">.skip <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">new_property</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  class_numeric<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">default</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-numeric z-integer z-decimal z-r">0<span class="z-storage z-type z-numeric z-r">L</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">validator</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function z-r"><span class="z-storage z-type z-function z-r">function</span></span><span class="z-meta z-function z-parameters z-r"><span class="z-punctuation z-section z-parameters z-begin z-r">(</span><span class="z-variable z-parameter z-r">value</span><span class="z-punctuation z-section z-parameters z-end z-r">)</span></span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-keyword z-control z-conditional z-if z-r">if</span> <span class="z-punctuation z-section z-parens z-begin z-r">(</span><span class="z-keyword z-operator z-logical z-r">!</span>rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">is_scalar_integerish</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>value<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-parens z-end z-r">)</span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">          <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>`skip` must be a scalar numeric<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">.n_max <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">new_property</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  class_numeric<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">default</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-language z-r">Inf</span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">validator</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function z-r"><span class="z-storage z-type z-function z-r">function</span></span><span class="z-meta z-function z-parameters z-r"><span class="z-punctuation z-section z-parameters z-begin z-r">(</span><span class="z-variable z-parameter z-r">value</span><span class="z-punctuation z-section z-parameters z-end z-r">)</span></span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-keyword z-control z-conditional z-if z-r">if</span> <span class="z-punctuation z-section z-parens z-begin z-r">(</span><span class="z-keyword z-operator z-logical z-r">!</span>rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">is_scalar_integerish</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>value<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-parens z-end z-r">)</span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">          <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>`n_max` must be a scalar numeric<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">.guess_max <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">new_property</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  class_numeric<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">default</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-numeric z-integer z-decimal z-r">1000<span class="z-storage z-type z-numeric z-r">L</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">validator</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function z-r"><span class="z-storage z-type z-function z-r">function</span></span><span class="z-meta z-function z-parameters z-r"><span class="z-punctuation z-section z-parameters z-begin z-r">(</span><span class="z-variable z-parameter z-r">value</span><span class="z-punctuation z-section z-parameters z-end z-r">)</span></span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-keyword z-control z-conditional z-if z-r">if</span> <span class="z-punctuation z-section z-parens z-begin z-r">(</span><span class="z-keyword z-operator z-logical z-r">!</span>rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">is_scalar_integerish</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>value<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-parens z-end z-r">)</span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">          <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>`guess_max` must be a scalar numeric<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">.n_max <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">new_property</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  class_numeric<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">default</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-language z-r">Inf</span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">validator</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function z-r"><span class="z-storage z-type z-function z-r">function</span></span><span class="z-meta z-function z-parameters z-r"><span class="z-punctuation z-section z-parameters z-begin z-r">(</span><span class="z-variable z-parameter z-r">value</span><span class="z-punctuation z-section z-parameters z-end z-r">)</span></span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-keyword z-control z-conditional z-if z-r">if</span> <span class="z-punctuation z-section z-parens z-begin z-r">(</span><span class="z-keyword z-operator z-logical z-r">!</span>rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">is_scalar_integerish</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>value<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-parens z-end z-r">)</span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">          <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>`n_max` must be a scalar numeric<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">.num_threads <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">new_property</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  class_numeric<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">default</span> <span class="z-keyword z-operator z-assignment z-r">=</span> readr<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">readr_threads</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">validator</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function z-r"><span class="z-storage z-type z-function z-r">function</span></span><span class="z-meta z-function z-parameters z-r"><span class="z-punctuation z-section z-parameters z-begin z-r">(</span><span class="z-variable z-parameter z-r">value</span><span class="z-punctuation z-section z-parameters z-end z-r">)</span></span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-keyword z-control z-conditional z-if z-r">if</span> <span class="z-punctuation z-section z-parens z-begin z-r">(</span><span class="z-keyword z-operator z-logical z-r">!</span>rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">is_scalar_integerish</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>value<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-parens z-end z-r">)</span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">          <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>`num_threads` must be a scalar numeric<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">.progress <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">new_property</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    class_logical<span class="z-punctuation z-separator z-arguments z-r">,</span> 
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-variable z-parameter z-r">default</span> <span class="z-keyword z-operator z-assignment z-r">=</span> readr<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">show_progress</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-variable z-parameter z-r">validator</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function z-r"><span class="z-storage z-type z-function z-r">function</span></span><span class="z-meta z-function z-parameters z-r"><span class="z-punctuation z-section z-parameters z-begin z-r">(</span><span class="z-variable z-parameter z-r">value</span><span class="z-punctuation z-section z-parameters z-end z-r">)</span></span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">         <span class="z-keyword z-control z-conditional z-if z-r">if</span> <span class="z-punctuation z-section z-parens z-begin z-r">(</span><span class="z-keyword z-operator z-logical z-r">!</span>rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">is_scalar_logical</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>value<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-parens z-end z-r">)</span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">          <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>`progress` must be a scalar logical<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">.show_col_types <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">new_property</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    class_logical<span class="z-punctuation z-separator z-arguments z-r">,</span> 
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-variable z-parameter z-r">default</span> <span class="z-keyword z-operator z-assignment z-r">=</span> readr<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">should_show_types</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> %<span class="z-keyword z-operator z-logical z-r">||</span>% <span class="z-constant z-language z-r">TRUE</span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-variable z-parameter z-r">validator</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function z-r"><span class="z-storage z-type z-function z-r">function</span></span><span class="z-meta z-function z-parameters z-r"><span class="z-punctuation z-section z-parameters z-begin z-r">(</span><span class="z-variable z-parameter z-r">value</span><span class="z-punctuation z-section z-parameters z-end z-r">)</span></span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">         <span class="z-keyword z-control z-conditional z-if z-r">if</span> <span class="z-punctuation z-section z-parens z-begin z-r">(</span><span class="z-keyword z-operator z-logical z-r">!</span>rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">is_scalar_logical</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>value<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-parens z-end z-r">)</span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">          <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>`show_col_types` must be a scalar logical<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">.skip_empty_rows <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">new_property</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    class_logical<span class="z-punctuation z-separator z-arguments z-r">,</span> 
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-variable z-parameter z-r">default</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-language z-r">TRUE</span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-variable z-parameter z-r">validator</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function z-r"><span class="z-storage z-type z-function z-r">function</span></span><span class="z-meta z-function z-parameters z-r"><span class="z-punctuation z-section z-parameters z-begin z-r">(</span><span class="z-variable z-parameter z-r">value</span><span class="z-punctuation z-section z-parameters z-end z-r">)</span></span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">         <span class="z-keyword z-control z-conditional z-if z-r">if</span> <span class="z-punctuation z-section z-parens z-begin z-r">(</span><span class="z-keyword z-operator z-logical z-r">!</span>rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">is_scalar_logical</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>value<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-parens z-end z-r">)</span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">          <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>`skip_empty_rows` must be a scalar logical<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">.lazy <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">new_property</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    class_logical<span class="z-punctuation z-separator z-arguments z-r">,</span> 
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-variable z-parameter z-r">default</span> <span class="z-keyword z-operator z-assignment z-r">=</span> readr<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">should_read_lazy</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-variable z-parameter z-r">validator</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function z-r"><span class="z-storage z-type z-function z-r">function</span></span><span class="z-meta z-function z-parameters z-r"><span class="z-punctuation z-section z-parameters z-begin z-r">(</span><span class="z-variable z-parameter z-r">value</span><span class="z-punctuation z-section z-parameters z-end z-r">)</span></span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">         <span class="z-keyword z-control z-conditional z-if z-r">if</span> <span class="z-punctuation z-section z-parens z-begin z-r">(</span><span class="z-keyword z-operator z-logical z-r">!</span>rlang<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">is_scalar_logical</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>value<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-parens z-end z-r">)</span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">          <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>`lazy` must be a scalar logical<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">      <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+</details>
+<h2 id="s7-readr-opts-class">S7 <code>readr_opts</code> class</h2>
+<p>Now can actually define the S7 object class by passing in all of our new
+property objects to the <code>properties</code> argument. Because we defined
+defaults for every property we can construct a default option object.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">class_readr_opts <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">new_class</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>readr_opts<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-variable z-parameter z-r">properties</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-storage z-type z-r">list</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-variable z-parameter z-r">locale</span> <span class="z-keyword z-operator z-assignment z-r">=</span> .locale<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-variable z-parameter z-r">na</span> <span class="z-keyword z-operator z-assignment z-r">=</span> .na<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-variable z-parameter z-r">quote</span> <span class="z-keyword z-operator z-assignment z-r">=</span> .quote<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> comment = .comment,
+</span></span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-variable z-parameter z-r">trim_ws</span> <span class="z-keyword z-operator z-assignment z-r">=</span> .trim_ws<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-variable z-parameter z-r">skip</span> <span class="z-keyword z-operator z-assignment z-r">=</span> .skip<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-variable z-parameter z-r">n_max</span> <span class="z-keyword z-operator z-assignment z-r">=</span> .n_max<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-variable z-parameter z-r">guess_max</span> <span class="z-keyword z-operator z-assignment z-r">=</span> .guess_max<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-variable z-parameter z-r">name_repair</span> <span class="z-keyword z-operator z-assignment z-r">=</span> .name_repair<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-variable z-parameter z-r">num_threads</span> <span class="z-keyword z-operator z-assignment z-r">=</span> .num_threads<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-variable z-parameter z-r">progress</span> <span class="z-keyword z-operator z-assignment z-r">=</span> .progress<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-variable z-parameter z-r">show_col_types</span> <span class="z-keyword z-operator z-assignment z-r">=</span> .show_col_types<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-variable z-parameter z-r">skip_empty_rows</span> <span class="z-keyword z-operator z-assignment z-r">=</span> .skip_empty_rows<span class="z-punctuation z-separator z-arguments z-r">,</span>
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r">    <span class="z-variable z-parameter z-r">lazy</span> <span class="z-keyword z-operator z-assignment z-r">=</span> .lazy
+</span></span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-meta z-function-call z-arguments z-r">  <span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">opts <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">class_readr_opts</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">opts
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">&lt;readr_opts&gt;
+</span><span class="z-text z-plain"> @ locale         :List of 7
+</span><span class="z-text z-plain"> .. $ date_names   :List of 5
+</span><span class="z-text z-plain"> ..  ..$ mon   : chr [1:12] &quot;January&quot; &quot;February&quot; &quot;March&quot; &quot;April&quot; ...
+</span><span class="z-text z-plain"> ..  ..$ mon_ab: chr [1:12] &quot;Jan&quot; &quot;Feb&quot; &quot;Mar&quot; &quot;Apr&quot; ...
+</span><span class="z-text z-plain"> ..  ..$ day   : chr [1:7] &quot;Sunday&quot; &quot;Monday&quot; &quot;Tuesday&quot; &quot;Wednesday&quot; ...
+</span><span class="z-text z-plain"> ..  ..$ day_ab: chr [1:7] &quot;Sun&quot; &quot;Mon&quot; &quot;Tue&quot; &quot;Wed&quot; ...
+</span><span class="z-text z-plain"> ..  ..$ am_pm : chr [1:2] &quot;AM&quot; &quot;PM&quot;
+</span><span class="z-text z-plain"> ..  ..- attr(*, &quot;class&quot;)= chr &quot;date_names&quot;
+</span><span class="z-text z-plain"> .. $ date_format  : chr &quot;%AD&quot;
+</span><span class="z-text z-plain"> .. $ time_format  : chr &quot;%AT&quot;
+</span><span class="z-text z-plain"> .. $ decimal_mark : chr &quot;.&quot;
+</span><span class="z-text z-plain"> .. $ grouping_mark: chr &quot;,&quot;
+</span><span class="z-text z-plain"> .. $ tz           : chr &quot;UTC&quot;
+</span><span class="z-text z-plain"> .. $ encoding     : chr &quot;UTF-8&quot;
+</span><span class="z-text z-plain"> .. - attr(*, &quot;class&quot;)= chr &quot;locale&quot;
+</span><span class="z-text z-plain"> @ na             : chr [1:2] &quot;&quot; &quot;NA&quot;
+</span><span class="z-text z-plain"> @ quote          : logi TRUE
+</span><span class="z-text z-plain"> @ trim_ws        : logi TRUE
+</span><span class="z-text z-plain"> @ skip           : int 0
+</span><span class="z-text z-plain"> @ n_max          : num Inf
+</span><span class="z-text z-plain"> @ guess_max      : int 1000
+</span><span class="z-text z-plain"> @ name_repair    : chr &quot;unique&quot;
+</span><span class="z-text z-plain"> @ num_threads    : int 8
+</span><span class="z-text z-plain"> @ progress       : logi FALSE
+</span><span class="z-text z-plain"> @ show_col_types : logi FALSE
+</span><span class="z-text z-plain"> @ skip_empty_rows: logi TRUE
+</span><span class="z-text z-plain"> @ lazy           : logi FALSE
+</span></code></pre>
+<div class="aside">
+<h2 id="update-2025-12-03">Update 2025-12-03</h2>
+<p>Due to a change in {S7}, “comment” is considered a “forbidden”
+(reserved) word and cannot be used. See <a href="https://github.com/RConsortium/S7/issues/579">issue
+579</a>.</p>
+</div>
+<p>We can access each of these properties using the <code>@</code> accessor. For
+example, if we want the <code>locale</code>:</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">opts<span class="z-keyword z-other z-r">@</span>locale
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">&lt;locale&gt;
+</span><span class="z-text z-plain">Numbers:  123,456.78
+</span><span class="z-text z-plain">Formats:  %AD / %AT
+</span><span class="z-text z-plain">Timezone: UTC
+</span><span class="z-text z-plain">Encoding: UTF-8
+</span><span class="z-text z-plain">&lt;date_names&gt;
+</span><span class="z-text z-plain">Days:   Sunday (Sun), Monday (Mon), Tuesday (Tue), Wednesday (Wed), Thursday
+</span><span class="z-text z-plain">        (Thu), Friday (Fri), Saturday (Sat)
+</span><span class="z-text z-plain">Months: January (Jan), February (Feb), March (Mar), April (Apr), May (May),
+</span><span class="z-text z-plain">        June (Jun), July (Jul), August (Aug), September (Sep), October
+</span><span class="z-text z-plain">        (Oct), November (Nov), December (Dec)
+</span><span class="z-text z-plain">AM/PM:  AM/PM
+</span></code></pre>
+<h2 id="simplifying-readr-read-csv">Simplifying <code>readr::read_csv()</code></h2>
+<p>Now, imagine if we can use this as a way to simplify the
+<code>readr::read_csv()</code> function. The function definition can now look like:</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function z-name z-r"><span class="z-entity z-name z-function z-r">read_csv</span> </span><span class="z-meta z-function z-r"><span class="z-keyword z-operator z-assignment z-r">&lt;-</span> </span><span class="z-meta z-function z-r"><span class="z-storage z-type z-function z-r">function</span></span><span class="z-meta z-function z-parameters z-r"><span class="z-punctuation z-section z-parameters z-begin z-r">(</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function z-parameters z-r">  <span class="z-variable z-parameter z-r">file</span><span class="z-punctuation z-separator z-parameters z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function z-parameters z-r">  <span class="z-variable z-parameter z-r">col_names</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-language z-r">TRUE</span><span class="z-punctuation z-separator z-parameters z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function z-parameters z-r">  <span class="z-variable z-parameter z-r">col_types</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-language z-r">NULL</span><span class="z-punctuation z-separator z-parameters z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function z-parameters z-r">  <span class="z-variable z-parameter z-r">col_select</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-language z-r">NULL</span><span class="z-punctuation z-separator z-parameters z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function z-parameters z-r">  <span class="z-variable z-parameter z-r">id</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-language z-r">NULL</span><span class="z-punctuation z-separator z-parameters z-r">,</span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function z-parameters z-r">  <span class="z-variable z-parameter z-r">options</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">class_readr_opts</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></span><span class="z-source z-r"><span class="z-meta z-function z-parameters z-r"><span class="z-punctuation z-section z-parameters z-end z-r">)</span></span> <span class="z-punctuation z-section z-braces z-begin z-r">{</span>
+</span><span class="z-source z-r">    <span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> function logic
+</span></span><span class="z-source z-r"><span class="z-punctuation z-section z-braces z-end z-r">}</span>
+</span></code></pre>
+<p>This greatly reduces the cognitive load for end users and it consolides
+options specification into a single object.</p>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <!-- Basecoat sidebar component -->
+        <script
+            src="https://josiah.rs/js/basecoat/sidebar.min.js"
+            defer
+        ></script>
+        <!-- Sidebar toggle for mobile -->
+        <script src="https://josiah.rs/js/sidebar-toggle.js" defer></script>
+        <!-- Custom tabs for panel-tabset -->
+        <script src="https://josiah.rs/js/tabs.js" defer></script>
+        <!-- Search functionality -->
+        <script src="https://josiah.rs/js/search.js" defer></script>
+        <script>
+            (() => {
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+
+                    // Toggle syntax highlighting themes via media attribute
+                    const darkSyntax = document.getElementById("syntax-dark");
+                    const lightSyntax = document.getElementById("syntax-light");
+                    if (darkSyntax && lightSyntax) {
+                        darkSyntax.media = dark ? "all" : "not all";
+                        lightSyntax.media = dark ? "not all" : "all";
+                    }
+
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        ></script>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"
+        ></script>
+        
+    </body>
+</html>

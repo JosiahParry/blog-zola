@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            What is critical race theory, anyways? | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+
+        <!-- Determine theme before loading syntax highlighting -->
+        <script>
+            (() => {
+                const stored = localStorage.getItem("themeMode");
+                // Use stored preference if exists, otherwise always default to dark
+                const isDark = stored ? stored === "dark" : true;
+
+                if (isDark) {
+                    document.documentElement.classList.add("dark");
+                }
+            })();
+        </script>
+
+        <!-- Syntax highlighting themes -->
+        <link rel="stylesheet" href="https://josiah.rs/syntax-dark.css" id="syntax-dark" />
+        <link rel="stylesheet" href="https://josiah.rs/syntax-light.css" id="syntax-light" />
+
+        <!-- KaTeX for math rendering -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        />
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-semibold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4 relative">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-sm bg-muted/50 border border-border"
+                id="search-input"
+            />
+            <div
+                id="search-results"
+                class="hidden absolute top-full left-4 -mt-1 w-96 max-h-96 overflow-y-auto bg-background border border-border rounded-lg shadow-lg z-50 p-2"
+            ></div>
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-2 text-sm pl-3 transition-colors font-medium border-l-2 border-primary -ml-px bg-sidebar-accent"
+                    >
+                        Posts
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Socials -->
+            <div
+                class="mt-4 block py-2 transition-colors font-medium px-3 text-sm bg-sidebar-accent"
+            >
+                <h2
+                    class="text-sm font-medium tracking-tight mb-2 text-muted-foreground border-b border-muted-foreground/20 pb-1"
+                >
+                    Socials
+                </h2>
+                <ul class="space-y-1.5">
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <polygon
+                                points="160 128 112 96 112 160 160 128"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M24,128c0,29.91,3.07,47.45,5.41,56.47A16,16,0,0,0,39,195.42C72.52,208.35,128,208,128,208s55.48.35,89-12.58a16,16,0,0,0,9.63-10.95c2.34-9,5.41-26.56,5.41-56.47s-3.07-47.45-5.41-56.47a16,16,0,0,0-9.63-11C183.48,47.65,128,48,128,48s-55.48-.35-89,12.58a16,16,0,0,0-9.63,11C27.07,80.54,24,98.09,24,128Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://www.youtube.com/@josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >YouTube</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <rect
+                                x="32"
+                                y="32"
+                                width="192"
+                                height="192"
+                                rx="8"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="120"
+                                y1="112"
+                                x2="120"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="88"
+                                y1="112"
+                                x2="88"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M120,140a28,28,0,0,1,56,0v36"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <circle cx="88" cy="84" r="12" />
+                        </svg>
+                        <a
+                            href="https://www.linkedin.com/in/josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >LinkedIn</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M119.83,56A52,52,0,0,0,76,32a51.92,51.92,0,0,0-3.49,44.7A49.28,49.28,0,0,0,64,104v8a48,48,0,0,0,48,48h48a48,48,0,0,0,48-48v-8a49.28,49.28,0,0,0-8.51-27.3A51.92,51.92,0,0,0,196,32a52,52,0,0,0-43.83,24Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,232V192a32,32,0,0,1,32-32h0a32,32,0,0,1,32,32v40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,208H72a32,32,0,0,1-32-32A32,32,0,0,0,8,144"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="http://github.com/josiahparry/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >GitHub</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M160,224H72a32,32,0,0,1-32-32V72A32,32,0,0,1,72,40H184a32,32,0,0,1,32,32v72a32,32,0,0,1-32,32H40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M128,136V104a24,24,0,0,0-48,0v32"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M176,136V104a24,24,0,0,0-48,0"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://fosstodon.org/@josi"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Mastodon</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                            class="w-4 h-4"
+                            fill="currentColor"
+                        >
+                            <path
+                                d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.698-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948"
+                            />
+                        </svg>
+                        <a
+                            href="https://bsky.app/profile/josiahparry.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Bluesky</a
+                        >
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">What is critical race theory, anyways?</h1>
+
+          
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >September 14, 2020</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><p><em>TL;DR critical race theory is a mental framework used for understanding racial inequality that focuses on power imbalances.</em></p>
+<p>Trump recently suggested that all educational institutions stop teaching critical race theory and, if they fail to do so, lose funding. Like most things Trump does I was appalled. But this came from a different place. This came from a fear of educational censorship and suppression of science.</p>
+<p>But what the hell is critical race theory, anyways? What does it matter?</p>
+<p>To understand critical race theory we need to understand where it came from. Critical race theory came from the sociological critical theory. And sociological critical theory came from what is called conflict theory. And conflict theory came from---now don't lose it---Karl Marx. Let's try and grasp each theory in chronological order from when they were created to understand how each new theory came to be.</p>
+<p>The very rough timeline looks like the below.</p>
+<div class="highlight">
+<img src="figs/unnamed-chunk-1-1.png" width="700px" style="display: block; margin: auto;" />
+</div>
+<h2 id="historical-materialism">Historical Materialism</h2>
+<p>Okay, Karl Marx. Sure, sure, he's considered the father of communism. But he is really so much more than that. His theories have been absolutely critical to the social sciences for decades.</p>
+<p>Marx believed that there were two broad categories of people in a society, the proletariat and the bourgeoisie. Think of them as the workers and the business owners / managers, respectively. These two groups are always in tension with each other. Workers want better pay and better working conditions. Business owners want to save costs by paying workers less to increase their earnings at the margin (margin is jargon for each <em>additional</em> unit of goods and services). In order to get along they each need to concede to achieve something in the middle ground. This meeting in the middle is how progress is supposedly made.</p>
+<blockquote>
+<p>"Meeting in the middle" is a simplification of the German philosopher Hegel's idea of a <a href="https://www.youtube.com/watch?v=q54VyCpXDH8&amp;ab_channel=TheSchoolofLife"><strong>dialectic</strong></a>. A dialectic is described as "thesis, antithesis, synthesis." In normal people words a dialectic is two opposites (thesis and antithesis) creating something (synthesis).</p>
+</blockquote>
+<h2 id="conflict-theory">Conflict Theory</h2>
+<p>Conflict theory is a bit more general than Marx's Historical Materialism. Conflict theory suggests that social structures are created from power struggles between different groups of people---not just proletariat and bourgeoisie. One group may have more authority and resources at hand and are using it to the detriment of the other group. We can think of students and teacher, homeless and housed, secular and religious, so on and so forth.</p>
+<p>In sociology, conflict theory is considered the antithesis (the direct opposite) of functionalism. Functionalism states that each social institution exists to serve some purpose. For example, policing serves the social function of reducing crime. Functionalists tend to think that's a good thing. Conflict theorists are likely to disagree because they see the power imbalance between the oppressed and the oppressor <em>causing</em> crime. These social institutions that we create tend to reinforce the status quo.</p>
+<h2 id="critical-theory">Critical Theory</h2>
+<p>Okay so we're getting closer to critical race theory. To recap:</p>
+<ul>
+<li>We can trace critical race theory's origin to Marx's Historical Materialism.</li>
+<li>Historical Materialism says that history is a product of economic struggle between workers and business owners.</li>
+<li>Conflict theory generalizes Marx's theory to say that social structures are created by tension between groups based on interests, resources, and power.</li>
+</ul>
+<p>Critical theory is famously defined as</p>
+<blockquote>
+<p>"an essential element in historical effort to create a world which satisfied the needs and powers of men...[and] its goal is man's emancipation from slavery" - <a href="https://www.sfu.ca/~andrewf/hork.doc">Horkheimer</a></p>
+</blockquote>
+<p>Critical theory is essentially conflict theory but with an embedded social <strong>critique</strong>. It's goal is to improve the human condition by illustrating power imbalance and to improve the conditions of the oppressed. Because of this desire to improve society, critical theory is often used by activists.</p>
+<div class="highlight">
+<div id="htmlwidget-2fa78195dfe5deb2e766" style="width:700px;height:415.296px;" class="nomnoml html-widget"></div>
+<script type="application/json" data-for="htmlwidget-2fa78195dfe5deb2e766">{"x":{"code":"\n#fill: #FEFEFF\n#lineWidth: 1\n#zoom: 4\n#direction: right\n\n[<box>Conflict Theory |\n   [Critical Theory| \n      [Critical Race Theory]\n      ]]","svg":false,"png":null},"evals":[],"jsHooks":[]}</script>
+</div>
+<p>The above diagram attempts to illustrate the hierarchical nature of these theories.</p>
+<h2 id="critical-race-theory">Critical Race Theory</h2>
+<p>Now making the leap from conflict theory and critical theory to critical race theory isn't all that difficult. We understand that there is historical conflict between groups of people. This conflict creates social structures and reinforces the relative power of one group to another. The created social structures perpetuate and often exacerbate inequalities. A lot of times the inequalities between groups, from a philosophical standpoint, are incongruent with our beliefs and need to be rectified or improved.</p>
+<p>Critical race theory, then, is the application of critical theory to the concept of race. In the American context we can understand critical race theory going all the way back to the 17th century.</p>
+<h3 id="critical-race-theory-in-the-united-states-the-really-really-and-i-cannot-stress-this-enough-really-short-version">Critical Race Theory in the United States: the really, <em>really</em>, and I cannot stress this enough, really, short version</h3>
+<p>(White) Europeans and then Americans enslaved Africans to be their source of labor. Europeans built institutions to maintain slave trading. The economy of the new world was built almost entirely on "free" labor. Social structures were modified to reinforce ownership rights between people and of people.</p>
+<p>Then one day on July 4th, 1776 this really important document was written which said</p>
+<blockquote>
+<p>"We hold these truths to be self-evident, that all men [people] are created equal, that they are endowed by their Creator with certain unalienable Rights, that among these are Life, Liberty and the pursuit of Happiness." -- Declaration of Independence</p>
+</blockquote>
+<p>But that wasn't true at all. Those words were aspirational at best. In the south, slavery was so deeply embedded that a life without it was deemed problematic enough to start a war over. When Mississippi seceded from the United States prior to the Civil War they enumerated their grievances (much like the Declaration of Independence did) to justify their departure from the US and wrote:</p>
+<blockquote>
+<p>"Our position is thoroughly identified with the institution of slavery---the greatest material interest of the world. Its labor supplies the product which constitutes by far the largest and most important portions of commerce of the earth." -- <a href="https://avalon.law.yale.edu/19th_century/csa_missec.asp">A Declaration of the Immediate Causes which Induce and Justify the Secession of the State of Mississippi from the Federal Union, 1861</a></p>
+</blockquote>
+<p>It wasn't until 1865 when the 13th Amendment was ratified, 1868 for the 14th Amendment and <em>still</em> that wasn't enough. In 1896 we had the landmark <a href="https://www.youtube.com/watch?v=Sj54KP16Ilw&amp;ab_channel=HISTORY">Plessy v. Ferguson</a> court case which paved the way for Jim Crow laws---a.k.a. American apartheid. It wasn't until 1964 until the <a href="https://www.history.com/topics/black-history/civil-rights-act">Civil Rights Act</a> was passed. But the passing of laws doesn't doesn't change our thinking or our behaviors right away. We still have social structures and institutions which condition and alter our thinking. They don't disappear with the stroke of a pen.</p>
+<p>In short, sh!t has been f*cked up in the United States for a very long time and things still aren't perfect. They're better. But they're not good. Critical race theory helps us understand how we got here, why we're still having problems, and suggests some ways that we can improve it.</p>
+<p>If we suppress critical race theory we're also tossing aside critical theory, conflict theory, and historical materialism. These are theories that have helped us make sense of the world for over one hundred years. If we allow this censorship we're giving way to an unjust power imbalance---the very thing these theories help us understand. If we throw away textbooks we're walking down the same path that was taken in 1930s Germany and in 1960s China. If we allow suppression of free thought we're giving way to authoritarians who don't want you to challenge injustices.</p>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <!-- Basecoat sidebar component -->
+        <script
+            src="https://josiah.rs/js/basecoat/sidebar.min.js"
+            defer
+        ></script>
+        <!-- Sidebar toggle for mobile -->
+        <script src="https://josiah.rs/js/sidebar-toggle.js" defer></script>
+        <!-- Custom tabs for panel-tabset -->
+        <script src="https://josiah.rs/js/tabs.js" defer></script>
+        <!-- Search functionality -->
+        <script src="https://josiah.rs/js/search.js" defer></script>
+        <script>
+            (() => {
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+
+                    // Toggle syntax highlighting themes via media attribute
+                    const darkSyntax = document.getElementById("syntax-dark");
+                    const lightSyntax = document.getElementById("syntax-light");
+                    if (darkSyntax && lightSyntax) {
+                        darkSyntax.media = dark ? "all" : "not all";
+                        lightSyntax.media = dark ? "not all" : "all";
+                    }
+
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        ></script>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"
+        ></script>
+        
+    </body>
+</html>

@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Josiah Parry - personal</title>
+    <link rel="self" type="application/atom+xml" href="https://josiah.rs/categories/personal/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://josiah.rs"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2023-03-01T00:00:00+00:00</updated>
+    <id>https://josiah.rs/categories/personal/atom.xml</id>
+    <entry xml:lang="en">
+        <title>learning rust</title>
+        <published>2023-03-01T00:00:00+00:00</published>
+        <updated>2023-03-01T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/learning-rust/"/>
+        <id>https://josiah.rs/posts/learning-rust/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/learning-rust/">&lt;p&gt;I have been wanting to learn a low level language for quite some time.
+Due to the power and prominence of Rcpp I had thought I wanted to learn
+C++. Every fast package in R uses C++, right? But Rust kept popping up.
+Rust, is fast. Rust is safe. Linux is going to be rewritten in Rust.
+Rust is the most loved language for 7 years in a row. Rust is easily
+multithreaded. Rust. Rust. Rust. I then heard a bit about
+&lt;a href=&quot;https:&#x2F;&#x2F;extendr.github.io&#x2F;rextendr&#x2F;&quot;&gt;&lt;code&gt;rextendr&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; a way to incorporate
+Rust into R packages. With that Rust became a real candidate language to
+learn.&lt;&#x2F;p&gt;
+&lt;p&gt;The &lt;a href=&quot;https:&#x2F;&#x2F;twitter.com&#x2F;hrbrmstr&quot;&gt;@hrbrmstr&lt;&#x2F;a&gt; provided some sweet words
+of encouragement over twitter, &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;hrbrmstr&#x2F;kev-push&quot;&gt;an example
+repo&lt;&#x2F;a&gt; to reference, and provided
+ideas on how to &lt;a href=&quot;https:&#x2F;&#x2F;dailyfinds.hrbrmstr.dev&#x2F;p&#x2F;knowledge-drop-learning-rust&quot;&gt;start learning
+Rust&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;I spent some time with &lt;a href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;stable&#x2F;book&#x2F;&quot;&gt;“The
+Book”&lt;&#x2F;a&gt; to wrap my head around
+the basics. I then spent some time writing a chess &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;josiahparry&#x2F;fen&quot;&gt;FEN
+parser&lt;&#x2F;a&gt;. I wrote a FEN parser. I
+wrote a whole program in Rust. That was crazy. The reason why I was able
+to continue learning Rust is because it is so easy to use (in comparison
+to C++). Once you wrap your head around the basics it rocks.&lt;&#x2F;p&gt;
+&lt;p&gt;Rust is a compiled language. Working with a compiled language is a huge
+paradigm shift. R is an interpreted language. Interpreted languages are
+super cool because we can run one line of code, do some stuff, and then
+run another line. Compiled languages have to take everything in at once.
+So there is no running a line, printing an object, then running another
+line. But that’s actually okay because of the Rust compiler is the best
+teacher I’ve ever had.&lt;&#x2F;p&gt;
+&lt;p&gt;When you make a mistake in Rust, the compiler will tell you &lt;em&gt;exactly&lt;&#x2F;em&gt;
+where that mistake is coming from—literally the line and column
+position. It will also often tell you exactly what code you need to
+change and how to change it to make your code run. So rather than
+running line by line, you can compile line by line.&lt;&#x2F;p&gt;
+&lt;p&gt;Learning Rust has made me a better R programmer for many reasons. Here
+are a few:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;I am conscious of type conversions and consistency&lt;&#x2F;li&gt;
+&lt;li&gt;I am conscientious of memory consumption&lt;&#x2F;li&gt;
+&lt;li&gt;I am a glutton for speed now&lt;&#x2F;li&gt;
+&lt;li&gt;I have a better understanding &#x2F; framework for thinking about
+inheritance&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Programming in Rust has made me think of ways that R can be improved.
+Mostly in that scalar classes are missing from R (and from vctrs). We
+also lack the ability to use 64 bit integers which is a bit of a
+problem. I also think R packages should be designed to be extended. This
+would be done by exposing generic s3 functions that can be extended for
+your class. If the method exists for your class you inherit the
+functionality. I employed a prototype of this idea in the
+&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;JosiahParry&#x2F;sdf&#x2F;&quot;&gt;&lt;code&gt;sdf&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; package.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>
