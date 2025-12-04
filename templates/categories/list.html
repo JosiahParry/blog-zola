@@ -1,18 +1,18 @@
-{% extends "base.html" %}
-
-{% block title %}Categories | {{ config.title | default(value="Blog") }}{% endblock %}
-
-{% block content %}
-{% include "sidebar.html" %}
+{% extends "base.html" %} {% block title %}Categories | {{ config.title |
+default(value="Blog") }}{% endblock %} {% block content %} {% include
+"sidebar.html" %}
 
 <div class="p-12 sm:ml-64">
     <div class="max-w-3xl mx-auto">
-        <h1 class="text-4xl font-bold italic mb-6">Categories</h1>
+        <h1 class="text-4xl font-semibold italic mb-6">Categories</h1>
 
         <ul class="space-y-2">
             {% for term in terms %}
             <li>
-                <a href="{{ term.permalink }}" class="font-medium hover:underline">
+                <a
+                    href="{{ term.permalink }}"
+                    class="font-medium hover:underline"
+                >
                     {{ term.name }} ({{ term.pages | length }})
                 </a>
             </li>

@@ -1,4 +1,69 @@
-{% extends "base.html" %} {% import "macros.html" as macros %} {% block title
-%}Home | {{ config.title | default(value="Blog") }}{% endblock %} {% block
-content %} {{ macros::page_layout(title=section.title |
-default(value="Welcome"), content=section.content) }} {% endblock %}
+{% extends "base.html" %} {% block title %}Home | {{ config.title |
+default(value="Blog") }}{% endblock %} {% block content %} {% include
+"sidebar.html" %}
+
+<div class="p-8 sm:ml-64">
+    <div class="max-w-3xl mx-auto">
+        <h1 class="text-2xl font-semibold tracking-tight mb-6">
+            {{ section.title | default(value="Welcome") }}
+        </h1>
+
+        {% if section.content %}
+        <div class="josi-prose mb-12">{{ section.content | safe }}</div>
+        {% endif %}
+
+        <h2
+            class="text-xl font-semibold tracking-tight mb-6 mt-12 pb-2 border-b"
+        >
+            Recent Posts
+        </h2>
+
+        {% set posts_section = get_section(path="posts/_index.md") %}
+        <div class="space-y-3">
+            {% for page in posts_section.pages | slice(end=5) %}
+            <a
+                href="{{ page.permalink }}"
+                class="hover:bg-accent hover:text-accent-foreground flex flex-col items-start gap-2 rounded-lg border p-3 text-left text-sm transition-all"
+            >
+                <div class="flex w-full flex-col gap-1">
+                    <div class="flex items-center">
+                        <div class="flex items-center gap-2">
+                            <div class="font-semibold">{{ page.title }}</div>
+                        </div>
+                        <div
+                            class="ml-auto text-xs text-muted-foreground font-mono"
+                        >
+                            {{ page.date | date(format="%B %d, %Y") }}
+                        </div>
+                    </div>
+                    {% if page.extra.subtitle %}
+                    <div class="text-xs font-medium">
+                        {{ page.extra.subtitle }}
+                    </div>
+                    {% endif %}
+                </div>
+                <div class="text-muted-foreground line-clamp-3 text-xs">
+                    {{ page.content | striptags | truncate(length=300) }}
+                </div>
+                {% if page.taxonomies.categories %}
+                <div class="flex items-center gap-2">
+                    {% for category in page.taxonomies.categories %}
+                    <span class="badge">{{ category }}</span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+
+        <div class="mt-8 text-center">
+            <a
+                href="{{ get_url(path='@/posts/_index.md') }}"
+                class="text-sm text-primary hover:underline"
+            >
+                View all posts →
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

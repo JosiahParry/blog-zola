@@ -2,19 +2,19 @@
 | default(value="Blog") }}{% endblock %} {% block content %} {% include
 "sidebar.html" %}
 
-<div class="p-12 sm:ml-64 relative">
+<div class="p-8 sm:ml-64 relative">
     <!-- Categories sidebar (absolute right) -->
-    <aside class="hidden xl:block absolute right-12 top-12">
-        <h2 class="text-lg font-semibold italic mb-4">Categories</h2>
-        <ul class="space-y-1">
+    <aside class="hidden xl:block absolute right-8 top-8">
+        <h2 class="text-sm font-medium tracking-tight mb-3 text-muted-foreground">Categories</h2>
+        <ul class="space-y-1.5">
             {% set categories = get_taxonomy(kind="categories") %} {% for
             term in categories.items %}
             <li>
                 <a
                     href="{{ term.permalink }}"
-                    class="text-sm font-medium hover:underline"
+                    class="text-sm text-muted-foreground hover:text-foreground transition-colors"
                 >
-                    {{ term.name }} ({{ term.pages | length }})
+                    {{ term.name }} <span class="text-xs">({{ term.pages | length }})</span>
                 </a>
             </li>
             {% endfor %}
@@ -23,34 +23,34 @@
 
     <!-- Posts list (centered) -->
     <div class="max-w-3xl mx-auto">
-        <h1 class="text-4xl font-bold italic mb-6">{{ section.title }}</h1>
+        <h1 class="text-2xl font-medium tracking-tight mb-8">{{ section.title }}</h1>
 
-        <div class="space-y-4">
+        <div class="space-y-6">
             {% for page in section.pages %}
-            <article>
+            <article class="border-b border-border/50 pb-6 last:border-b-0">
                 <a href="{{ page.permalink }}" class="block group">
+                    <time
+                        datetime="{{ page.date }}"
+                        class="text-xs text-muted-foreground font-mono"
+                    >
+                        {{ page.date | date(format="%B %d, %Y") }}
+                    </time>
                     <h2
-                        class="text-xl font-medium italic group-hover:underline"
+                        class="text-lg font-medium tracking-tight mt-1 group-hover:text-muted-foreground transition-colors"
                     >
                         {{ page.title }}
                     </h2>
                     {% if page.extra.subtitle %}
-                    <p class="text-muted-foreground">
+                    <p class="text-sm text-muted-foreground mt-1">
                         {{ page.extra.subtitle }}
                     </p>
                     {% endif %} {% if page.taxonomies.categories %}
-                    <div class="flex flex-wrap gap-2 mt-1">
+                    <div class="flex flex-wrap gap-2 mt-2">
                         {% for category in page.taxonomies.categories %}
-                        <span class="badge-secondary">{{ category }}</span>
+                        <span class="badge">{{ category }}</span>
                         {% endfor %}
                     </div>
                     {% endif %}
-                    <time
-                        datetime="{{ page.date }}"
-                        class="text-sm text-muted-foreground font-mono"
-                    >
-                        {{ page.date | date(format="%B %d, %Y") }}
-                    </time>
                 </a>
             </article>
             {% endfor %}

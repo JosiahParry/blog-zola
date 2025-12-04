@@ -34,7 +34,7 @@
         <div class="flex items-center justify-between p-4">
             <a
                 href="{{ get_url(path='/') }}"
-                class="font-mono font-bold italic text-lg"
+                class="font-mono font-semibold italic text-lg"
             >
                 {{ config.title | default(value="Blog") }}
             </a>
@@ -90,7 +90,7 @@
             <input
                 type="search"
                 placeholder="Search..."
-                class="input w-full text-xs font-mono"
+                class="input w-full text-sm bg-muted/50 border border-border"
                 id="search-input"
             />
             <div
@@ -100,12 +100,12 @@
         </div>
 
         <!-- Content: Navigation -->
-        <div class="flex-1 overflow-y-auto px-4">
+        <div class="overflow-y-auto px-4">
             <ul class="flex flex-col gap-1">
                 <li>
                     <a
                         href="{{ get_url(path='/') }}"
-                        class="block py-1 text-sm font-mono pl-3 {% if current_path == '/' %}font-semibold border-l-2 border-primary -ml-px bg-sidebar-accent{% else %}text-muted-foreground hover:text-foreground hover:underline decoration-primary{% endif %}"
+                        class="block py-2 text-sm pl-3 transition-colors {% if current_path == '/' %}font-medium border-l-2 border-primary -ml-px bg-sidebar-accent{% else %}hover:bg-sidebar-accent/50{% endif %}"
                     >
                         Home
                     </a>
@@ -113,7 +113,7 @@
                 <li>
                     <a
                         href="{{ get_url(path='@/about.md') }}"
-                        class="block py-1 text-sm font-mono pl-3 {% if page is defined and page.slug == 'about' %}font-semibold border-l-2 border-primary -ml-px bg-sidebar-accent{% else %}text-muted-foreground hover:text-foreground hover:underline decoration-primary{% endif %}"
+                        class="block py-2 text-sm pl-3 transition-colors {% if page is defined and page.slug == 'about' %}font-medium border-l-2 border-primary -ml-px bg-sidebar-accent{% else %}hover:bg-sidebar-accent/50{% endif %}"
                     >
                         About
                     </a>
@@ -121,20 +121,225 @@
                 <li>
                     <a
                         href="{{ get_url(path='@/posts/_index.md') }}"
-                        class="block py-1 text-sm font-mono pl-3 {% if current_path is starting_with('/posts/') %}font-semibold border-l-2 border-primary -ml-px bg-sidebar-accent{% else %}text-muted-foreground hover:text-foreground hover:underline decoration-primary{% endif %}"
+                        class="block py-2 text-sm pl-3 transition-colors {% if current_path is starting_with('/posts/') %}font-medium border-l-2 border-primary -ml-px bg-sidebar-accent{% else %}hover:bg-sidebar-accent/50{% endif %}"
                     >
                         Posts
                     </a>
                 </li>
-                <li>
-                    <a
-                        href="{{ get_url(path='@/contact.md') }}"
-                        class="block py-1 text-sm font-mono pl-3 {% if page is defined and page.slug == 'contact' %}font-semibold border-l-2 border-primary -ml-px bg-sidebar-accent{% else %}text-muted-foreground hover:text-foreground hover:underline decoration-primary{% endif %}"
-                    >
-                        Contact
-                    </a>
-                </li>
             </ul>
+
+            <!-- Socials -->
+            <div
+                class="mt-4 block py-2 transition-colors font-medium px-3 text-sm bg-sidebar-accent"
+            >
+                <h2
+                    class="text-sm font-medium tracking-tight mb-2 text-muted-foreground border-b border-muted-foreground/20 pb-1"
+                >
+                    Socials
+                </h2>
+                <ul class="space-y-1.5">
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <polygon
+                                points="160 128 112 96 112 160 160 128"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M24,128c0,29.91,3.07,47.45,5.41,56.47A16,16,0,0,0,39,195.42C72.52,208.35,128,208,128,208s55.48.35,89-12.58a16,16,0,0,0,9.63-10.95c2.34-9,5.41-26.56,5.41-56.47s-3.07-47.45-5.41-56.47a16,16,0,0,0-9.63-11C183.48,47.65,128,48,128,48s-55.48-.35-89,12.58a16,16,0,0,0-9.63,11C27.07,80.54,24,98.09,24,128Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://www.youtube.com/@josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >YouTube</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <rect
+                                x="32"
+                                y="32"
+                                width="192"
+                                height="192"
+                                rx="8"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="120"
+                                y1="112"
+                                x2="120"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="88"
+                                y1="112"
+                                x2="88"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M120,140a28,28,0,0,1,56,0v36"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <circle cx="88" cy="84" r="12" />
+                        </svg>
+                        <a
+                            href="https://www.linkedin.com/in/josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >LinkedIn</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M119.83,56A52,52,0,0,0,76,32a51.92,51.92,0,0,0-3.49,44.7A49.28,49.28,0,0,0,64,104v8a48,48,0,0,0,48,48h48a48,48,0,0,0,48-48v-8a49.28,49.28,0,0,0-8.51-27.3A51.92,51.92,0,0,0,196,32a52,52,0,0,0-43.83,24Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,232V192a32,32,0,0,1,32-32h0a32,32,0,0,1,32,32v40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,208H72a32,32,0,0,1-32-32A32,32,0,0,0,8,144"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="http://github.com/josiahparry/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >GitHub</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M160,224H72a32,32,0,0,1-32-32V72A32,32,0,0,1,72,40H184a32,32,0,0,1,32,32v72a32,32,0,0,1-32,32H40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M128,136V104a24,24,0,0,0-48,0v32"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M176,136V104a24,24,0,0,0-48,0"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://fosstodon.org/@josi"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Mastodon</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                            class="w-4 h-4"
+                            fill="currentColor"
+                        >
+                            <path
+                                d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.698-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948"
+                            />
+                        </svg>
+                        <a
+                            href="https://bsky.app/profile/josiahparry.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Bluesky</a
+                        >
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
 </aside>
