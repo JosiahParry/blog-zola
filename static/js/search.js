@@ -12,8 +12,9 @@
 
   await new Promise(resolve => script.onload = resolve);
 
-  // Load search index
-  const response = await fetch('/search_index.en.json');
+  // Load search index - use base URL from meta tag or fallback
+  const baseUrl = document.querySelector('meta[name="base-url"]')?.content || window.location.origin;
+  const response = await fetch(`${baseUrl}/search_index.en.json`);
   const searchIndex = await response.json();
 
   // Initialize Fuse
