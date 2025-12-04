@@ -11,8 +11,29 @@
         <!-- Tailwind + Basecoat CSS -->
         <link rel="stylesheet" href="{{ get_url(path='css/style.css') }}" />
 
+        <!-- Determine theme before loading syntax highlighting -->
+        <script>
+            (() => {
+                const stored = localStorage.getItem("themeMode");
+                const isDark = stored
+                    ? stored === "dark"
+                    : matchMedia("(prefers-color-scheme: dark)").matches;
+
+                if (isDark) {
+                    document.documentElement.classList.add("dark");
+                }
+            })();
+        </script>
+
+        <!-- Syntax highlighting themes -->
+        <link rel="stylesheet" href="{{ get_url(path='syntax-dark.css') }}" id="syntax-dark" />
+        <link rel="stylesheet" href="{{ get_url(path='syntax-light.css') }}" id="syntax-light" />
+
         <!-- KaTeX for math rendering -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        />
 
         {% block head %}{% endblock %}
     </head>
@@ -27,7 +48,10 @@
             defer
         ></script>
         <!-- Basecoat sidebar component -->
-        <script src="{{ get_url(path='js/basecoat/sidebar.min.js') }}" defer></script>
+        <script
+            src="{{ get_url(path='js/basecoat/sidebar.min.js') }}"
+            defer
+        ></script>
         <!-- Sidebar toggle for mobile -->
         <script src="{{ get_url(path='js/sidebar-toggle.js') }}" defer></script>
         <!-- Custom tabs for panel-tabset -->
@@ -36,19 +60,17 @@
         <script src="{{ get_url(path='js/search.js') }}" defer></script>
         <script>
             (() => {
-                try {
-                    const stored = localStorage.getItem("themeMode");
-                    if (
-                        stored
-                            ? stored === "dark"
-                            : matchMedia("(prefers-color-scheme: dark)").matches
-                    ) {
-                        document.documentElement.classList.add("dark");
-                    }
-                } catch (_) {}
-
                 const apply = (dark) => {
                     document.documentElement.classList.toggle("dark", dark);
+
+                    // Toggle syntax highlighting themes via media attribute
+                    const darkSyntax = document.getElementById("syntax-dark");
+                    const lightSyntax = document.getElementById("syntax-light");
+                    if (darkSyntax && lightSyntax) {
+                        darkSyntax.media = dark ? "all" : "not all";
+                        lightSyntax.media = dark ? "not all" : "all";
+                    }
+
                     try {
                         localStorage.setItem(
                             "themeMode",
@@ -72,14 +94,20 @@
             })();
         </script>
         <!-- KaTeX auto-render -->
-        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
-        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        ></script>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
             onload="renderMathInElement(document.body, {
                 delimiters: [
                     {left: '$$', right: '$$', display: true},
                     {left: '$', right: '$', display: false}
                 ]
-            });"></script>
+            });"
+        ></script>
         {% block scripts %}{% endblock %}
     </body>
 </html>

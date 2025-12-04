@@ -14,12 +14,16 @@
     @apply italic border-l-4 border-primary pl-4 text-accent-foreground bg-accent/80 py-4;
 }
 
+.josi-prose h1 {
+    @apply text-xl sm:text-2xl font-semibold italic border-b-2 pb-2 border-primary;
+}
+
 .josi-prose h2 {
-    @apply text-2xl font-semibold italic border-b-2 pb-2 border-primary;
+    @apply text-xl sm:text-2xl font-semibold italic border-b-2 pb-2 border-primary;
 }
 
 .josi-prose h3 {
-    @apply text-xl font-semibold mt-6 mb-3;
+    @apply text-lg sm:text-xl font-semibold mt-6 mb-3;
 }
 
 .badge,
@@ -97,4 +101,35 @@
 
 .josi-prose .panel-tabset .tab-content.active {
     @apply block;
+}
+
+/* Code block styling */
+.josi-prose pre {
+    @apply p-4 rounded-lg border border-border shadow-md overflow-x-auto text-sm;
+}
+
+.josi-prose pre code {
+    @apply text-sm;
+}
+
+/* Collapsible code blocks */
+.josi-prose details.code-fold {
+    @apply border border-border rounded-lg mb-4;
+}
+
+.josi-prose details.code-fold summary {
+    @apply px-4 py-2 bg-muted cursor-pointer font-mono text-xs font-medium hover:bg-accent transition-colors flex items-center gap-2;
+}
+
+.josi-prose details.code-fold summary::before {
+    content: "▶";
+    @apply inline-block transition-transform;
+}
+
+.josi-prose details.code-fold[open] summary::before {
+    @apply rotate-90;
+}
+
+.josi-prose details.code-fold pre {
+    @apply mt-0 rounded-t-none border-0 border-t border-border;
 }

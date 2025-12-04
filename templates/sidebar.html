@@ -93,7 +93,10 @@
                 class="input w-full text-xs font-mono"
                 id="search-input"
             />
-            <div id="search-results" class="hidden absolute top-full left-4 -mt-1 w-96 max-h-96 overflow-y-auto bg-background border border-border rounded-lg shadow-lg z-50 p-2"></div>
+            <div
+                id="search-results"
+                class="hidden absolute top-full left-4 -mt-1 w-96 max-h-96 overflow-y-auto bg-background border border-border rounded-lg shadow-lg z-50 p-2"
+            ></div>
         </div>
 
         <!-- Content: Navigation -->
@@ -102,7 +105,7 @@
                 <li>
                     <a
                         href="{{ get_url(path='/') }}"
-                        class="block py-1 text-sm font-mono pl-3 {% if current_path == '/' %}font-semibold border-l-2 border-primary -ml-px{% else %}text-muted-foreground hover:text-foreground hover:underline decoration-primary{% endif %}"
+                        class="block py-1 text-sm font-mono pl-3 {% if current_path == '/' %}font-semibold border-l-2 border-primary -ml-px bg-sidebar-accent{% else %}text-muted-foreground hover:text-foreground hover:underline decoration-primary{% endif %}"
                     >
                         Home
                     </a>
@@ -110,7 +113,7 @@
                 <li>
                     <a
                         href="{{ get_url(path='@/about.md') }}"
-                        class="block py-1 text-sm font-mono pl-3 {% if page is defined and page.slug == 'about' %}font-semibold border-l-2 border-primary -ml-px{% else %}text-muted-foreground hover:text-foreground hover:underline decoration-primary{% endif %}"
+                        class="block py-1 text-sm font-mono pl-3 {% if page is defined and page.slug == 'about' %}font-semibold border-l-2 border-primary -ml-px bg-sidebar-accent{% else %}text-muted-foreground hover:text-foreground hover:underline decoration-primary{% endif %}"
                     >
                         About
                     </a>
@@ -118,7 +121,7 @@
                 <li>
                     <a
                         href="{{ get_url(path='@/posts/_index.md') }}"
-                        class="block py-1 text-sm font-mono pl-3 {% if current_path is starting_with('/posts/') %}font-semibold border-l-2 border-primary -ml-px{% else %}text-muted-foreground hover:text-foreground hover:underline decoration-primary{% endif %}"
+                        class="block py-1 text-sm font-mono pl-3 {% if current_path is starting_with('/posts/') %}font-semibold border-l-2 border-primary -ml-px bg-sidebar-accent{% else %}text-muted-foreground hover:text-foreground hover:underline decoration-primary{% endif %}"
                     >
                         Posts
                     </a>
@@ -126,7 +129,7 @@
                 <li>
                     <a
                         href="{{ get_url(path='@/contact.md') }}"
-                        class="block py-1 text-sm font-mono pl-3 {% if page is defined and page.slug == 'contact' %}font-semibold border-l-2 border-primary -ml-px{% else %}text-muted-foreground hover:text-foreground hover:underline decoration-primary{% endif %}"
+                        class="block py-1 text-sm font-mono pl-3 {% if page is defined and page.slug == 'contact' %}font-semibold border-l-2 border-primary -ml-px bg-sidebar-accent{% else %}text-muted-foreground hover:text-foreground hover:underline decoration-primary{% endif %}"
                     >
                         Contact
                     </a>

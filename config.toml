@@ -14,6 +14,12 @@ taxonomies = [
 # Whether to do syntax highlighting
 # Theme can be customised by setting the `highlight_theme` variable to a theme supported by Zola
 highlight_code = true
+highlight_theme = "css"
+extra_syntaxes_and_themes = ["highlight_themes"]
+highlight_themes_css = [
+  { theme = "catppuccin-mocha", filename = "syntax-dark.css" },
+  { theme = "catppuccin-frappe", filename = "syntax-light.css" }
+]
 
 [search]
 index_format = "fuse_json"

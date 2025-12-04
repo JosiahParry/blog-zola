@@ -1,8 +1,4 @@
-{% extends "base.html" %}
-{% import "macros.html" as macros %}
-
-{% block title %}Home | {{ config.title | default(value="Blog") }}{% endblock %}
-
-{% block content %}
-{{ macros::page_layout(title=section.title | default(value="Welcome"), content=section.content) }}
-{% endblock %}
+{% extends "base.html" %} {% import "macros.html" as macros %} {% block title
+%}Home | {{ config.title | default(value="Blog") }}{% endblock %} {% block
+content %} {{ macros::page_layout(title=section.title |
+default(value="Welcome"), content=section.content) }} {% endblock %}
