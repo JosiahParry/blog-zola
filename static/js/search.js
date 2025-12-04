@@ -12,9 +12,20 @@
 
   await new Promise(resolve => script.onload = resolve);
 
-  // Load search index - use base URL from meta tag or fallback
-  const baseUrl = document.querySelector('meta[name="base-url"]')?.content || window.location.origin;
-  const response = await fetch(`${baseUrl}/search_index.en.json`);
+  // Load search index - detect if we're in a subdirectory deployment (like GitHub Pages)
+  const pathSegments = window.location.pathname.split('/').filter(p => p);
+
+  // Common Zola content directories that shouldn't be treated as base path
+  const contentDirs = ['posts', 'pages', 'blog', 'categories', 'tags'];
+
+  let basePath = '/';
+
+  // If first segment exists and is NOT a content directory, it's likely the repo/subdirectory
+  if (pathSegments.length > 0 && !contentDirs.includes(pathSegments[0])) {
+    basePath = `/${pathSegments[0]}/`;
+  }
+
+  const response = await fetch(`${basePath}search_index.en.json`);
   const searchIndex = await response.json();
 
   // Initialize Fuse
