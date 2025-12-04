@@ -1,7 +1,7 @@
 title = "Josiah Parry"
 # The URL the site will be built for
 # base_url = "https://josiah.rs"
-base_url = "/"
+base_url = "https://josiahparry.github.io/blog-zola/"
 # Whether to automatically compile all Sass files in the sass directory
 compile_sass = false
 # Whether to build a search index to be used later on by a JavaScript library
@@ -19,7 +19,7 @@ highlight_theme = "css"
 extra_syntaxes_and_themes = ["highlight_themes"]
 highlight_themes_css = [
   { theme = "catppuccin-mocha", filename = "syntax-dark.css" },
-  { theme = "catppuccin-frappe", filename = "syntax-light.css" }
+  { theme = "catppuccin-latte", filename = "syntax-light.css" }
 ]
 
 [search]
