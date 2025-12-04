@@ -20,9 +20,8 @@
         <script>
             (() => {
                 const stored = localStorage.getItem("themeMode");
-                const isDark = stored
-                    ? stored === "dark"
-                    : matchMedia("(prefers-color-scheme: dark)").matches;
+                // Use stored preference if exists, otherwise always default to dark
+                const isDark = stored ? stored === "dark" : true;
 
                 if (isDark) {
                     document.documentElement.classList.add("dark");
