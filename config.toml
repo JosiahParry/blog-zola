@@ -1,7 +1,6 @@
 title = "Josiah Parry"
 # The URL the site will be built for
-# base_url = "https://josiah.rs"
-base_url = "https://josiahparry.github.io/blog-zola/"
+base_url = "https://josiah.rs"
 # Whether to automatically compile all Sass files in the sass directory
 compile_sass = false
 # Whether to build a search index to be used later on by a JavaScript library
