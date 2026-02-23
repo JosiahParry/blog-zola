@@ -2,6 +2,9 @@
 default:
     @just --list
 
+serve:
+    zola serve --open
+
 # Render a single post using quarto
 render post:
     #!/usr/bin/env bash
@@ -14,6 +17,23 @@ render post:
         echo "Error: Could not find content/posts/{{post}}/index.qmd or content/posts/{{post}}.qmd"
         exit 1
     fi
+
+# Create a new post with today's date
+new name:
+    #!/usr/bin/env bash
+    date=$(date +%Y-%m-%d)
+    dir="content/posts/${date}-{{name}}"
+    mkdir -p "$dir"
+    cat > "$dir/index.qmd" << EOF
+    ---
+    title: {{name}}
+    date: "$date"
+    author: Josiah Parry
+    taxonomies:
+      categories: []
+    ---
+    EOF
+    echo "Created $dir/index.qmd"
 
 # Run Tailwind and Zola in parallel
 dev:
