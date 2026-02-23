@@ -35,10 +35,8 @@ In no way is this a "oh, no! poor company!"
 ## Who Actually Loses
 
 What this means, is that supporting the scientists at NOAA, EPA, USDA, the Forest Service, our homie [Eli Pousson](https://github.com/elipousson) at the City of Baltimore, the analysts of the Penobscot, Muscogee, Cherokee, Skokomish, and other nations of the [tribal exchange network](https://www.tribalexchangenetwork.org/) (shouts out [Angie Reed](https://www.linkedin.com/in/angie-reed-a26b5635/), btw), and the DoT, and, and, and...
+all of those who love and rely on R, gets stopped before it starts!
 
-::: aside
-All of those who love and rely on R, gets stopped before it starts!
-:::
 
 But I'm pig-headed 🐷 and love the R community and I want to see R be more available to spatial analysts everywhere. But in order to support R, I have to _fight_ R itself.
 

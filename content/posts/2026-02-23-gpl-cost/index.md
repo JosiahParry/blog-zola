@@ -58,13 +58,8 @@ analysts of the Penobscot, Muscogee, Cherokee, Skokomish, and other
 nations of the [tribal exchange
 network](https://www.tribalexchangenetwork.org/) (shouts out [Angie
 Reed](https://www.linkedin.com/in/angie-reed-a26b5635/), btw), and the
-DoT, and, and, and…
-
-<div class="aside">
-
-All of those who love and rely on R, gets stopped before it starts!
-
-</div>
+DoT, and, and, and… all of those who love and rely on R, gets stopped
+before it starts!
 
 But I’m pig-headed 🐷 and love the R community and I want to see R be
 more available to spatial analysts everywhere. But in order to support
