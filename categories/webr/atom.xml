@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Josiah Parry - webr</title>
+    <link rel="self" type="application/atom+xml" href="https://josiah.rs/categories/webr/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://josiah.rs"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2025-04-30T00:00:00+00:00</updated>
+    <id>https://josiah.rs/categories/webr/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Building local packages for WebR</title>
+        <published>2025-04-30T00:00:00+00:00</published>
+        <updated>2025-04-30T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/building-for-webr/"/>
+        <id>https://josiah.rs/posts/building-for-webr/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/building-for-webr/">&lt;p&gt;We’ve recently &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;extendr&#x2F;rextendr&#x2F;pull&#x2F;431&quot;&gt;added WebR
+support&lt;&#x2F;a&gt; for
+&lt;a href=&quot;https:&#x2F;&#x2F;extendr.github.io&#x2F;&quot;&gt;extendr&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;div class=&quot;alert-tip&quot;&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;docs.r-wasm.org&#x2F;webr&#x2F;latest&#x2F;&quot;&gt;WebR&lt;&#x2F;a&gt; is a distribution of the R
+programming language that runs natively in
+&lt;a href=&quot;https:&#x2F;&#x2F;webassembly.org&#x2F;&quot;&gt;WebAssembly&lt;&#x2F;a&gt;. WebAssembly is binary format
+that runs directly in the browser.&lt;&#x2F;p&gt;
+&lt;p&gt;Using WebR means that R can be used directly by the browser &#x2F;
+&lt;a href=&quot;https:&#x2F;&#x2F;developer.mozilla.org&#x2F;en-US&#x2F;docs&#x2F;Web&#x2F;JavaScript&quot;&gt;JavaScript&lt;&#x2F;a&gt;
+without a backend server running R for you.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;Typically, folks rely on &lt;a href=&quot;https:&#x2F;&#x2F;r-universe.dev&#x2F;&quot;&gt;R-universe&lt;&#x2F;a&gt; to build
+their packages for WebR. However, compiled packages require a bit more
+work. Figuring out how to build a package for WebR locally was
+surprsingly confusing and also very straightfoward.&lt;&#x2F;p&gt;
+&lt;p&gt;I’ve releaned how to do this a few times now. Here is how it is done:&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;how-to-build-for-webr&quot;&gt;How to build for WebR&lt;&#x2F;h2&gt;
+&lt;p&gt;The easiest way to build a local package for WebR is using the Docker
+image.&lt;&#x2F;p&gt;
+&lt;p&gt;To do so, cd into your R package you want to build. Then spin up the
+Docker image and then enter R from inside of the container.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;bash&quot; class=&quot;language-bash z-code&quot;&gt;&lt;code class=&quot;language-bash&quot; data-lang=&quot;bash&quot;&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;docker&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-shell&quot;&gt; run&lt;span class=&quot;z-variable z-parameter z-option z-shell&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-parameter z-shell&quot;&gt; -&lt;&#x2F;span&gt;it&lt;&#x2F;span&gt;&lt;span class=&quot;z-variable z-parameter z-option z-shell&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-parameter z-shell&quot;&gt; --&lt;&#x2F;span&gt;rm&lt;&#x2F;span&gt;&lt;span class=&quot;z-variable z-parameter z-option z-shell&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-parameter z-shell&quot;&gt; -&lt;&#x2F;span&gt;v&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-group z-expansion z-parameter z-shell&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-variable z-shell&quot;&gt;$&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-expansion z-parameter z-begin z-shell&quot;&gt;{&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-group z-expansion z-parameter z-shell&quot;&gt;&lt;span class=&quot;z-variable z-other z-readwrite z-shell&quot;&gt;PWD&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-group z-expansion z-parameter z-shell&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-expansion z-parameter z-end z-shell&quot;&gt;}&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&#x2F;output:&#x2F;output&lt;span class=&quot;z-variable z-parameter z-option z-shell&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-parameter z-shell&quot;&gt; -&lt;&#x2F;span&gt;w&lt;&#x2F;span&gt; &#x2F;output ghcr.io&#x2F;r-wasm&#x2F;webr:main&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-shell z-bash&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-shell&quot;&gt;&lt;span class=&quot;z-variable z-function z-shell&quot;&gt;R&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Then from R inside of the container, run &lt;code&gt;rwasm::build(&quot;.&quot;)&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;That’s it!&lt;&#x2F;p&gt;
+&lt;p&gt;Thanks to &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;r-wasm&#x2F;rwasm&#x2F;issues&#x2F;50#issuecomment-2827097396&quot;&gt;George
+Stagg&lt;&#x2F;a&gt;
+for helping with this!&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Caching WebR from CDN</title>
+        <published>2024-06-13T00:00:00+00:00</published>
+        <updated>2024-06-13T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/caching-webr/"/>
+        <id>https://josiah.rs/posts/caching-webr/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/caching-webr/">&lt;p&gt;I am developing Rust bindings to &lt;a href=&quot;https:&#x2F;&#x2F;webr.r-wasm.org&#x2F;&quot;&gt;WebR&lt;&#x2F;a&gt;.
+Because WebR is not compiled for WASI and only WebAssembly, native Rust
+bindings are not possible. Instead, bindings are done through
+&lt;a href=&quot;https:&#x2F;&#x2F;rustwasm.github.io&#x2F;docs&#x2F;wasm-bindgen&#x2F;&quot;&gt;wasm-bindgen&lt;&#x2F;a&gt; which
+creates bindings to JavaScript.&lt;&#x2F;p&gt;
+&lt;p&gt;The WIP Rust crate is called
+&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;JosiahParry&#x2F;webr-js-rs&#x2F;&quot;&gt;&lt;code&gt;webr-js-rs&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;div class=&quot;alert-tip&quot;&gt;
+&lt;p&gt;I’m building these bindings to support
+&lt;strong&gt;&lt;a href=&quot;https:&#x2F;&#x2F;flrsh.dev&#x2F;&quot;&gt;flrsh.dev&lt;&#x2F;a&gt;&lt;&#x2F;strong&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Sign up for an account to be notified when I launch our first course (a
+deep dive on DuckDB)!&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;&lt;code&gt;webr-js-rs&lt;&#x2F;code&gt; works &lt;em&gt;only&lt;&#x2F;em&gt; on wasm targets.&lt;&#x2F;p&gt;
+&lt;div class=&quot;alert-note&quot;&gt;
+&lt;ul&gt;
+&lt;li&gt;See &lt;a href=&quot;https:&#x2F;&#x2F;hacks.mozilla.org&#x2F;2019&#x2F;03&#x2F;standardizing-wasi-a-webassembly-system-interface&#x2F;&quot;&gt;this informative blog
+post&lt;&#x2F;a&gt;
+from Mozilla on what WASI is.&lt;&#x2F;li&gt;
+&lt;li&gt;There is an &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;r-wasm&#x2F;webr&#x2F;issues&#x2F;166&quot;&gt;outstanding
+issue&lt;&#x2F;a&gt; on the WebR GitHub.&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;The problem I was encountering:&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;WebR wasn’t caching the binaries!&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Turns out that this is because my code had this:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;rs&quot; class=&quot;language-rs z-code&quot;&gt;&lt;code class=&quot;language-rs&quot; data-lang=&quot;rs&quot;&gt;&lt;span class=&quot;z-source z-rust&quot;&gt;&lt;span class=&quot;z-meta z-annotation z-rust&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-annotation z-rust&quot;&gt;#&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-group z-begin z-rust&quot;&gt;[&lt;&#x2F;span&gt;&lt;span class=&quot;z-variable z-annotation z-rust&quot;&gt;wasm_bindgen&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-annotation z-parameters z-rust&quot;&gt;&lt;span class=&quot;z-meta z-group z-rust&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-group z-begin z-rust&quot;&gt;(&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-annotation z-parameters z-rust&quot;&gt;&lt;span class=&quot;z-meta z-group z-rust&quot;&gt;module &lt;span class=&quot;z-keyword z-operator z-rust&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-string z-quoted z-double z-rust&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-rust&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;https:&#x2F;&#x2F;webr.r-wasm.org&#x2F;latest&#x2F;webr.mjs&lt;span class=&quot;z-punctuation z-definition z-string z-end z-rust&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-annotation z-parameters z-rust&quot;&gt;&lt;span class=&quot;z-meta z-group z-rust&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-group z-end z-rust&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-group z-end z-rust&quot;&gt;]&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;I brought this issue up in a GitHub issue.
+&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;georgestagg&quot;&gt;@GeorgeStagg&lt;&#x2F;a&gt; pointed out&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;“The webR CDN assets under &#x2F;latest&#x2F; are intentionally served with
+Cache-Control: no-cache so that the latest commit is always downloaded
+by the browser.”&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;This makes sense! It means since there is no cache instruction, it will
+fetch the binaries every time! Instead he recommended to use a tagged
+version&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;“The longer-term builds under e.g. &#x2F;v0.3.3&#x2F; are served with the HTTP
+header cache-control: max-age=604800, and so the webR assets should
+automatically be &lt;strong&gt;cached by browsers for 1 week&lt;&#x2F;strong&gt;.”&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;👆🏼 emphasis mine.&lt;&#x2F;p&gt;
+&lt;p&gt;This works! So I’ve changed webr-js-rs to use a fixed version.&lt;&#x2F;p&gt;
+&lt;p&gt;The one challenge with this, though, is that even though the binaries
+are cached, the R session will be restarted from scratch if the browser
+is refreshed. So that is something I need to figure out next!&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

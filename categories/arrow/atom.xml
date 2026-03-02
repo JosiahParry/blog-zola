@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Josiah Parry - arrow</title>
+    <link rel="self" type="application/atom+xml" href="https://josiah.rs/categories/arrow/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://josiah.rs"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2025-06-04T00:00:00+00:00</updated>
+    <id>https://josiah.rs/categories/arrow/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Apache Arrow, Rust, and cross-langauge data science</title>
+        <published>2025-06-04T00:00:00+00:00</published>
+        <updated>2025-06-04T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/cross-language-ds/"/>
+        <id>https://josiah.rs/posts/cross-language-ds/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/cross-language-ds/">&lt;h2 id=&quot;tl-dr&quot;&gt;TL;DR&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;arrow.apache.org&#x2F;&quot;&gt;Apache Arrow&lt;&#x2F;a&gt; standardized memory layout
+so that memory can be used in any language without (de)serialization.&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;www.rust-lang.org&#x2F;&quot;&gt;Rust&lt;&#x2F;a&gt; is a great candidate for building
+core algorithm &#x2F; tool implementations as it has robust &lt;a href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;std&#x2F;ffi&#x2F;index.html&quot;&gt;foreign
+function interface&lt;&#x2F;a&gt;
+(&lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Foreign_function_interface&quot;&gt;FFI&lt;&#x2F;a&gt;)
+tooling and bindings tools like &lt;a href=&quot;https:&#x2F;&#x2F;extendr.github.io&#x2F;&quot;&gt;extendr&lt;&#x2F;a&gt;,
+&lt;a href=&quot;https:&#x2F;&#x2F;pyo3.rs&#x2F;&quot;&gt;PyO3&lt;&#x2F;a&gt;, and
+&lt;a href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;jlrs&#x2F;latest&#x2F;jlrs&#x2F;&quot;&gt;jlrs&lt;&#x2F;a&gt;.&lt;&#x2F;li&gt;
+&lt;li&gt;Use Apache Arrow as inputs and outputs from the tool standardize the
+API across languages.&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;the-status-quo&quot;&gt;The Status Quo&lt;&#x2F;h2&gt;
+&lt;p&gt;I would categorize the majority of scientific computing libraries as
+either:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;tightly coupled&lt;&#x2F;li&gt;
+&lt;li&gt;loosely coupled&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;tightly-coupled&quot;&gt;Tightly coupled&lt;&#x2F;h2&gt;
+&lt;p&gt;Many of the most popular scientific computing libraries in R and Python
+are developed in a tightly coupled manner.&lt;&#x2F;p&gt;
+&lt;div class=&quot;columns&quot;&gt;
+&lt;div class=&quot;column&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;cross-language-ds&#x2F;images&#x2F;rdatatable.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;column&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;cross-language-ds&#x2F;images&#x2F;numpy.svg&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;aside&quot;&gt;
+&lt;p&gt;Julia is a different beast because it is inherently fast and native
+implementations are exceptionally performant.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;For example &lt;a href=&quot;https:&#x2F;&#x2F;rdatatable.gitlab.io&#x2F;data.table&#x2F;&quot;&gt;&lt;code&gt;{data.table}&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;
+is one of the fastest data frame libraries in the world—and for a while
+was &lt;em&gt;the&lt;&#x2F;em&gt; fastest. It is developed in C directly with R’s C API.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;numpy.org&#x2F;&quot;&gt;NumPy&lt;&#x2F;a&gt; is probably the most numerical computing
+library in the world. It is written directly in C with Cython and is
+intended for use directly with Python.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;pros&quot;&gt;Pros&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Highly efficient&lt;&#x2F;li&gt;
+&lt;li&gt;Ergonomic APIs for the language&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;cons&quot;&gt;Cons&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Innovation and development siloed to the language of implementation&lt;&#x2F;li&gt;
+&lt;li&gt;Contributor pool shrinks to the intersection of C developers with
+knowledge of the language-specific C API&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;loosely-coupled&quot;&gt;Loosely coupled&lt;&#x2F;h2&gt;
+&lt;p&gt;Loose coupling is another common approach to scientific computing and is
+pervasive in the geospatial ecosystem.&lt;&#x2F;p&gt;
+&lt;p&gt;Core libraries such as &lt;a href=&quot;https:&#x2F;&#x2F;libgeos.org&#x2F;&quot;&gt;GEOS&lt;&#x2F;a&gt;,
+&lt;a href=&quot;https:&#x2F;&#x2F;gdal.org&#x2F;en&#x2F;stable&#x2F;&quot;&gt;GDAL&lt;&#x2F;a&gt;, and
+&lt;a href=&quot;https:&#x2F;&#x2F;proj.org&#x2F;en&#x2F;stable&#x2F;&quot;&gt;PROJ&lt;&#x2F;a&gt; are written in C&#x2F;++ with bindings to
+them in R, Python, Julia, and others.&lt;&#x2F;p&gt;
+&lt;figure&gt;
+&lt;a href=&quot;https:&#x2F;&#x2F;arxiv.org&#x2F;abs&#x2F;2503.16686&quot;&gt;&lt;img
+src=&quot;images&#x2F;sdsl.png&quot; &#x2F;&gt;&lt;&#x2F;a&gt;
+&lt;figcaption&gt;Pebesma, et al. 2025&lt;&#x2F;figcaption&gt;
+&lt;&#x2F;figure&gt;
+&lt;p&gt;There are many packages that have bindings to these libraries. However,
+due to the lack of standardized interface, the APIs that are developed
+may not work with each other even if they’re implemented in the same
+language.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;pros-1&quot;&gt;Pros&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Innovations and development is not siloed&lt;&#x2F;li&gt;
+&lt;li&gt;Contributions to the core library can be propagated to the client
+bindings&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;cons-1&quot;&gt;Cons&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Little &#x2F; no standardization of data format leads to &lt;em&gt;tons&lt;&#x2F;em&gt; of very
+different and incompatible libraries&lt;&#x2F;li&gt;
+&lt;li&gt;Using output from one library in another requires intermediate
+representation&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;using-rust-for-a-core-library&quot;&gt;Using Rust for a core library&lt;&#x2F;h2&gt;
+&lt;p&gt;It is not my intention to belabor the point of “why Rust.” But I will
+list out a few bullets for why I believe Rust is the best candidate for
+core implementations.&lt;&#x2F;p&gt;
+&lt;table&gt;
+&lt;colgroup&gt;
+&lt;col style=&quot;width: 33%&quot; &#x2F;&gt;
+&lt;col style=&quot;width: 66%&quot; &#x2F;&gt;
+&lt;&#x2F;colgroup&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Pro&lt;&#x2F;th&gt;
+&lt;th&gt;Me belaboring the point&lt;&#x2F;th&gt;
+&lt;&#x2F;tr&gt;
+&lt;&#x2F;thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Rust is (fairly) easy to pick up.&lt;&#x2F;td&gt;
+&lt;td&gt;I’ve tried and failed many times to learn C++. I’ve tried to learn
+Java. I’ve tried to learn Go. Nothing has the guide rails that Rust
+does.&lt;&#x2F;td&gt;
+&lt;&#x2F;tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Dependency free&lt;&#x2F;td&gt;
+&lt;td&gt;Rust crates are compiled into a single shared library which has no
+dependencies to other libraries. More often than not there is also no
+system dependency requirement either.&lt;&#x2F;td&gt;
+&lt;&#x2F;tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Stupid fast by default 🚀&lt;&#x2F;td&gt;
+&lt;td&gt;The most naive implementations often out perform even advanced
+implementations in R or Python (and sometimes even Julia)&lt;&#x2F;td&gt;
+&lt;&#x2F;tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Easy parallelization with &lt;a
+href=&quot;https:&#x2F;&#x2F;github.com&#x2F;rayon-rs&#x2F;rayon&quot;&gt;&lt;code&gt;rayon&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;
+&lt;td&gt;&lt;code&gt;rayon&lt;&#x2F;code&gt; allows you to parallelize your code with next to
+no effort. For example changing &lt;code&gt;.iter()&lt;&#x2F;code&gt; ➡️
+&lt;code&gt;.par_iter()&lt;&#x2F;code&gt; is all you need.&lt;&#x2F;td&gt;
+&lt;&#x2F;tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Cross-platform support.&lt;&#x2F;td&gt;
+&lt;td&gt;Rust libraries can support Windows, Mac, x86 and Arm, Linux, and
+WASM, all with no modification of the core library. That’s HUGE!&lt;&#x2F;td&gt;
+&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;
+&lt;&#x2F;table&gt;
+&lt;p&gt;Creating a Rust core would still be considered a “loose coupling.”
+Though, you do at least get the above benefits of using Rust. We can
+improve this experience a bit more by incorporating Apache Arrow into
+the picture.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;apache-arrow&quot;&gt;Apache Arrow&lt;&#x2F;h2&gt;
+&lt;p&gt;Apache Arrow is a &lt;strong&gt;specification&lt;&#x2F;strong&gt; of what data should look like &lt;em&gt;in
+memory&lt;&#x2F;em&gt; (not stored as a file). Additionally, Apache Arrow &lt;strong&gt;is not&lt;&#x2F;strong&gt;
+the R package &lt;code&gt;{arrow}&lt;&#x2F;code&gt; and it is also not pyarrow. Those package are
+&lt;em&gt;implementations&lt;&#x2F;em&gt; of Arrow with additional goodies.&lt;&#x2F;p&gt;
+&lt;div class=&quot;alert-note&quot;&gt;
+&lt;p&gt;I really recommend reading Danielle Navarro’s &lt;a href=&quot;https:&#x2F;&#x2F;blog.djnavarro.net&#x2F;posts&#x2F;2021-11-19_starting-apache-arrow-in-r&#x2F;#fiiiiiine-ill-keep-reading-tell-me-what-arrow-is&quot;&gt;blog post on Apache
+Arrow&lt;&#x2F;a&gt;
+for a very human introduction to the topic.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;h3 id=&quot;the-problem&quot;&gt;The Problem&lt;&#x2F;h3&gt;
+&lt;p&gt;In this status-quo of cross-language tooling, we have this issue where
+data in R is represented differently than data is represented in Python,
+which is represented differently in Rust or Julia—and so on.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;cross-language-ds&#x2F;images&#x2F;paste-7.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;This process of copying data and converting is &lt;em&gt;expensive&lt;&#x2F;em&gt; and time
+consuming. The canonical example is that of a database.&lt;&#x2F;p&gt;
+&lt;p&gt;We typically work with tabular data that looks like so&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;cross-language-ds&#x2F;images&#x2F;paste-9.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;However, these databases typically represent data in a row-oriented
+manner. Where each row is stored in memory followed by the next row etc.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;columnar-data&quot;&gt;Columnar data&lt;&#x2F;h3&gt;
+&lt;p&gt;Instead, Apache Arrow is a columnar data format. Instead of each row
+being represented in memory, we have each column. This is a huge
+enhancement particularly for analytical processes where we are working
+with &lt;em&gt;columns&lt;&#x2F;em&gt; of data instead of _rows.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;cross-language-ds&#x2F;images&#x2F;paste-13.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;The above shows the difference between these.&lt;&#x2F;p&gt;
+&lt;p&gt;Apache Arrow is a standized way of saying what data should look like in
+memory. So instead of copying and converting between each tool, we can
+use the same exact arrow data set by each tool .&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;cross-language-ds&#x2F;images&#x2F;paste-8.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;arrow-and-cross-langauge-tooling&quot;&gt;Arrow and cross-langauge tooling&lt;&#x2F;h2&gt;
+&lt;p&gt;By adopting Apache Arrow as a standard memory format, we can have data
+science workflows that look something like this.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;cross-language-ds&#x2F;images&#x2F;paste-4.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;At step 1, we may call a library that uses Rust under the hood. But when
+we send data to it, it uses Apache Arrow, and it also gives us back
+Arrow. Then in the next step, we use our Arrow data to call out to a C++
+library which &lt;em&gt;also&lt;&#x2F;em&gt; accepts and returns Arrow.&lt;&#x2F;p&gt;
+&lt;p&gt;Doing this will eliminate the overhead of copying and converting data to
+each tool’s desired format. This also helps us move towards a
+standardized API that shouldn’t be too different between language
+binding. Also, by using the same data format, even if there are multiple
+bindings to the same underlying library, if they all accept Arrow, there
+is no cost incurred by sending data to them.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;a-real-example&quot;&gt;A real example&lt;&#x2F;h2&gt;
+&lt;p&gt;A real world example of this is the
+&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;JosiahParry&#x2F;anime&quot;&gt;ANIME&lt;&#x2F;a&gt; algorithm that I developed
+along with &lt;a href=&quot;https:&#x2F;&#x2F;www.robinlovelace.net&#x2F;&quot;&gt;Dr. Robin Lovelace&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Approximate Network Integration, Matching, and Enrichment (ANIME) is a
+partial line matching algorithm that is written in Rust with bindings to
+it in both R and Python—no Julia bindings, so if you’re interested in
+building them, please help!&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;cross-language-ds&#x2F;images&#x2F;paste-16.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;The ANIME crate is designed to work &lt;a href=&quot;https:&#x2F;&#x2F;geoarrow.org&#x2F;&quot;&gt;GeoArrow&lt;&#x2F;a&gt;
+data.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;repo-structure&quot;&gt;Repo structure&lt;&#x2F;h3&gt;
+&lt;p&gt;I use a monorepo structure to accomplish this where the core algorithm
+is implemented in &lt;code&gt;&#x2F;rust&lt;&#x2F;code&gt; and the R bindings in &lt;code&gt;r&#x2F;&lt;&#x2F;code&gt; and the python
+bindings in &lt;code&gt;&#x2F;python&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;.
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;├── rust&#x2F;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;│   └── Cargo.toml
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;├── r&#x2F;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;│   └── src&#x2F;rust&#x2F;Cargo.toml
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;└── py&#x2F;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    └── Cargo.toml
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The result is bindings with a very similar API and &lt;em&gt;identical&lt;&#x2F;em&gt; results:&lt;&#x2F;p&gt;
+&lt;div&gt;
+&lt;&#x2F;div&gt;
+&lt;h2 id=&quot;arrow-ffi-helpers&quot;&gt;Arrow FFI helpers&lt;&#x2F;h2&gt;
+&lt;p&gt;There still exists a challenge of taking Arrow from R, Python, or Julia
+and getting it across the language barrier.&lt;&#x2F;p&gt;
+&lt;p&gt;To do so from R with extendr is
+&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;JosiahParry&#x2F;arrow-extendr&quot;&gt;&lt;code&gt;arrow-extendr&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;. And
+from Python is &lt;a href=&quot;https:&#x2F;&#x2F;kylebarron.dev&#x2F;arro3&#x2F;latest&#x2F;&quot;&gt;arro3&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;a-quick-caveat&quot;&gt;A quick caveat&lt;&#x2F;h2&gt;
+&lt;p&gt;ANIME is not a perfectly fleshed out example. At present, the core rust
+library does not &lt;em&gt;return&lt;&#x2F;em&gt; Arrow but &lt;em&gt;it is&lt;&#x2F;em&gt; designed to work with the
+geoarrow-rust library. The current bindings are a loose-ish coupling
+approach where on the extendr and PyO3 side the results are processed
+into a data.frame and Arrow Table respectively.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Call to action&lt;&#x2F;strong&gt; if you’re interested in contributing Julia bindings
+or improving the Python bindings (and maybe publishing them), please do
+make a PR or an issue.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Databases for Data Scientist</title>
+        <published>2024-05-16T00:00:00+00:00</published>
+        <updated>2024-05-16T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/databases-for-ds/"/>
+        <id>https://josiah.rs/posts/databases-for-ds/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/databases-for-ds/">&lt;p&gt;It’s been coming up a lot recently, or, maybe, I’ve just been focused on
+this a lot more. Data scientists are coming to terms with the fact that
+they have to work with databases if they want their analytics to scale.
+That is pretty normal. But one of the bigger challenges is that these
+data scientists don’t really know how to make that leap. What do they
+need to know to make that transition?&lt;&#x2F;p&gt;
+&lt;p&gt;For many of use in the “know”, we know that there actually isn’t all
+that much different between a database and a data.frame. A data frame is
+in memory but a database table is just &lt;em&gt;over there&lt;&#x2F;em&gt; sitting somewhere
+else.&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;If you know how to write dplyr, you already know how to work with a
+database.&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;what-do-you-need-to-know&quot;&gt;What do you need to know?&lt;&#x2F;h2&gt;
+&lt;p&gt;For those of you who want to begin to use databases in your work and
+want to start scaling your analysis, there are a few topics that would
+be helpful for you to know. I’m not going to teach you them here. But
+list them out so you can google it. And truthfully, you already know
+what these are but you don’t know the terminology.&lt;&#x2F;p&gt;
+&lt;p&gt;Here is my list of things to know:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Learn what &lt;strong&gt;RDBMS&lt;&#x2F;strong&gt; means.&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;ul&gt;
+&lt;li&gt;relational database management system or sometimes just DBMS&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;Understand &lt;strong&gt;primary keys&lt;&#x2F;strong&gt; and &lt;strong&gt;foreign keys&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;Figure out what database &lt;strong&gt;normalization&lt;&#x2F;strong&gt; is and when its useful&lt;&#x2F;li&gt;
+&lt;li&gt;Schemas vs. tables for organizational purposes&lt;&#x2F;li&gt;
+&lt;li&gt;Views vs tables (this is handy for making tables to be consumed by
+BI &#x2F; other things)&lt;&#x2F;li&gt;
+&lt;li&gt;Table indexes and what they are (that way you can know when you
+might need them)&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;why-you-might-not-actually-need-a-full-rdbms&quot;&gt;Why you might not actually need a full RDBMS&lt;&#x2F;h2&gt;
+&lt;p&gt;With the ubiquity of parquet and tools like apache arrow and DuckDB,
+there’s a good chance that for what you want to accomplish in your
+analytical workflow, you don’t need a fully fledged database. Organized
+parquet files into a database-like structure will be sufficient. DuckDB
+and Arrow can allow you to work with these data in a larger than memory
+capacity. You don’t need to read it all into memory, actually.&lt;&#x2F;p&gt;
+&lt;p&gt;Before you say you need Postgres for analytics, instead, try parquet
+(and with hive partitioning if your data are larger) with DuckDB and
+Apache Arrow. It’s likely all you need.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

@@ -1,0 +1,839 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            Encoding spatial patterns as variables | Josiah Parry
+        </title>
+
+        <!-- Tailwind + Basecoat CSS -->
+        <link rel="stylesheet" href="https://josiah.rs/css/style.css" />
+
+        <!-- Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300..700&display=swap" rel="stylesheet">
+
+        <!-- Determine theme before loading syntax highlighting -->
+        <script>
+            (() => {
+                const stored = localStorage.getItem("themeMode");
+                // Use stored preference if exists, otherwise always default to dark
+                const isDark = stored ? stored === "dark" : true;
+
+                if (isDark) {
+                    document.documentElement.classList.add("dark");
+                }
+            })();
+        </script>
+
+        <!-- Syntax highlighting themes -->
+        <link rel="stylesheet" href="https://josiah.rs/syntax-dark.css" id="syntax-dark" />
+        <link rel="stylesheet" href="https://josiah.rs/syntax-light.css" id="syntax-light" />
+
+        <!-- KaTeX for math rendering -->
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+        />
+
+        <!-- PostHog analytics -->
+        <script>
+            !function(t,e){var o,n,p,r;e.__SV||(window.posthog && window.posthog.__loaded)||(window.posthog=e,e._i=[],e.init=function(i,s,a){function g(t,e){var o=e.split(".");2==o.length&&(t=t[o[0]],e=o[1]),t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}}(p=t.createElement("script")).type="text/javascript",p.crossOrigin="anonymous",p.async=!0,p.src=s.api_host.replace(".i.posthog.com","-assets.i.posthog.com")+"/static/array.js",(r=t.getElementsByTagName("script")[0]).parentNode.insertBefore(p,r);var u=e;for(void 0!==a?u=e[a]=[]:a="posthog",u.people=u.people||[],u.toString=function(t){var e="posthog";return"posthog"!==a&&(e+="."+a),t||(e+=" (stub)"),e},u.people.toString=function(){return u.toString(1)+".people (stub)"},o="init ir nr qi rr ar Ze er capture calculateEventProperties dr register register_once register_for_session unregister unregister_for_session getFeatureFlag getFeatureFlagPayload getFeatureFlagResult isFeatureEnabled reloadFeatureFlags updateFlags updateEarlyAccessFeatureEnrollment getEarlyAccessFeatures on onFeatureFlags onSurveysLoaded onSessionId getSurveys getActiveMatchingSurveys renderSurvey displaySurvey cancelPendingSurvey canRenderSurvey canRenderSurveyAsync identify setPersonProperties group resetGroups setPersonPropertiesForFlags resetPersonPropertiesForFlags setGroupPropertiesForFlags resetGroupPropertiesForFlags reset get_distinct_id getGroups get_session_id get_session_replay_url alias set_config startSessionRecording stopSessionRecording sessionRecordingStarted captureException startExceptionAutocapture stopExceptionAutocapture loadToolbar get_property getSessionProperty cr hr createPersonProfile setInternalOrTestUser pr Xe gr opt_in_capturing opt_out_capturing has_opted_in_capturing has_opted_out_capturing get_explicit_consent_status is_capturing clear_opt_in_out_capturing lr debug At vr getPageViewId captureTraceFeedback captureTraceMetric Je".split(" "),n=0;n<o.length;n++)g(u,o[n]);e._i.push([i,s,a])},e.__SV=1)}(document,window.posthog||[]);
+            posthog.init('phc_6GJw8ydX1jrmG8VxPr3b2Ff41O3zzUNmpFS1NcQ0d3x', {
+                api_host: 'https://us.i.posthog.com',
+                defaults: '2026-01-30',
+                person_profiles: 'identified_only',
+            })
+        </script>
+
+        
+    </head>
+    <body class="min-h-screen bg-background text-foreground">
+        <main> <button
+    data-drawer-target="default-sidebar"
+    data-drawer-toggle="default-sidebar"
+    aria-controls="default-sidebar"
+    type="button"
+    class="text-heading bg-transparent box-border border border-transparent hover:bg-neutral-secondary-medium focus:ring-4 focus:ring-neutral-tertiary font-medium leading-5 rounded-base ms-3 mt-3 text-sm p-2 focus:outline-none inline-flex sm:hidden"
+>
+    <span class="sr-only">Open sidebar</span>
+    <svg
+        class="w-6 h-6"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+    >
+        <path
+            stroke="currentColor"
+            stroke-linecap="round"
+            stroke-width="2"
+            d="M5 7h14M5 12h14M5 17h10"
+        />
+    </svg>
+</button>
+
+<aside
+    id="default-sidebar"
+    class="fixed top-0 left-0 z-40 w-64 h-full transition-transform -translate-x-full sm:translate-x-0"
+    aria-label="Sidebar"
+>
+    <div class="flex h-full flex-col bg-sidebar border-e border-default">
+        <!-- Header: Title + Dark Mode -->
+        <div class="flex items-center justify-between p-4">
+            <a
+                href="https://josiah.rs"
+                class="font-mono font-semibold italic text-lg"
+            >
+                Josiah Parry
+            </a>
+            <button
+                type="button"
+                aria-label="Toggle dark mode"
+                onclick="document.dispatchEvent(new CustomEvent('basecoat:theme'))"
+                class="btn-sm-ghost text-muted-foreground hover:text-foreground"
+            >
+                <span class="hidden dark:block">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <circle cx="12" cy="12" r="4" />
+                        <path d="M12 2v2" />
+                        <path d="M12 20v2" />
+                        <path d="m4.93 4.93 1.41 1.41" />
+                        <path d="m17.66 17.66 1.41 1.41" />
+                        <path d="M2 12h2" />
+                        <path d="M20 12h2" />
+                        <path d="m6.34 17.66-1.41 1.41" />
+                        <path d="m19.07 4.93-1.41 1.41" />
+                    </svg>
+                </span>
+                <span class="block dark:hidden">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" />
+                    </svg>
+                </span>
+            </button>
+        </div>
+
+        <!-- Search -->
+        <div class="px-4 pb-4 relative">
+            <input
+                type="search"
+                placeholder="Search..."
+                class="input w-full text-sm bg-muted/50 border border-border"
+                id="search-input"
+            />
+            <div
+                id="search-results"
+                class="hidden absolute top-full left-4 -mt-1 w-96 max-h-96 overflow-y-auto bg-background border border-border rounded-lg shadow-lg z-50 p-2"
+            ></div>
+        </div>
+
+        <!-- Content: Navigation -->
+        <div class="overflow-y-auto px-4">
+            <ul class="flex flex-col gap-1">
+                <li>
+                    <a
+                        href="https://josiah.rs"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/about/"
+                        class="block py-2 text-sm pl-3 transition-colors hover:bg-sidebar-accent/50"
+                    >
+                        About
+                    </a>
+                </li>
+                <li>
+                    <a
+                        href="https://josiah.rs/posts/"
+                        class="block py-2 text-sm pl-3 transition-colors font-medium border-l-2 border-primary -ml-px bg-sidebar-accent"
+                    >
+                        Posts
+                    </a>
+                </li>
+            </ul>
+
+            <!-- Socials -->
+            <div
+                class="mt-4 block py-2 transition-colors font-medium px-3 text-sm bg-sidebar-accent"
+            >
+                <h2
+                    class="text-sm font-medium tracking-tight mb-2 text-muted-foreground border-b border-muted-foreground/20 pb-1"
+                >
+                    Socials
+                </h2>
+                <ul class="space-y-1.5">
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <polygon
+                                points="160 128 112 96 112 160 160 128"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M24,128c0,29.91,3.07,47.45,5.41,56.47A16,16,0,0,0,39,195.42C72.52,208.35,128,208,128,208s55.48.35,89-12.58a16,16,0,0,0,9.63-10.95c2.34-9,5.41-26.56,5.41-56.47s-3.07-47.45-5.41-56.47a16,16,0,0,0-9.63-11C183.48,47.65,128,48,128,48s-55.48-.35-89,12.58a16,16,0,0,0-9.63,11C27.07,80.54,24,98.09,24,128Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://www.youtube.com/@josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >YouTube</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <rect
+                                x="32"
+                                y="32"
+                                width="192"
+                                height="192"
+                                rx="8"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="120"
+                                y1="112"
+                                x2="120"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <line
+                                x1="88"
+                                y1="112"
+                                x2="88"
+                                y2="176"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M120,140a28,28,0,0,1,56,0v36"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <circle cx="88" cy="84" r="12" />
+                        </svg>
+                        <a
+                            href="https://www.linkedin.com/in/josiahparry"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >LinkedIn</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M119.83,56A52,52,0,0,0,76,32a51.92,51.92,0,0,0-3.49,44.7A49.28,49.28,0,0,0,64,104v8a48,48,0,0,0,48,48h48a48,48,0,0,0,48-48v-8a49.28,49.28,0,0,0-8.51-27.3A51.92,51.92,0,0,0,196,32a52,52,0,0,0-43.83,24Z"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,232V192a32,32,0,0,1,32-32h0a32,32,0,0,1,32,32v40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M104,208H72a32,32,0,0,1-32-32A32,32,0,0,0,8,144"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="http://github.com/josiahparry/"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >GitHub</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 256 256"
+                            class="w-4 h-4"
+                        >
+                            <rect width="256" height="256" fill="none" />
+                            <path
+                                d="M160,224H72a32,32,0,0,1-32-32V72A32,32,0,0,1,72,40H184a32,32,0,0,1,32,32v72a32,32,0,0,1-32,32H40"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M128,136V104a24,24,0,0,0-48,0v32"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                            <path
+                                d="M176,136V104a24,24,0,0,0-48,0"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="16"
+                            />
+                        </svg>
+                        <a
+                            href="https://fosstodon.org/@josi"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Mastodon</a
+                        >
+                    </li>
+                    <li
+                        class="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 16 16"
+                            class="w-4 h-4"
+                            fill="currentColor"
+                        >
+                            <path
+                                d="M3.468 1.948C5.303 3.325 7.276 6.118 8 7.616c.725-1.498 2.698-4.29 4.532-5.668C13.855.955 16 .186 16 2.632c0 .489-.28 4.105-.444 4.692-.572 2.04-2.653 2.561-4.504 2.246 3.236.551 4.06 2.375 2.281 4.2-3.376 3.464-4.852-.87-5.23-1.98-.07-.204-.103-.3-.103-.218 0-.081-.033.014-.102.218-.379 1.11-1.855 5.444-5.231 1.98-1.778-1.825-.955-3.65 2.28-4.2-1.85.315-3.932-.205-4.503-2.246C.28 6.737 0 3.12 0 2.632 0 .186 2.145.955 3.468 1.948"
+                            />
+                        </svg>
+                        <a
+                            href="https://bsky.app/profile/josiahparry.com"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-sm"
+                            >Bluesky</a
+                        >
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</aside>
+
+
+<div class="p-12 sm:ml-64">
+    <div class="max-w-2xl mx-auto">
+        <h1 class="text-3xl font-medium italic mb-2">Encoding spatial patterns as variables</h1>
+
+         
+        <div class="flex flex-wrap gap-2 mb-4">
+            
+            <a
+                href="/categories/spatial"
+                class="badge-secondary cursor pointer"
+                >spatial</a
+            >
+            
+            <a
+                href="/categories/r"
+                class="badge-secondary cursor pointer"
+                >r</a
+            >
+            
+        </div>
+         
+
+        <div class="flex gap-8 mb-6 text-sm">
+            
+            <div>
+                <span class="text-muted-foreground font-mono font-medium"
+                    >May 17, 2024</span
+                >
+            </div>
+            
+        </div>
+
+        <div class="josi-prose"><p>I’ve begun reading <a href="https://www.sciencedirect.com/science/article/abs/pii/S0304380006000925">“Spatial modelling: a comprehensive framework for
+principal coordinate analysis of neighbour matrices
+(PCNM)”</a>
+which describes the process of making “Moran Eigenvector Maps.”</p>
+<p>In this case, I haven’t finished reading the paper but am quite thrilled
+by the prospect of it. One of the biggest problems in ecological and
+social science modelling is that space is often a confounder in models.
+By this I mean that a lot of phenomena we see are <strong>spatially
+dependent</strong>.</p>
+<p>Reductively, spatial dependence means that variables or outcomes are
+strongly linked to where things are. For example, income tends to be
+spatially dependent. Meaning that high income areas are typically
+surounded by other high income areas.</p>
+<h2 id="the-problem">The problem</h2>
+<p>When modelling data that exhibit spatial dependence, spatial
+relationships need to be accounted for. Otherwise, you will often find
+that model residuals (errors) <em>also exhibit spatial dependence</em>. So? How
+can you control for this.</p>
+<p>There are a number of techniques that people use from more statistically
+sound ones, to tricks used by ML engineers. For example you may
+introduce the spatial lag (neighborhood average of a variable) to
+account for some of the spatial association.</p>
+<h2 id="principal-coordinate-analysis-pcoa">Principal Coordinate Analysis (PCoA)</h2>
+<p>One interesting idea is using principle components analysis to encode
+geography into numeric variables. Conceptually, the idea is actually
+rather simple!</p>
+<p>When we do spatial statistics, we create what are called spatial weights
+matrices. These define which features are related to eachother.</p>
+<p>For example we can identify the neighbors from the famous guerry dataset
+based on the contiguity—that is if they are touching. We create a <code>nb</code>
+and <code>wt</code> object. The <code>nb</code> are the neighbors and <code>wt</code> uses a gaussian
+kernel. The gaussian kernel assigns more weight to to locations that are
+closer and less weight to those that are further—essentially following
+the normal distribution.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">library</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>sfdep<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">library</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>dplyr<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">geoms <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> guerry<span class="z-keyword z-accessor z-dollar z-r">$</span>geometry
+</span><span class="z-source z-r">centroids <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> sf<span class="z-punctuation z-accessor z-colons z-r">::</span><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">st_centroid</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>geoms<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r">nb <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">st_contiguity</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>geoms<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">wt <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">st_kernel_weights</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>nb<span class="z-punctuation z-separator z-arguments z-r">,</span> centroids<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>gaussian<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<p>Visually, this is what the neighborhood relationship looks like:</p>
+<details class="code-fold">
+<summary>Code</summary>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">library</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>ggplot2<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">sfn <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">st_as_graph</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>geoms<span class="z-punctuation z-separator z-arguments z-r">,</span> nb<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">autoplot</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>sfn<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-arithmetic z-r">+</span>
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">geom_sf</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-variable z-parameter z-r">data</span> <span class="z-keyword z-operator z-assignment z-r">=</span> geoms<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">fill</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-language z-r">NA</span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">color</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>black<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">lwd</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-numeric z-float z-decimal z-r">0<span class="z-punctuation z-separator z-decimal z-r">.</span>2</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-arithmetic z-r">+</span>
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">theme_void</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+</details>
+<p><img src="https://josiah.rs/posts/moran-eigenvectors/2024-05-17-moran-eigenvectors_files/figure-commonmark/unnamed-chunk-3-1.png" alt="" /></p>
+<p>The weights object is a ragged array which is used to be a sparse matrix
+representation of the spatial weights.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">head</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>wt<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">[[1]]
+</span><span class="z-text z-plain">[1] 1.553402 1.857660 2.062100 1.676694
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">[[2]]
+</span><span class="z-text z-plain">[1] 1.801787 1.717777 1.439955 1.721547 1.260566 1.429496
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">[[3]]
+</span><span class="z-text z-plain">[1] 1.599532 1.527097 1.376795 1.722723 1.865664 1.350771
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">[[4]]
+</span><span class="z-text z-plain">[1] 2.040754 1.356645 1.871658 1.685343
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">[[5]]
+</span><span class="z-text z-plain">[1] 2.040754 1.674375 1.689488
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">[[6]]
+</span><span class="z-text z-plain">[1] 2.075805 1.679763 1.357435 1.308397 2.009760 1.812262 1.432539
+</span></code></pre>
+<p>The spatial weights are an <code>n x n</code> square matrix. The idea behind the
+paper above is that we can encode the spatial relationships in this
+neighborhood matrix using principle components.</p>
+<p>We can take the weights matrix and create a dense matrix from it:</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">m <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">wt_as_matrix</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>nb<span class="z-punctuation z-separator z-arguments z-r">,</span> wt<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<p>Using this new matrix, we can perform PCA on it.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">pca_res <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">prcomp</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>m<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">summary</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>pca_res<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">Importance of components:
+</span><span class="z-text z-plain">                           PC1     PC2     PC3     PC4     PC5     PC6     PC7
+</span><span class="z-text z-plain">Standard deviation     0.95957 0.89585 0.85836 0.81484 0.79239 0.72065 0.66135
+</span><span class="z-text z-plain">Proportion of Variance 0.06928 0.06038 0.05543 0.04996 0.04724 0.03907 0.03291
+</span><span class="z-text z-plain">Cumulative Proportion  0.06928 0.12966 0.18510 0.23505 0.28229 0.32137 0.35428
+</span><span class="z-text z-plain">                           PC8     PC9    PC10    PC11    PC12    PC13    PC14
+</span><span class="z-text z-plain">Standard deviation     0.65347 0.60391 0.58993 0.54551 0.51607 0.51048 0.50266
+</span><span class="z-text z-plain">Proportion of Variance 0.03213 0.02744 0.02618 0.02239 0.02004 0.01961 0.01901
+</span><span class="z-text z-plain">Cumulative Proportion  0.38640 0.41385 0.44003 0.46242 0.48246 0.50206 0.52107
+</span><span class="z-text z-plain">                          PC15    PC16    PC17    PC18    PC19    PC20    PC21
+</span><span class="z-text z-plain">Standard deviation     0.50008 0.49651 0.48004 0.47334 0.46571 0.46447 0.45886
+</span><span class="z-text z-plain">Proportion of Variance 0.01882 0.01855 0.01734 0.01686 0.01632 0.01623 0.01584
+</span><span class="z-text z-plain">Cumulative Proportion  0.53989 0.55844 0.57578 0.59263 0.60895 0.62518 0.64103
+</span><span class="z-text z-plain">                          PC22   PC23    PC24    PC25    PC26    PC27    PC28
+</span><span class="z-text z-plain">Standard deviation     0.45371 0.4495 0.43495 0.43208 0.42533 0.42265 0.40912
+</span><span class="z-text z-plain">Proportion of Variance 0.01549 0.0152 0.01423 0.01405 0.01361 0.01344 0.01259
+</span><span class="z-text z-plain">Cumulative Proportion  0.65651 0.6717 0.68595 0.70000 0.71361 0.72705 0.73964
+</span><span class="z-text z-plain">                          PC29    PC30    PC31    PC32    PC33    PC34    PC35
+</span><span class="z-text z-plain">Standard deviation     0.40662 0.40248 0.39657 0.38949 0.38172 0.37648 0.36612
+</span><span class="z-text z-plain">Proportion of Variance 0.01244 0.01219 0.01183 0.01141 0.01096 0.01066 0.01009
+</span><span class="z-text z-plain">Cumulative Proportion  0.75208 0.76427 0.77610 0.78752 0.79848 0.80915 0.81923
+</span><span class="z-text z-plain">                          PC36    PC37    PC38    PC39    PC40    PC41    PC42
+</span><span class="z-text z-plain">Standard deviation     0.35885 0.35324 0.35042 0.34655 0.33906 0.33458 0.32477
+</span><span class="z-text z-plain">Proportion of Variance 0.00969 0.00939 0.00924 0.00904 0.00865 0.00842 0.00794
+</span><span class="z-text z-plain">Cumulative Proportion  0.82892 0.83831 0.84755 0.85658 0.86523 0.87366 0.88159
+</span><span class="z-text z-plain">                          PC43    PC44    PC45    PC46    PC47    PC48    PC49
+</span><span class="z-text z-plain">Standard deviation     0.32182 0.30859 0.30426 0.30100 0.29700 0.28072 0.27493
+</span><span class="z-text z-plain">Proportion of Variance 0.00779 0.00716 0.00697 0.00682 0.00664 0.00593 0.00569
+</span><span class="z-text z-plain">Cumulative Proportion  0.88938 0.89655 0.90351 0.91033 0.91697 0.92290 0.92858
+</span><span class="z-text z-plain">                          PC50    PC51    PC52    PC53    PC54    PC55    PC56
+</span><span class="z-text z-plain">Standard deviation     0.26620 0.25927 0.25817 0.25373 0.25203 0.23148 0.22505
+</span><span class="z-text z-plain">Proportion of Variance 0.00533 0.00506 0.00501 0.00484 0.00478 0.00403 0.00381
+</span><span class="z-text z-plain">Cumulative Proportion  0.93391 0.93897 0.94399 0.94883 0.95361 0.95764 0.96145
+</span><span class="z-text z-plain">                          PC57   PC58    PC59    PC60    PC61    PC62    PC63
+</span><span class="z-text z-plain">Standard deviation     0.21925 0.2124 0.20738 0.20542 0.20426 0.17969 0.17415
+</span><span class="z-text z-plain">Proportion of Variance 0.00362 0.0034 0.00324 0.00318 0.00314 0.00243 0.00228
+</span><span class="z-text z-plain">Cumulative Proportion  0.96507 0.9685 0.97170 0.97488 0.97801 0.98044 0.98273
+</span><span class="z-text z-plain">                          PC64    PC65    PC66    PC67    PC68    PC69    PC70
+</span><span class="z-text z-plain">Standard deviation     0.17330 0.16078 0.15374 0.14641 0.14201 0.13335 0.13088
+</span><span class="z-text z-plain">Proportion of Variance 0.00226 0.00194 0.00178 0.00161 0.00152 0.00134 0.00129
+</span><span class="z-text z-plain">Cumulative Proportion  0.98499 0.98693 0.98871 0.99032 0.99184 0.99318 0.99447
+</span><span class="z-text z-plain">                          PC71    PC72    PC73    PC74    PC75    PC76    PC77
+</span><span class="z-text z-plain">Standard deviation     0.12526 0.10810 0.10181 0.08943 0.08425 0.07410 0.07172
+</span><span class="z-text z-plain">Proportion of Variance 0.00118 0.00088 0.00078 0.00060 0.00053 0.00041 0.00039
+</span><span class="z-text z-plain">Cumulative Proportion  0.99565 0.99653 0.99731 0.99791 0.99844 0.99885 0.99924
+</span><span class="z-text z-plain">                          PC78    PC79    PC80    PC81    PC82    PC83     PC84
+</span><span class="z-text z-plain">Standard deviation     0.06809 0.04608 0.03760 0.03481 0.02250 0.01105 0.008143
+</span><span class="z-text z-plain">Proportion of Variance 0.00035 0.00016 0.00011 0.00009 0.00004 0.00001 0.000000
+</span><span class="z-text z-plain">Cumulative Proportion  0.99959 0.99975 0.99986 0.99995 0.99999 1.00000 1.000000
+</span><span class="z-text z-plain">                            PC85
+</span><span class="z-text z-plain">Standard deviation     3.921e-16
+</span><span class="z-text z-plain">Proportion of Variance 0.000e+00
+</span><span class="z-text z-plain">Cumulative Proportion  1.000e+00
+</span></code></pre>
+<p>The spatial relationships that are embedded by the spatial weights
+matrix, are now encoded as components from a PCA. This means that we can
+use each of these components as a univariate measure of space. And, they
+also exhibit quite interesting patterns of spatial dependence.</p>
+<h2 id="exploring-pcoa">Exploring PCoA</h2>
+<p>These components essentially capture spatial autocorrelation. For
+example we an look at the first component.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> extract the first component
+</span></span><span class="z-source z-r">comp1 <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> pca_res<span class="z-keyword z-accessor z-dollar z-r">$</span>rotation<span class="z-meta z-item-access z-r"><span class="z-punctuation z-section z-brackets z-single z-begin z-r">[</span></span><span class="z-meta z-item-access z-r"><span class="z-meta z-item-access z-arguments z-r"><span class="z-punctuation z-separator z-parameters z-r">,</span> <span class="z-constant z-numeric z-float z-decimal z-r">1</span></span></span><span class="z-meta z-item-access z-r"><span class="z-punctuation z-section z-brackets z-single z-end z-r">]</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">ggplot</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>guerry<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">aes</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-variable z-parameter z-r">fill</span> <span class="z-keyword z-operator z-assignment z-r">=</span> comp1<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-arithmetic z-r">+</span>
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">geom_sf</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-variable z-parameter z-r">color</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>black<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">lwd</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-numeric z-float z-decimal z-r">0<span class="z-punctuation z-separator z-decimal z-r">.</span>2</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-arithmetic z-r">+</span>
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">scale_fill_viridis_c</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-arithmetic z-r">+</span>
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">theme_void</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-arithmetic z-r">+</span>
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">labs</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-variable z-parameter z-r">fill</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>Eigenvector<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<p><img src="https://josiah.rs/posts/moran-eigenvectors/2024-05-17-moran-eigenvectors_files/figure-commonmark/unnamed-chunk-7-1.png" alt="" /></p>
+<p>It displays a pattern of being near Paris (the dark purple, or negative
+eigenvector values) or being nearer to Aveyron, the positive eigenvector
+values. Clearly, this displays some interesting global spatial
+autocorrelation. But how much?</p>
+<p>We can measure the global spatial autocorrelation of this component
+using Moran’s I.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">global_moran_perm</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>comp1<span class="z-punctuation z-separator z-arguments z-r">,</span> nb<span class="z-punctuation z-separator z-arguments z-r">,</span> wt<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">    Monte-Carlo simulation of Moran I
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">data:  x 
+</span><span class="z-text z-plain">weights: listw  
+</span><span class="z-text z-plain">number of simulations + 1: 500 
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">statistic = 1.0698, observed rank = 500, p-value &lt; 2.2e-16
+</span><span class="z-text z-plain">alternative hypothesis: two.sided
+</span></code></pre>
+<p>The result is <code>1.0698</code> which is greater than the theoretical maximum
+of 1. There is a ridiculous amount of spatial autocorrelation here.</p>
+<h2 id="using-pcoa-eigenvectors-to-reduce-spatial-confounding">Using PCoA Eigenvectors to reduce spatial confounding</h2>
+<p>Predicting crime based on population and the prostitution levels of
+1830s France shows that there is a <em>lot</em> of spatial autocorrelation in
+the residuals. This means that the results of the model do not
+appropriately account for spatial dependence.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">mod <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">lm</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>crime_pers <span class="z-keyword z-other z-r">~</span> pop1831 <span class="z-keyword z-operator z-arithmetic z-r">+</span> prostitutes<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">data</span> <span class="z-keyword z-operator z-assignment z-r">=</span> guerry<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">summary</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>mod<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">Call:
+</span><span class="z-text z-plain">lm(formula = crime_pers ~ pop1831 + prostitutes, data = guerry)
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Residuals:
+</span><span class="z-text z-plain">     Min       1Q   Median       3Q      Max 
+</span><span class="z-text z-plain">-13762.2  -4592.1   -974.6   4892.4  18672.5 
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Coefficients:
+</span><span class="z-text z-plain">             Estimate Std. Error t value Pr(&gt;|t|)    
+</span><span class="z-text z-plain">(Intercept) 13688.932   2265.393   6.043 4.27e-08 ***
+</span><span class="z-text z-plain">pop1831        17.676      5.881   3.006  0.00352 ** 
+</span><span class="z-text z-plain">prostitutes    -3.197      1.665  -1.920  0.05833 .  
+</span><span class="z-text z-plain">---
+</span><span class="z-text z-plain">Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Residual standard error: 7001 on 82 degrees of freedom
+</span><span class="z-text z-plain">Multiple R-squared:  0.1021,    Adjusted R-squared:  0.08016 
+</span><span class="z-text z-plain">F-statistic:  4.66 on 2 and 82 DF,  p-value: 0.01211
+</span></code></pre>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">global_moran_test</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">resid</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>mod<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> nb<span class="z-punctuation z-separator z-arguments z-r">,</span> wt<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">    Moran I test under randomisation
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">data:  x  
+</span><span class="z-text z-plain">weights: listw    
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Moran I statistic standard deviate = 5.0424, p-value = 2.298e-07
+</span><span class="z-text z-plain">alternative hypothesis: greater
+</span><span class="z-text z-plain">sample estimates:
+</span><span class="z-text z-plain">Moran I statistic       Expectation          Variance 
+</span><span class="z-text z-plain">      0.328493924      -0.011904762       0.004557168 
+</span></code></pre>
+<p>If you include the first eigenvector component, the spatial
+autocorrelation of the residuals decrease dramatically.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">mod <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">lm</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>crime_pers <span class="z-keyword z-other z-r">~</span> pop1831 <span class="z-keyword z-operator z-arithmetic z-r">+</span> prostitutes <span class="z-keyword z-operator z-arithmetic z-r">+</span> comp1<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">data</span> <span class="z-keyword z-operator z-assignment z-r">=</span> guerry<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">summary</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>mod<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">Call:
+</span><span class="z-text z-plain">lm(formula = crime_pers ~ pop1831 + prostitutes + comp1, data = guerry)
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Residuals:
+</span><span class="z-text z-plain">     Min       1Q   Median       3Q      Max 
+</span><span class="z-text z-plain">-14228.8  -3822.7   -893.4   4232.5  19718.8 
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Coefficients:
+</span><span class="z-text z-plain">              Estimate Std. Error t value Pr(&gt;|t|)    
+</span><span class="z-text z-plain">(Intercept)  14847.292   2080.269   7.137 3.66e-10 ***
+</span><span class="z-text z-plain">pop1831         15.179      5.386   2.818  0.00607 ** 
+</span><span class="z-text z-plain">prostitutes     -4.597      1.551  -2.964  0.00399 ** 
+</span><span class="z-text z-plain">comp1       -28422.828   6708.123  -4.237 5.95e-05 ***
+</span><span class="z-text z-plain">---
+</span><span class="z-text z-plain">Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Residual standard error: 6373 on 81 degrees of freedom
+</span><span class="z-text z-plain">Multiple R-squared:  0.265, Adjusted R-squared:  0.2378 
+</span><span class="z-text z-plain">F-statistic: 9.733 on 3 and 81 DF,  p-value: 1.482e-05
+</span></code></pre>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">global_moran_test</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">resid</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>mod<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> nb<span class="z-punctuation z-separator z-arguments z-r">,</span> wt<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">    Moran I test under randomisation
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">data:  x  
+</span><span class="z-text z-plain">weights: listw    
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Moran I statistic standard deviate = 2.666, p-value = 0.003838
+</span><span class="z-text z-plain">alternative hypothesis: greater
+</span><span class="z-text z-plain">sample estimates:
+</span><span class="z-text z-plain">Moran I statistic       Expectation          Variance 
+</span><span class="z-text z-plain">      0.167439656      -0.011904762       0.004525529 
+</span></code></pre>
+<p>Interestingly, this increases the <em>R</em><sup>2</sup> by 16 which is nothing
+to scoff at. The significance of <code>prostitutes</code> variable increases and
+the <em>β</em> values shrink. And the first component accounts for pretty much
+everything else lol!</p>
+<h3 id="what-about-another-component">What about another component?</h3>
+<p>We can plot the relationship that is capture by the second component.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-comment z-line z-number-sign z-r"><span class="z-punctuation z-definition z-comment z-r">#</span> extract the second component
+</span></span><span class="z-source z-r">comp2 <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> pca_res<span class="z-keyword z-accessor z-dollar z-r">$</span>rotation<span class="z-meta z-item-access z-r"><span class="z-punctuation z-section z-brackets z-single z-begin z-r">[</span></span><span class="z-meta z-item-access z-r"><span class="z-meta z-item-access z-arguments z-r"><span class="z-punctuation z-separator z-parameters z-r">,</span> <span class="z-constant z-numeric z-float z-decimal z-r">2</span></span></span><span class="z-meta z-item-access z-r"><span class="z-punctuation z-section z-brackets z-single z-end z-r">]</span></span>
+</span><span class="z-source z-r">
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">ggplot</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>guerry<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">aes</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-variable z-parameter z-r">fill</span> <span class="z-keyword z-operator z-assignment z-r">=</span> comp2<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-arithmetic z-r">+</span>
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">geom_sf</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-variable z-parameter z-r">color</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>black<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">lwd</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-constant z-numeric z-float z-decimal z-r">0<span class="z-punctuation z-separator z-decimal z-r">.</span>2</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-arithmetic z-r">+</span>
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">scale_fill_viridis_c</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-arithmetic z-r">+</span>
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">theme_void</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span> <span class="z-keyword z-operator z-arithmetic z-r">+</span>
+</span><span class="z-source z-r">  <span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">labs</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-variable z-parameter z-r">fill</span> <span class="z-keyword z-operator z-assignment z-r">=</span> <span class="z-string z-quoted z-double z-r"><span class="z-punctuation z-definition z-string z-begin z-r">&quot;</span>Eigenvector<span class="z-punctuation z-definition z-string z-end z-r">&quot;</span></span><span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<p><img src="https://josiah.rs/posts/moran-eigenvectors/2024-05-17-moran-eigenvectors_files/figure-commonmark/unnamed-chunk-11-1.png" alt="" /></p>
+<p>This component captures a west to east relationship rather than a north
+to south one. Is the second component spatially autocorrelated?</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">global_moran_perm</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>comp2<span class="z-punctuation z-separator z-arguments z-r">,</span> nb<span class="z-punctuation z-separator z-arguments z-r">,</span> wt<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">    Monte-Carlo simulation of Moran I
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">data:  x 
+</span><span class="z-text z-plain">weights: listw  
+</span><span class="z-text z-plain">number of simulations + 1: 500 
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">statistic = 0.99864, observed rank = 500, p-value &lt; 2.2e-16
+</span><span class="z-text z-plain">alternative hypothesis: two.sided
+</span></code></pre>
+<p>Oh hell yeah it is.</p>
+<p>If this component is included in the model instead of the first one we
+see something interesting.</p>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r">mod <span class="z-keyword z-operator z-assignment z-r">&lt;-</span> <span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">lm</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>crime_pers <span class="z-keyword z-other z-r">~</span> pop1831 <span class="z-keyword z-operator z-arithmetic z-r">+</span> prostitutes <span class="z-keyword z-operator z-arithmetic z-r">+</span> comp2<span class="z-punctuation z-separator z-arguments z-r">,</span> <span class="z-variable z-parameter z-r">data</span> <span class="z-keyword z-operator z-assignment z-r">=</span> guerry<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">summary</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>mod<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">Call:
+</span><span class="z-text z-plain">lm(formula = crime_pers ~ pop1831 + prostitutes + comp2, data = guerry)
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Residuals:
+</span><span class="z-text z-plain">   Min     1Q Median     3Q    Max 
+</span><span class="z-text z-plain">-13617  -4584  -1150   4831  18360 
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Coefficients:
+</span><span class="z-text z-plain">             Estimate Std. Error t value Pr(&gt;|t|)    
+</span><span class="z-text z-plain">(Intercept) 13730.388   2278.027   6.027 4.71e-08 ***
+</span><span class="z-text z-plain">pop1831        17.518      5.919   2.960  0.00404 ** 
+</span><span class="z-text z-plain">prostitutes    -3.098      1.686  -1.837  0.06989 .  
+</span><span class="z-text z-plain">comp2        3303.053   7091.459   0.466  0.64262    
+</span><span class="z-text z-plain">---
+</span><span class="z-text z-plain">Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Residual standard error: 7034 on 81 degrees of freedom
+</span><span class="z-text z-plain">Multiple R-squared:  0.1045,    Adjusted R-squared:  0.0713 
+</span><span class="z-text z-plain">F-statistic:  3.15 on 3 and 81 DF,  p-value: 0.02941
+</span></code></pre>
+<pre data-lang="r" class="language-r z-code"><code class="language-r" data-lang="r"><span class="z-source z-r"><span class="z-meta z-function-call z-name z-r"><span class="z-variable z-function z-r">global_moran_test</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span><span class="z-meta z-function-call z-name z-r"><span class="z-support z-function z-r">resid</span></span><span class="z-meta z-function-call z-arguments z-r"><span class="z-punctuation z-section z-arguments z-begin z-r">(</span>mod<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span><span class="z-punctuation z-separator z-arguments z-r">,</span> nb<span class="z-punctuation z-separator z-arguments z-r">,</span> wt<span class="z-punctuation z-section z-arguments z-end z-r">)</span></span>
+</span></code></pre>
+<pre class="z-code"><code><span class="z-text z-plain">    Moran I test under randomisation
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">data:  x  
+</span><span class="z-text z-plain">weights: listw    
+</span><span class="z-text z-plain">
+</span><span class="z-text z-plain">Moran I statistic standard deviate = 5.0189, p-value = 2.598e-07
+</span><span class="z-text z-plain">alternative hypothesis: greater
+</span><span class="z-text z-plain">sample estimates:
+</span><span class="z-text z-plain">Moran I statistic       Expectation          Variance 
+</span><span class="z-text z-plain">      0.326953780      -0.011904762       0.004558477 
+</span></code></pre>
+<p>The model is not impacted nor is the spatial autocorrelation. So the
+pattern encompassed by the second component is not confounding our
+variables like the first one is.</p>
+<h2 id="what-does-this-mean">What does this mean?</h2>
+<p>If you have spatially dependent features that you’re predicting you
+should consider using these as input features to your models. I have a
+hunch that they would work insanely well with computer vision tasks and
+things models like Random Forests and XGBoost.</p>
+</div>
+    </div>
+</div>
+</main>
+
+        
+
+        <!-- Basecoat JS for interactive components -->
+        <script
+            src="https://josiah.rs/js/basecoat/basecoat.min.js"
+            defer
+        ></script>
+        <!-- Basecoat sidebar component -->
+        <script
+            src="https://josiah.rs/js/basecoat/sidebar.min.js"
+            defer
+        ></script>
+        <!-- Sidebar toggle for mobile -->
+        <script src="https://josiah.rs/js/sidebar-toggle.js" defer></script>
+        <!-- Custom tabs for panel-tabset -->
+        <script src="https://josiah.rs/js/tabs.js" defer></script>
+        <!-- Search functionality -->
+        <script src="https://josiah.rs/js/search.js" defer></script>
+        <script>
+            (() => {
+                const apply = (dark) => {
+                    document.documentElement.classList.toggle("dark", dark);
+
+                    // Toggle syntax highlighting themes via media attribute
+                    const darkSyntax = document.getElementById("syntax-dark");
+                    const lightSyntax = document.getElementById("syntax-light");
+                    if (darkSyntax && lightSyntax) {
+                        darkSyntax.media = dark ? "all" : "not all";
+                        lightSyntax.media = dark ? "not all" : "all";
+                    }
+
+                    try {
+                        localStorage.setItem(
+                            "themeMode",
+                            dark ? "dark" : "light",
+                        );
+                    } catch (_) {}
+                };
+
+                document.addEventListener("basecoat:theme", (event) => {
+                    const mode = event.detail?.mode;
+                    apply(
+                        mode === "dark"
+                            ? true
+                            : mode === "light"
+                              ? false
+                              : !document.documentElement.classList.contains(
+                                    "dark",
+                                ),
+                    );
+                });
+            })();
+        </script>
+        <!-- KaTeX auto-render -->
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"
+        ></script>
+        <script
+            defer
+            src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+            onload="renderMathInElement(document.body, {
+                delimiters: [
+                    {left: '$$', right: '$$', display: true},
+                    {left: '$', right: '$', display: false}
+                ]
+            });"
+        ></script>
+        
+    </body>
+</html>

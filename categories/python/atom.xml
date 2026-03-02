@@ -1,0 +1,486 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Josiah Parry - Python</title>
+    <link rel="self" type="application/atom+xml" href="https://josiah.rs/categories/python/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://josiah.rs"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2025-06-04T00:00:00+00:00</updated>
+    <id>https://josiah.rs/categories/python/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Apache Arrow, Rust, and cross-langauge data science</title>
+        <published>2025-06-04T00:00:00+00:00</published>
+        <updated>2025-06-04T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/cross-language-ds/"/>
+        <id>https://josiah.rs/posts/cross-language-ds/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/cross-language-ds/">&lt;h2 id=&quot;tl-dr&quot;&gt;TL;DR&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;arrow.apache.org&#x2F;&quot;&gt;Apache Arrow&lt;&#x2F;a&gt; standardized memory layout
+so that memory can be used in any language without (de)serialization.&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;www.rust-lang.org&#x2F;&quot;&gt;Rust&lt;&#x2F;a&gt; is a great candidate for building
+core algorithm &#x2F; tool implementations as it has robust &lt;a href=&quot;https:&#x2F;&#x2F;doc.rust-lang.org&#x2F;std&#x2F;ffi&#x2F;index.html&quot;&gt;foreign
+function interface&lt;&#x2F;a&gt;
+(&lt;a href=&quot;https:&#x2F;&#x2F;en.wikipedia.org&#x2F;wiki&#x2F;Foreign_function_interface&quot;&gt;FFI&lt;&#x2F;a&gt;)
+tooling and bindings tools like &lt;a href=&quot;https:&#x2F;&#x2F;extendr.github.io&#x2F;&quot;&gt;extendr&lt;&#x2F;a&gt;,
+&lt;a href=&quot;https:&#x2F;&#x2F;pyo3.rs&#x2F;&quot;&gt;PyO3&lt;&#x2F;a&gt;, and
+&lt;a href=&quot;https:&#x2F;&#x2F;docs.rs&#x2F;jlrs&#x2F;latest&#x2F;jlrs&#x2F;&quot;&gt;jlrs&lt;&#x2F;a&gt;.&lt;&#x2F;li&gt;
+&lt;li&gt;Use Apache Arrow as inputs and outputs from the tool standardize the
+API across languages.&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;hr &#x2F;&gt;
+&lt;h2 id=&quot;the-status-quo&quot;&gt;The Status Quo&lt;&#x2F;h2&gt;
+&lt;p&gt;I would categorize the majority of scientific computing libraries as
+either:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;tightly coupled&lt;&#x2F;li&gt;
+&lt;li&gt;loosely coupled&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;tightly-coupled&quot;&gt;Tightly coupled&lt;&#x2F;h2&gt;
+&lt;p&gt;Many of the most popular scientific computing libraries in R and Python
+are developed in a tightly coupled manner.&lt;&#x2F;p&gt;
+&lt;div class=&quot;columns&quot;&gt;
+&lt;div class=&quot;column&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;cross-language-ds&#x2F;images&#x2F;rdatatable.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;column&quot;&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;cross-language-ds&#x2F;images&#x2F;numpy.svg&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;aside&quot;&gt;
+&lt;p&gt;Julia is a different beast because it is inherently fast and native
+implementations are exceptionally performant.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;For example &lt;a href=&quot;https:&#x2F;&#x2F;rdatatable.gitlab.io&#x2F;data.table&#x2F;&quot;&gt;&lt;code&gt;{data.table}&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;
+is one of the fastest data frame libraries in the world—and for a while
+was &lt;em&gt;the&lt;&#x2F;em&gt; fastest. It is developed in C directly with R’s C API.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;numpy.org&#x2F;&quot;&gt;NumPy&lt;&#x2F;a&gt; is probably the most numerical computing
+library in the world. It is written directly in C with Cython and is
+intended for use directly with Python.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;pros&quot;&gt;Pros&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Highly efficient&lt;&#x2F;li&gt;
+&lt;li&gt;Ergonomic APIs for the language&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;cons&quot;&gt;Cons&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Innovation and development siloed to the language of implementation&lt;&#x2F;li&gt;
+&lt;li&gt;Contributor pool shrinks to the intersection of C developers with
+knowledge of the language-specific C API&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;loosely-coupled&quot;&gt;Loosely coupled&lt;&#x2F;h2&gt;
+&lt;p&gt;Loose coupling is another common approach to scientific computing and is
+pervasive in the geospatial ecosystem.&lt;&#x2F;p&gt;
+&lt;p&gt;Core libraries such as &lt;a href=&quot;https:&#x2F;&#x2F;libgeos.org&#x2F;&quot;&gt;GEOS&lt;&#x2F;a&gt;,
+&lt;a href=&quot;https:&#x2F;&#x2F;gdal.org&#x2F;en&#x2F;stable&#x2F;&quot;&gt;GDAL&lt;&#x2F;a&gt;, and
+&lt;a href=&quot;https:&#x2F;&#x2F;proj.org&#x2F;en&#x2F;stable&#x2F;&quot;&gt;PROJ&lt;&#x2F;a&gt; are written in C&#x2F;++ with bindings to
+them in R, Python, Julia, and others.&lt;&#x2F;p&gt;
+&lt;figure&gt;
+&lt;a href=&quot;https:&#x2F;&#x2F;arxiv.org&#x2F;abs&#x2F;2503.16686&quot;&gt;&lt;img
+src=&quot;images&#x2F;sdsl.png&quot; &#x2F;&gt;&lt;&#x2F;a&gt;
+&lt;figcaption&gt;Pebesma, et al. 2025&lt;&#x2F;figcaption&gt;
+&lt;&#x2F;figure&gt;
+&lt;p&gt;There are many packages that have bindings to these libraries. However,
+due to the lack of standardized interface, the APIs that are developed
+may not work with each other even if they’re implemented in the same
+language.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;pros-1&quot;&gt;Pros&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Innovations and development is not siloed&lt;&#x2F;li&gt;
+&lt;li&gt;Contributions to the core library can be propagated to the client
+bindings&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h3 id=&quot;cons-1&quot;&gt;Cons&lt;&#x2F;h3&gt;
+&lt;ul&gt;
+&lt;li&gt;Little &#x2F; no standardization of data format leads to &lt;em&gt;tons&lt;&#x2F;em&gt; of very
+different and incompatible libraries&lt;&#x2F;li&gt;
+&lt;li&gt;Using output from one library in another requires intermediate
+representation&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;using-rust-for-a-core-library&quot;&gt;Using Rust for a core library&lt;&#x2F;h2&gt;
+&lt;p&gt;It is not my intention to belabor the point of “why Rust.” But I will
+list out a few bullets for why I believe Rust is the best candidate for
+core implementations.&lt;&#x2F;p&gt;
+&lt;table&gt;
+&lt;colgroup&gt;
+&lt;col style=&quot;width: 33%&quot; &#x2F;&gt;
+&lt;col style=&quot;width: 66%&quot; &#x2F;&gt;
+&lt;&#x2F;colgroup&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Pro&lt;&#x2F;th&gt;
+&lt;th&gt;Me belaboring the point&lt;&#x2F;th&gt;
+&lt;&#x2F;tr&gt;
+&lt;&#x2F;thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;Rust is (fairly) easy to pick up.&lt;&#x2F;td&gt;
+&lt;td&gt;I’ve tried and failed many times to learn C++. I’ve tried to learn
+Java. I’ve tried to learn Go. Nothing has the guide rails that Rust
+does.&lt;&#x2F;td&gt;
+&lt;&#x2F;tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Dependency free&lt;&#x2F;td&gt;
+&lt;td&gt;Rust crates are compiled into a single shared library which has no
+dependencies to other libraries. More often than not there is also no
+system dependency requirement either.&lt;&#x2F;td&gt;
+&lt;&#x2F;tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Stupid fast by default 🚀&lt;&#x2F;td&gt;
+&lt;td&gt;The most naive implementations often out perform even advanced
+implementations in R or Python (and sometimes even Julia)&lt;&#x2F;td&gt;
+&lt;&#x2F;tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Easy parallelization with &lt;a
+href=&quot;https:&#x2F;&#x2F;github.com&#x2F;rayon-rs&#x2F;rayon&quot;&gt;&lt;code&gt;rayon&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;&lt;&#x2F;td&gt;
+&lt;td&gt;&lt;code&gt;rayon&lt;&#x2F;code&gt; allows you to parallelize your code with next to
+no effort. For example changing &lt;code&gt;.iter()&lt;&#x2F;code&gt; ➡️
+&lt;code&gt;.par_iter()&lt;&#x2F;code&gt; is all you need.&lt;&#x2F;td&gt;
+&lt;&#x2F;tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Cross-platform support.&lt;&#x2F;td&gt;
+&lt;td&gt;Rust libraries can support Windows, Mac, x86 and Arm, Linux, and
+WASM, all with no modification of the core library. That’s HUGE!&lt;&#x2F;td&gt;
+&lt;&#x2F;tr&gt;
+&lt;&#x2F;tbody&gt;
+&lt;&#x2F;table&gt;
+&lt;p&gt;Creating a Rust core would still be considered a “loose coupling.”
+Though, you do at least get the above benefits of using Rust. We can
+improve this experience a bit more by incorporating Apache Arrow into
+the picture.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;apache-arrow&quot;&gt;Apache Arrow&lt;&#x2F;h2&gt;
+&lt;p&gt;Apache Arrow is a &lt;strong&gt;specification&lt;&#x2F;strong&gt; of what data should look like &lt;em&gt;in
+memory&lt;&#x2F;em&gt; (not stored as a file). Additionally, Apache Arrow &lt;strong&gt;is not&lt;&#x2F;strong&gt;
+the R package &lt;code&gt;{arrow}&lt;&#x2F;code&gt; and it is also not pyarrow. Those package are
+&lt;em&gt;implementations&lt;&#x2F;em&gt; of Arrow with additional goodies.&lt;&#x2F;p&gt;
+&lt;div class=&quot;alert-note&quot;&gt;
+&lt;p&gt;I really recommend reading Danielle Navarro’s &lt;a href=&quot;https:&#x2F;&#x2F;blog.djnavarro.net&#x2F;posts&#x2F;2021-11-19_starting-apache-arrow-in-r&#x2F;#fiiiiiine-ill-keep-reading-tell-me-what-arrow-is&quot;&gt;blog post on Apache
+Arrow&lt;&#x2F;a&gt;
+for a very human introduction to the topic.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;h3 id=&quot;the-problem&quot;&gt;The Problem&lt;&#x2F;h3&gt;
+&lt;p&gt;In this status-quo of cross-language tooling, we have this issue where
+data in R is represented differently than data is represented in Python,
+which is represented differently in Rust or Julia—and so on.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;cross-language-ds&#x2F;images&#x2F;paste-7.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;This process of copying data and converting is &lt;em&gt;expensive&lt;&#x2F;em&gt; and time
+consuming. The canonical example is that of a database.&lt;&#x2F;p&gt;
+&lt;p&gt;We typically work with tabular data that looks like so&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;cross-language-ds&#x2F;images&#x2F;paste-9.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;However, these databases typically represent data in a row-oriented
+manner. Where each row is stored in memory followed by the next row etc.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;columnar-data&quot;&gt;Columnar data&lt;&#x2F;h3&gt;
+&lt;p&gt;Instead, Apache Arrow is a columnar data format. Instead of each row
+being represented in memory, we have each column. This is a huge
+enhancement particularly for analytical processes where we are working
+with &lt;em&gt;columns&lt;&#x2F;em&gt; of data instead of _rows.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;cross-language-ds&#x2F;images&#x2F;paste-13.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;The above shows the difference between these.&lt;&#x2F;p&gt;
+&lt;p&gt;Apache Arrow is a standized way of saying what data should look like in
+memory. So instead of copying and converting between each tool, we can
+use the same exact arrow data set by each tool .&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;cross-language-ds&#x2F;images&#x2F;paste-8.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;arrow-and-cross-langauge-tooling&quot;&gt;Arrow and cross-langauge tooling&lt;&#x2F;h2&gt;
+&lt;p&gt;By adopting Apache Arrow as a standard memory format, we can have data
+science workflows that look something like this.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;cross-language-ds&#x2F;images&#x2F;paste-4.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;At step 1, we may call a library that uses Rust under the hood. But when
+we send data to it, it uses Apache Arrow, and it also gives us back
+Arrow. Then in the next step, we use our Arrow data to call out to a C++
+library which &lt;em&gt;also&lt;&#x2F;em&gt; accepts and returns Arrow.&lt;&#x2F;p&gt;
+&lt;p&gt;Doing this will eliminate the overhead of copying and converting data to
+each tool’s desired format. This also helps us move towards a
+standardized API that shouldn’t be too different between language
+binding. Also, by using the same data format, even if there are multiple
+bindings to the same underlying library, if they all accept Arrow, there
+is no cost incurred by sending data to them.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;a-real-example&quot;&gt;A real example&lt;&#x2F;h2&gt;
+&lt;p&gt;A real world example of this is the
+&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;JosiahParry&#x2F;anime&quot;&gt;ANIME&lt;&#x2F;a&gt; algorithm that I developed
+along with &lt;a href=&quot;https:&#x2F;&#x2F;www.robinlovelace.net&#x2F;&quot;&gt;Dr. Robin Lovelace&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Approximate Network Integration, Matching, and Enrichment (ANIME) is a
+partial line matching algorithm that is written in Rust with bindings to
+it in both R and Python—no Julia bindings, so if you’re interested in
+building them, please help!&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;cross-language-ds&#x2F;images&#x2F;paste-16.png&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;The ANIME crate is designed to work &lt;a href=&quot;https:&#x2F;&#x2F;geoarrow.org&#x2F;&quot;&gt;GeoArrow&lt;&#x2F;a&gt;
+data.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;repo-structure&quot;&gt;Repo structure&lt;&#x2F;h3&gt;
+&lt;p&gt;I use a monorepo structure to accomplish this where the core algorithm
+is implemented in &lt;code&gt;&#x2F;rust&lt;&#x2F;code&gt; and the R bindings in &lt;code&gt;r&#x2F;&lt;&#x2F;code&gt; and the python
+bindings in &lt;code&gt;&#x2F;python&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;.
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;├── rust&#x2F;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;│   └── Cargo.toml
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;├── r&#x2F;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;│   └── src&#x2F;rust&#x2F;Cargo.toml
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;└── py&#x2F;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    └── Cargo.toml
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The result is bindings with a very similar API and &lt;em&gt;identical&lt;&#x2F;em&gt; results:&lt;&#x2F;p&gt;
+&lt;div&gt;
+&lt;&#x2F;div&gt;
+&lt;h2 id=&quot;arrow-ffi-helpers&quot;&gt;Arrow FFI helpers&lt;&#x2F;h2&gt;
+&lt;p&gt;There still exists a challenge of taking Arrow from R, Python, or Julia
+and getting it across the language barrier.&lt;&#x2F;p&gt;
+&lt;p&gt;To do so from R with extendr is
+&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;JosiahParry&#x2F;arrow-extendr&quot;&gt;&lt;code&gt;arrow-extendr&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;. And
+from Python is &lt;a href=&quot;https:&#x2F;&#x2F;kylebarron.dev&#x2F;arro3&#x2F;latest&#x2F;&quot;&gt;arro3&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;a-quick-caveat&quot;&gt;A quick caveat&lt;&#x2F;h2&gt;
+&lt;p&gt;ANIME is not a perfectly fleshed out example. At present, the core rust
+library does not &lt;em&gt;return&lt;&#x2F;em&gt; Arrow but &lt;em&gt;it is&lt;&#x2F;em&gt; designed to work with the
+geoarrow-rust library. The current bindings are a loose-ish coupling
+approach where on the extendr and PyO3 side the results are processed
+into a data.frame and Arrow Table respectively.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;strong&gt;Call to action&lt;&#x2F;strong&gt; if you’re interested in contributing Julia bindings
+or improving the Python bindings (and maybe publishing them), please do
+make a PR or an issue.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Export Python functions in R packages</title>
+        <published>2023-10-28T00:00:00+00:00</published>
+        <updated>2023-10-28T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/python-fns/"/>
+        <id>https://josiah.rs/posts/python-fns/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/python-fns/">&lt;p&gt;I was asked a really interesting question by
+&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;benyamindsmith&quot;&gt;@benyamindsmith&lt;&#x2F;a&gt; yesterday. The
+question was essentially:&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;em&gt;How can one export a python 🐍 function in an R package 📦?&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;I proposed my solution as a very minimal R package called
+&lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;JosiahParry&#x2F;pyfns&quot;&gt;&lt;code&gt;{pyfns}&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;It is an R package with one function: &lt;code&gt;hello_world()&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;how-it-works&quot;&gt;How it works&lt;&#x2F;h2&gt;
+&lt;p&gt;The process is &lt;em&gt;fairly&lt;&#x2F;em&gt; simple.&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;We create an environment inside of our package&lt;&#x2F;li&gt;
+&lt;li&gt;On package start-up we source python scripts using
+&lt;code&gt;reticulate::source_python()&lt;&#x2F;code&gt; into the new environment&lt;&#x2F;li&gt;
+&lt;li&gt;We create R wrapper functions that call the reticulated function.&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;Example usage:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;pyfns&lt;span class=&quot;z-punctuation z-accessor z-colons z-r&quot;&gt;::&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;hello_world&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;[1] &amp;quot;Helloooo world&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;storing-python-scripts&quot;&gt;Storing Python Scripts&lt;&#x2F;h2&gt;
+&lt;p&gt;Store python scripts inside of &lt;code&gt;inst&#x2F;&lt;&#x2F;code&gt;. These files can be read using
+&lt;code&gt;system.file()&lt;&#x2F;code&gt;. In this example &lt;code&gt;inst&#x2F;helloworld.py&lt;&#x2F;code&gt; contains&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;py&quot; class=&quot;language-py z-code&quot;&gt;&lt;code class=&quot;language-py&quot; data-lang=&quot;py&quot;&gt;&lt;span class=&quot;z-source z-python&quot;&gt;&lt;span class=&quot;z-meta z-function z-python&quot;&gt;&lt;span class=&quot;z-storage z-type z-function z-python&quot;&gt;&lt;span class=&quot;z-keyword z-declaration z-function z-python&quot;&gt;def&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-entity z-name z-function z-python&quot;&gt;&lt;span class=&quot;z-meta z-generic-name z-python&quot;&gt;hello_world&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-parameters z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-parameters z-begin z-python&quot;&gt;(&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-parameters z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-parameters z-end z-python&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-function z-begin z-python&quot;&gt;:&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-python&quot;&gt;  &lt;span class=&quot;z-keyword z-control z-flow z-return z-python&quot;&gt;return&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-string z-python&quot;&gt;&lt;span class=&quot;z-string z-quoted z-double z-python&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-python&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-string z-python&quot;&gt;&lt;span class=&quot;z-string z-quoted z-double z-python&quot;&gt;Helloooo world&lt;span class=&quot;z-punctuation z-definition z-string z-end z-python&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;creating-an-environment&quot;&gt;Creating an environment&lt;&#x2F;h2&gt;
+&lt;p&gt;Before we can source python scripts, we must create an environment to
+soure them into. This is done in &lt;code&gt;R&#x2F;env.R&lt;&#x2F;code&gt; like so&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;pyfn_env &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; rlang&lt;span class=&quot;z-punctuation z-accessor z-colons z-r&quot;&gt;::&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;env&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;sourcing-scripts&quot;&gt;Sourcing scripts&lt;&#x2F;h2&gt;
+&lt;p&gt;Scripts are sourced in &lt;code&gt;R&#x2F;zzz.R&lt;&#x2F;code&gt; in which there is an &lt;code&gt;.onLoad()&lt;&#x2F;code&gt;
+function call. This gets called only once when the package is loaded.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function z-name z-r&quot;&gt;&lt;span class=&quot;z-entity z-name z-function z-r&quot;&gt;.onLoad&lt;&#x2F;span&gt; &lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-r&quot;&gt;&lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-r&quot;&gt;&lt;span class=&quot;z-storage z-type z-function z-r&quot;&gt;function&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-parameters z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-parameters z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;libname&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-parameters z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;pkgname&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-parameters z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-braces z-begin z-r&quot;&gt;{&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;  reticulate&lt;span class=&quot;z-punctuation z-accessor z-colons z-r&quot;&gt;::&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;source_python&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;    &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;system.file&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;helloworld.py&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;package&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;pyfns&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;    &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;envir&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; pyfn_env
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-braces z-end z-r&quot;&gt;}&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;In this chunk we use &lt;code&gt;reticulate::source_python()&lt;&#x2F;code&gt; to bring the python
+function into scope. The function needs a path to the python script that
+we want to source. This is where &lt;code&gt;system.file()&lt;&#x2F;code&gt; comes into play. It can
+access files stored in &lt;code&gt;inst&lt;&#x2F;code&gt;. &lt;em&gt;Note that it does not include &lt;code&gt;inst&lt;&#x2F;code&gt;&lt;&#x2F;em&gt;.
+And most importantly we set &lt;code&gt;envir = pyfn_env&lt;&#x2F;code&gt; which is the environment
+we created in &lt;code&gt;R&#x2F;env.R&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;wrapper-functions&quot;&gt;Wrapper functions&lt;&#x2F;h2&gt;
+&lt;p&gt;Since the functions are being sourced into &lt;code&gt;pyfn_env&lt;&#x2F;code&gt; they can be called
+from the environment directly. In &lt;code&gt;R&#x2F;env.R&lt;&#x2F;code&gt;, the R function
+&lt;code&gt;hello_world()&lt;&#x2F;code&gt; is just calling the &lt;code&gt;hello_world()&lt;&#x2F;code&gt; python function from
+the &lt;code&gt;pyfn_env&lt;&#x2F;code&gt;. If there were arguments we can pass them in using &lt;code&gt;...&lt;&#x2F;code&gt;
+in the outer function or recreating the same function arguments.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-comment z-line z-roxygen z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-comment z-r&quot;&gt;#&amp;#39;&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-other z-r&quot;&gt;@export&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function z-name z-r&quot;&gt;&lt;span class=&quot;z-entity z-name z-function z-r&quot;&gt;hello_world&lt;&#x2F;span&gt; &lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-r&quot;&gt;&lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-r&quot;&gt;&lt;span class=&quot;z-storage z-type z-function z-r&quot;&gt;function&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-parameters z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-parameters z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-parameters z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-punctuation z-section z-braces z-begin z-r&quot;&gt;{&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;  pyfn_env&lt;span class=&quot;z-keyword z-accessor z-dollar z-r&quot;&gt;$&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;hello_world&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-braces z-end z-r&quot;&gt;}&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>genius Plumber API</title>
+        <published>2019-03-30T00:00:00+00:00</published>
+        <updated>2019-03-30T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/genius-api/"/>
+        <id>https://josiah.rs/posts/genius-api/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/genius-api/">&lt;p&gt;&lt;em&gt;get started &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;JosiahParry&#x2F;genius-api&quot;&gt;here&lt;&#x2F;a&gt;&lt;&#x2F;em&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Since I created &lt;code&gt;genius&lt;&#x2F;code&gt;, I&#x27;ve wanted to make a version for python. But frankly, that&#x27;s a daunting task for me seeing as my python skills are intermediate at best. But recently I&#x27;ve been made aware of the package &lt;code&gt;plumber&lt;&#x2F;code&gt;. To put it plainly, &lt;code&gt;plumber&lt;&#x2F;code&gt; takes your R code and makes it accessible via an API.&lt;&#x2F;p&gt;
+&lt;p&gt;I thought this would be difficult. I was so wrong.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;media.giphy.com&#x2F;media&#x2F;l0MYOMxG9ijrXhF3q&#x2F;giphy.gif&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;using-plumber&quot;&gt;Using plumber&lt;&#x2F;h2&gt;
+&lt;p&gt;Plumber works by using &lt;code&gt;roxygen&lt;&#x2F;code&gt; like comments (&lt;code&gt;#*&lt;&#x2F;code&gt;). Using a single comment, you can define the request type and the end point. Following that you define a function. The arguments to the funciton become the query parameters.&lt;&#x2F;p&gt;
+&lt;p&gt;The main &lt;code&gt;genius&lt;&#x2F;code&gt; functions only require two main arguments &lt;code&gt;artist&lt;&#x2F;code&gt; and &lt;code&gt;album&lt;&#x2F;code&gt; or &lt;code&gt;song&lt;&#x2F;code&gt;. Making these accessible by API is as simple as:&lt;&#x2F;p&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;#* @get &#x2F;track
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;function(artist, song) {
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;  genius::genius_lyrics(artist, song)
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;With this line of code I created an endpoint called &lt;code&gt;track&lt;&#x2F;code&gt; to retrieve song lyrics. The two parameters as defined by the anonymous function are &lt;code&gt;artist&lt;&#x2F;code&gt; and &lt;code&gt;song&lt;&#x2F;code&gt;. This means that song lyrics are accessible with a query looking like &lt;code&gt;http:&#x2F;&#x2F;hostname&#x2F;track?artist=artist_name&amp;amp;song=song_name&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;But as it stands, this isn&#x27;t enough to host the API locally. Save your functions with plumber documentation into a file (I named mine &lt;code&gt;plumber.R&lt;&#x2F;code&gt;).&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;creating-the-api&quot;&gt;Creating the API&lt;&#x2F;h3&gt;
+&lt;p&gt;Creating the API is probably the easiest part. It takes quite literally, two lines of code. The function &lt;code&gt;plumb()&lt;&#x2F;code&gt; takes two arguments, the &lt;code&gt;file&lt;&#x2F;code&gt; which contains your plumber commented code, and the &lt;code&gt;dir&lt;&#x2F;code&gt;ectory that houses it.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;plumb()&lt;&#x2F;code&gt; creates a router which is &quot;responsible for taking an incoming request, submitting it through the appropriate filters.&quot;&lt;&#x2F;p&gt;
+&lt;p&gt;I created a plumber router which would be used to route income queries.&lt;&#x2F;p&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;pr &amp;lt;- plumb(&amp;quot;plumber.R&amp;quot;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The next step is to actually run the router. Again, this is quite simple by calling the &lt;code&gt;run()&lt;&#x2F;code&gt; method of the &lt;code&gt;pr&lt;&#x2F;code&gt; object. All I need to do is specify the &lt;code&gt;port&lt;&#x2F;code&gt; that the API will listen on, and optionally the &lt;code&gt;host&lt;&#x2F;code&gt; address.&lt;&#x2F;p&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;pr$run(port = 80, host = &amp;quot;0.0.0.0&amp;quot;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Now I can construct queries in my browser. An example query is &lt;code&gt;http:&#x2F;&#x2F;localhost&#x2F;track?artist=andrew%20bird&amp;amp;song=proxy%20war&lt;&#x2F;code&gt;. Sending this request produces a very friendly &lt;code&gt;json&lt;&#x2F;code&gt; output.&lt;&#x2F;p&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;[
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:1,&amp;quot;lyric&amp;quot;:&amp;quot;He don&amp;#39;t have to get over her&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:2,&amp;quot;lyric&amp;quot;:&amp;quot;She don&amp;#39;t to have get over him&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:3,&amp;quot;lyric&amp;quot;:&amp;quot;With all their words preserved forevermore&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:4,&amp;quot;lyric&amp;quot;:&amp;quot;You don&amp;#39;t have to get over her&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:5,&amp;quot;lyric&amp;quot;:&amp;quot;She don&amp;#39;t have to get over you&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:6,&amp;quot;lyric&amp;quot;:&amp;quot;It&amp;#39;s true these two have never met before&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:7,&amp;quot;lyric&amp;quot;:&amp;quot;At least not in real life&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:8,&amp;quot;lyric&amp;quot;:&amp;quot;Where your words cut like a knife&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:9,&amp;quot;lyric&amp;quot;:&amp;quot;Conjuring blood, biblical floods&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:10,&amp;quot;lyric&amp;quot;:&amp;quot;Looks that stop time&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:11,&amp;quot;lyric&amp;quot;:&amp;quot;You don&amp;#39;t have to remember&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:12,&amp;quot;lyric&amp;quot;:&amp;quot;We forget what memories are for&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:13,&amp;quot;lyric&amp;quot;:&amp;quot;Now we store them in the atmosphere&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:14,&amp;quot;lyric&amp;quot;:&amp;quot;If you don&amp;#39;t want to get too close&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:15,&amp;quot;lyric&amp;quot;:&amp;quot;You don&amp;#39;t have to get too close&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:16,&amp;quot;lyric&amp;quot;:&amp;quot;It&amp;#39;s just what we&amp;#39;re calling peer-to-peer&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:17,&amp;quot;lyric&amp;quot;:&amp;quot;You don&amp;#39;t want to get over&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:18,&amp;quot;lyric&amp;quot;:&amp;quot;You don&amp;#39;t have to get over&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:19,&amp;quot;lyric&amp;quot;:&amp;quot;We store them in the atmosphere&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:20,&amp;quot;lyric&amp;quot;:&amp;quot;If you don&amp;#39;t want to get over her&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:21,&amp;quot;lyric&amp;quot;:&amp;quot;She don&amp;#39;t have to get over you&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:22,&amp;quot;lyric&amp;quot;:&amp;quot;It&amp;#39;s true these two have never met before&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:23,&amp;quot;lyric&amp;quot;:&amp;quot;At least not in real life&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:24,&amp;quot;lyric&amp;quot;:&amp;quot;Where your words cut like a knife&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:25,&amp;quot;lyric&amp;quot;:&amp;quot;Conjuring blood, biblical floods&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:26,&amp;quot;lyric&amp;quot;:&amp;quot;Looks that stop time&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:27,&amp;quot;lyric&amp;quot;:&amp;quot;If you don&amp;#39;t want to get over her&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:28,&amp;quot;lyric&amp;quot;:&amp;quot;You don&amp;#39;t have to get over her&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:29,&amp;quot;lyric&amp;quot;:&amp;quot;If you don&amp;#39;t want to get too close&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:30,&amp;quot;lyric&amp;quot;:&amp;quot;You don&amp;#39;t have to get too close&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:31,&amp;quot;lyric&amp;quot;:&amp;quot;If you want to remember&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:32,&amp;quot;lyric&amp;quot;:&amp;quot;If you don&amp;#39;t want to get over&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:33,&amp;quot;lyric&amp;quot;:&amp;quot;If you don&amp;#39;t want to get over&amp;quot;},
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;{&amp;quot;track_title&amp;quot;:&amp;quot;Proxy War&amp;quot;,&amp;quot;line&amp;quot;:34,&amp;quot;lyric&amp;quot;:&amp;quot;If you don&amp;#39;t want to get over&amp;quot;}
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;]
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;writing-a-python-wrapper&quot;&gt;Writing a Python Wrapper&lt;&#x2F;h2&gt;
+&lt;p&gt;One of the appeals of writing an API is that it can be accessed from any language. This was the inspiriation of creating this API. I want to be able to call R using Python. Creating an API is a great intermediary as writing an API wrapper is much easier for me than recreating all of the code that I wrote in R.&lt;&#x2F;p&gt;
+&lt;p&gt;I want to be able to recreate the three main functions of &lt;code&gt;genius&lt;&#x2F;code&gt;. These are &lt;code&gt;genius_lyrics()&lt;&#x2F;code&gt;, &lt;code&gt;genius_album()&lt;&#x2F;code&gt;, and &lt;code&gt;genius_tracklist()&lt;&#x2F;code&gt;. In doing this there are two steps I have to consider. The first is creating query urls, and the second is parsing json.&lt;&#x2F;p&gt;
+&lt;p&gt;To create the urls, the &lt;code&gt;requests&lt;&#x2F;code&gt; library is used. Next, I created a template for the urls.&lt;&#x2F;p&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;import requests
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;url_template = &amp;quot;http:&#x2F;&#x2F;localhost:80&#x2F;track?artist={}&amp;amp;song={}&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;The idea here is that the &lt;a href=&quot;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;base&#x2F;Paren.html&quot;&gt;&lt;code&gt;{}&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; characters will be filled with provided parameters by using the &lt;code&gt;.format()&lt;&#x2F;code&gt; method.&lt;&#x2F;p&gt;
+&lt;p&gt;For example, if I wanted to get lyrics for Proxy War by Andrew Bird, I would supply &lt;code&gt;&quot;Andrew Bird&quot;&lt;&#x2F;code&gt; and &lt;code&gt;&quot;Proxy War&quot;&lt;&#x2F;code&gt; as the arguments to &lt;a href=&quot;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;base&#x2F;format.html&quot;&gt;&lt;code&gt;format()&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;. It&#x27;s important to note that these arguments are taken positionally. The url is created using this method.&lt;&#x2F;p&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;url = url_template.format(&amp;quot;andrew bird&amp;quot;, &amp;quot;proxy war&amp;quot;)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Now I am at the point where I can ping the server to receive the json. This is accomplished by using the &lt;code&gt;.get()&lt;&#x2F;code&gt; method from &lt;code&gt;requests&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;response = requests.get(url)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;This returns an object that contains the json response. Next, in order to get this into a format that can be analysed, it needs to be parsed. I prefer a Pandas &lt;code&gt;DataFrame&lt;&#x2F;code&gt;, and fortunately Pandas has a lovely &lt;code&gt;read_json&lt;&#x2F;code&gt; function. I will call the &lt;code&gt;.content&lt;&#x2F;code&gt; attribute of the &lt;code&gt;response&lt;&#x2F;code&gt; objectm and feed that into the &lt;code&gt;read_json()&lt;&#x2F;code&gt; function.&lt;&#x2F;p&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;import pandas as pd
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;proxy_war = pd.read_json(response.content)
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;proxy_war.head()
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    line    lyric                                   track_title
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;0   1   He don&amp;#39;t have to get over her               Proxy War
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;1   2   She don&amp;#39;t to have get over him              Proxy War
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;2   3   With all their words preserved forevermore  Proxy War
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;3   4   You don&amp;#39;t have to get over her              Proxy War
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;4   5   She don&amp;#39;t have to get over you              Proxy War
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Beautiful. Song lyrics are available through this API and can easily be accessed via python. The next step is to generalize this and the other two functions. The below is the code to create the &lt;code&gt;genius_lyrics()&lt;&#x2F;code&gt; function in python. It works almost identically as in R. However, at this moment it does not have the ability to set the &lt;code&gt;info&lt;&#x2F;code&gt; argument. But this can be changed easily in the original &lt;code&gt;plumber.R&lt;&#x2F;code&gt; file.&lt;&#x2F;p&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;# Define genius_lyrics()
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;def genius_lyrics(artist, song):
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    url_template = &amp;quot;http:&#x2F;&#x2F;localhost:80&#x2F;track?artist={}&amp;amp;song={}&amp;quot;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    url = url_template.format(artist, song)
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    response = requests.get(url)
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    song = pd.read_json(response.content)
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    return(song)
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;At this point I&#x27;m feeling extremely stoked on the fact that I can use &lt;code&gt;genius&lt;&#x2F;code&gt; with python. Who says R and python practitioners can&#x27;t work together?&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;media.giphy.com&#x2F;media&#x2F;l2JJyDYEX1tXFmCd2&#x2F;giphy.gif&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;containerize-with-docker&quot;&gt;Containerize with Docker&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;media.giphy.com&#x2F;media&#x2F;cUMNWzWZ5n75LvcCIe&#x2F;giphy.gif&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;To make the process of setting up this genius API up easier for those who don&#x27;t necessarily interact with R, I created a lightweight-ish Docker container. The idea for this was to be able to pull a Docker image, run a command, and then the API will be available on a local port without having to interact with R at all.&lt;&#x2F;p&gt;
+&lt;p&gt;I&#x27;m not the most experience person with creating Docker containers but I can borrow code quite well. Fortunately I came across some wonderful &lt;a href=&quot;https:&#x2F;&#x2F;nolisllc.com&#x2F;assets&#x2F;presentations&#x2F;r-tensorflow-api.pdf&quot;&gt;slides&lt;&#x2F;a&gt; from &lt;code&gt;rstudio::conf 2019&lt;&#x2F;code&gt;. &lt;a href=&quot;https:&#x2F;&#x2F;twitter.com&#x2F;heatherklus&quot;&gt;Heather Nollis&lt;&#x2F;a&gt; and &lt;a href=&quot;https:&#x2F;&#x2F;twitter.com&#x2F;skyetetra&quot;&gt;Jacqueline Nolis&lt;&#x2F;a&gt; presented on &quot;API development with R and TensorFlow at T-Mobile&quot;.&lt;&#x2F;p&gt;
+&lt;p&gt;This container needs two things: a linux environment and an installation of R with plumber, genius, and its dependencies. An organization called &lt;a href=&quot;https:&#x2F;&#x2F;www.rocker-project.org&#x2F;&quot;&gt;The Rocker Project&lt;&#x2F;a&gt; has created a number of Docker images that are stable and easy to install.&lt;&#x2F;p&gt;
+&lt;p&gt;Since &lt;code&gt;genius&lt;&#x2F;code&gt; relies on many packages from the &lt;a href=&quot;https:&#x2F;&#x2F;tidyverse.org&quot;&gt;tidyverse&lt;&#x2F;a&gt;, the &lt;a href=&quot;https:&#x2F;&#x2F;hub.docker.com&#x2F;r&#x2F;rocker&#x2F;tidyverse&quot;&gt;&lt;code&gt;rocker&#x2F;tidyverse&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; image was used. To use their wonderful image, only one line is needed in my &lt;code&gt;Dockerfile&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;# Import existing Docker image
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;FROM rocker&#x2F;tidyverse:3.5.2
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;Now, not knowing exactly what I was doing, I copied code from Jacqueline and Heather&#x27;s sample &lt;code&gt;Dockerfile&lt;&#x2F;code&gt; in their slides. Their comment says that this is necessary to have the &lt;em&gt;&quot;needed linux libraries for plumber&quot;&lt;&#x2F;em&gt;, I went with it.&lt;&#x2F;p&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;# install needed linux libraries for plumber
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;RUN apt-get update -qq &amp;amp;&amp;amp; apt-get install -y \
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;  libssl-dev \
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;  libcurl4-gnutls-dev
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;code&gt;genius&lt;&#x2F;code&gt; and &lt;code&gt;plumber&lt;&#x2F;code&gt; are not part of the tidyverse image and have to be installed manually. The following lines tell Docker to run the listed R commands. For some unknown reason there was an issue with installing &lt;code&gt;genius&lt;&#x2F;code&gt; from CRAN so the &lt;code&gt;repos&lt;&#x2F;code&gt; argument was stated explicitly.&lt;&#x2F;p&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;# Install R packages
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;RUN R -e &amp;quot;install.packages(&amp;#39;genius&amp;#39;, repos = &amp;#39;http:&#x2F;&#x2F;cran.rstudio.com&#x2F;&amp;#39;)&amp;quot;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;RUN R -e &amp;quot;install.packages(&amp;#39;plumber&amp;#39;)&amp;quot;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;In addition to the &lt;code&gt;Dockerfile&lt;&#x2F;code&gt; there are two files in my directory which are used to launch the API. The &lt;code&gt;plumber.R&lt;&#x2F;code&gt; and &lt;code&gt;launch_api.R&lt;&#x2F;code&gt; files. These need to be copied into the container. The line &lt;code&gt;COPY &#x2F; &#x2F;&lt;&#x2F;code&gt; copies from the location &lt;code&gt;&#x2F;&lt;&#x2F;code&gt; in my directory to the location &lt;code&gt;&#x2F;&lt;&#x2F;code&gt; in the container.&lt;&#x2F;p&gt;
+&lt;p&gt;The Docker image has the libraries and files needed, but it needs to be able to actually launch the API. Since the &lt;code&gt;plumber.R&lt;&#x2F;code&gt; file specifies that the API will be listening on port &lt;code&gt;80&lt;&#x2F;code&gt;, I need to expose that port in my Docker image using &lt;code&gt;EXPOSE 80&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;The last part of this is to run the &lt;code&gt;launch_api.R&lt;&#x2F;code&gt; so the API is available. The &lt;code&gt;ENTRYPOINT&lt;&#x2F;code&gt; command tells Docker what to run when the container is launched. In this case &lt;code&gt;ENTRYPOINT [&quot;Rscript&quot;, &quot;launch_api.R&quot;]&lt;&#x2F;code&gt; tells Docker to run the &lt;code&gt;Rscript&lt;&#x2F;code&gt; command with the argument &lt;code&gt;launch_api.R&lt;&#x2F;code&gt;. And with that, the &lt;code&gt;Dockerfile&lt;&#x2F;code&gt; is complete and read to run.&lt;&#x2F;p&gt;
+&lt;p&gt;The image needs to be built and ran. The simplest way to do this for me was to work from &lt;a href=&quot;https:&#x2F;&#x2F;cloud.docker.com&#x2F;repository&#x2F;docker&#x2F;josiahparry&#x2F;genius-api&quot;&gt;Dockerhub&lt;&#x2F;a&gt;. Thus to run this container only three lines of code are needed!&lt;&#x2F;p&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;docker pull josiahparry&#x2F;genius-api:working
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;docker build -t josiahparry&#x2F;genius-api .
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;docker run --rm -p 80:80 josiahparry&#x2F;genius-api
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;media.giphy.com&#x2F;media&#x2F;3o7qDEq2bMbcbPRQ2c&#x2F;giphy.gif&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;p&gt;Boom, now you have an API that will be able to use the functionality of &lt;code&gt;genius&lt;&#x2F;code&gt;. If you wish to use Python with the API, I wrote a simple script which creates a nice tidy &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;JosiahParry&#x2F;genius-api&#x2F;blob&#x2F;master&#x2F;genius.py&quot;&gt;wrapper&lt;&#x2F;a&gt; around it.&lt;&#x2F;p&gt;
+&lt;hr &#x2F;&gt;
+&lt;p&gt;If anyone is interested in writing a more stable Python library that can call the functionality described above I&#x27;d love your help to make &lt;code&gt;genius&lt;&#x2F;code&gt; more readily available to the python community.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

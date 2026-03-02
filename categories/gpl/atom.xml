@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Josiah Parry - gpl</title>
+    <link rel="self" type="application/atom+xml" href="https://josiah.rs/categories/gpl/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://josiah.rs"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2026-02-23T00:00:00+00:00</updated>
+    <id>https://josiah.rs/categories/gpl/atom.xml</id>
+    <entry xml:lang="en">
+        <title>GPL is holding R back</title>
+        <published>2026-02-23T00:00:00+00:00</published>
+        <updated>2026-02-23T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/gpl-cost/"/>
+        <id>https://josiah.rs/posts/gpl-cost/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/gpl-cost/">&lt;p&gt;Over the course of the 4 years and then some years I’ve worked at Esri,
+I have been championing the support and integration of R here. I’d like
+to think I’ve had some success doing so. However, one thing keeps coming
+up—the &lt;strong&gt;GPL&lt;&#x2F;strong&gt; license.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;r-arcgis-pro&quot;&gt;R &amp;amp; ArcGIS Pro&lt;&#x2F;h2&gt;
+&lt;p&gt;Our package &lt;code&gt;{arcgisbinding}&lt;&#x2F;code&gt; links to ArcGIS Pro. This alone was a feat
+that took hours of legal consultation, individual championing, and
+outreach to the R community. This all predates my time at Esri (and was
+actually released when I was an undergraduate!).&lt;&#x2F;p&gt;
+&lt;p&gt;Due to the GPL we cannot ship R or arcgisbinding in ArcGIS Pro—and then
+a litany of internal reasonings too that are entirely unrelated!&lt;&#x2F;p&gt;
+&lt;p&gt;Many tools in ArcGIS Pro were inspired by and verified against open
+source R packages. But much of the use of R ends there.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;the-real-cost&quot;&gt;The Real Cost&lt;&#x2F;h2&gt;
+&lt;p&gt;I want to make the (fairly uncontroversial, I think) point that&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;GPL is holding R back.&lt;&#x2F;strong&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;p&gt;I am working to push through a new top secret 🕵️‍♂️product &lt;strong&gt;idea&lt;&#x2F;strong&gt; (note:
+&lt;em&gt;idea&lt;&#x2F;em&gt; not product, even) that would enhance the way we support R.&lt;&#x2F;p&gt;
+&lt;p&gt;This week alone, I count at least 11 people who have had to dedicate
+multiple hours discussing, documenting, outlining, arguing about &lt;strong&gt;if&lt;&#x2F;strong&gt;
+and &lt;strong&gt;how&lt;&#x2F;strong&gt; we can use R due to the GPL license.&lt;&#x2F;p&gt;
+&lt;div class=&quot;alert-note&quot;&gt;
+&lt;p&gt;This has cost the business &lt;strong&gt;thousands&lt;&#x2F;strong&gt; (maybe even a ten thousand or
+more) of dollars.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;In no way is this a “oh, no! poor company!”&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;who-actually-loses&quot;&gt;Who Actually Loses&lt;&#x2F;h2&gt;
+&lt;p&gt;What this means, is that supporting the scientists at NOAA, EPA, USDA,
+the Forest Service, our homie &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;elipousson&quot;&gt;Eli
+Pousson&lt;&#x2F;a&gt; at the City of Baltimore, the
+analysts of the Penobscot, Muscogee, Cherokee, Skokomish, and other
+nations of the &lt;a href=&quot;https:&#x2F;&#x2F;www.tribalexchangenetwork.org&#x2F;&quot;&gt;tribal exchange
+network&lt;&#x2F;a&gt; (shouts out &lt;a href=&quot;https:&#x2F;&#x2F;www.linkedin.com&#x2F;in&#x2F;angie-reed-a26b5635&#x2F;&quot;&gt;Angie
+Reed&lt;&#x2F;a&gt;, btw), and the
+DoT, and, and, and… all of those who love and rely on R, gets stopped
+before it starts!&lt;&#x2F;p&gt;
+&lt;p&gt;But I’m pig-headed 🐷 and love the R community and I want to see R be
+more available to spatial analysts everywhere. But in order to support
+R, I have to &lt;em&gt;fight&lt;&#x2F;em&gt; R itself.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;the-path-forward&quot;&gt;The Path Forward&lt;&#x2F;h2&gt;
+&lt;p&gt;If this was an MIT, or BSD-3, or Apache-2, or other more permissive
+licenses, this wouldn’t be as much of a problem.&lt;&#x2F;p&gt;
+&lt;p&gt;While I know there are people out there who will say &lt;em&gt;“skill issue,”&lt;&#x2F;em&gt;
+I’d like to recognize that it’s not that simple. Business have concerns
+that, for better or worse, are legitimate.&lt;&#x2F;p&gt;
+&lt;p&gt;There’s a balance to be struck that emphasizes the importance of the
+&lt;strong&gt;software protected by&lt;&#x2F;strong&gt; the GPL license but also &lt;strong&gt;enables
+businesses&lt;&#x2F;strong&gt; to use the software without having to give up their secret
+sauce 🍔.&lt;&#x2F;p&gt;
+&lt;p&gt;I don’t think the GPL is it.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

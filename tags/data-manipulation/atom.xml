@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Josiah Parry - data manipulation</title>
+    <link rel="self" type="application/atom+xml" href="https://josiah.rs/tags/data-manipulation/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://josiah.rs"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2018-10-27T00:00:00+00:00</updated>
+    <id>https://josiah.rs/tags/data-manipulation/atom.xml</id>
+    <entry xml:lang="en">
+        <title>Reading Multiple csvs as 1 data frame</title>
+        <published>2018-10-27T00:00:00+00:00</published>
+        <updated>2018-10-27T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/read-chunked-csv/"/>
+        <id>https://josiah.rs/posts/read-chunked-csv/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/read-chunked-csv/">&lt;p&gt;In an earlier &lt;a href=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;read-chunked-csv&#x2F;josiahparry.com&#x2F;post&#x2F;write-chunked-csv&quot;&gt;posting&lt;&#x2F;a&gt; I wrote about having to break a single csv into multiple csvs. In other scenarios one data set maybe provided as multiple a csvs.&lt;&#x2F;p&gt;
+&lt;p&gt;Thankfully &lt;code&gt;purrr&lt;&#x2F;code&gt; has a beautiful function called &lt;a href=&quot;https:&#x2F;&#x2F;purrr.tidyverse.org&#x2F;reference&#x2F;map.html&quot;&gt;&lt;code&gt;map_df()&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; which will make this into a two liner. This process has essentially 3 steps.&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Create a vector of all &lt;code&gt;.csv&lt;&#x2F;code&gt; files that should be merged together.&lt;&#x2F;li&gt;
+&lt;li&gt;Read each file using &lt;a href=&quot;https:&#x2F;&#x2F;readr.tidyverse.org&#x2F;reference&#x2F;read_delim.html&quot;&gt;&lt;code&gt;readr::read_csv()&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;Combine each dataframe into one.&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;purrr.tidyverse.org&#x2F;reference&#x2F;map.html&quot;&gt;&lt;code&gt;map_df()&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; maps (applys) a function to each value of an object and produces a dataframe of all outputs.&lt;&#x2F;p&gt;
+&lt;p&gt;For this example I will use the csvs I created in a previous tutorial utilizing a dataset from the Quantitative Social Science book.&lt;&#x2F;p&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;c&#x27;&gt;# Get all csv file names &lt;&#x2F;span&gt;
+&lt;span class=&#x27;nv&#x27;&gt;file_names&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;base&#x2F;list.files.html&#x27;&gt;list.files&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;s&#x27;&gt;&quot;..&#x2F;..&#x2F;static&#x2F;data&#x2F;chunk_data&quot;&lt;&#x2F;span&gt;, pattern &lt;span class=&#x27;o&#x27;&gt;=&lt;&#x2F;span&gt; &lt;span class=&#x27;s&#x27;&gt;&quot;\\.csv&quot;&lt;&#x2F;span&gt;, full.names &lt;span class=&#x27;o&#x27;&gt;=&lt;&#x2F;span&gt; &lt;span class=&#x27;kc&#x27;&gt;TRUE&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+&lt;span class=&#x27;nv&#x27;&gt;file_names&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;  [1] &quot;..&#x2F;..&#x2F;static&#x2F;data&#x2F;chunk_data&#x2F;social_chunked_1.csv&quot; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;  [2] &quot;..&#x2F;..&#x2F;static&#x2F;data&#x2F;chunk_data&#x2F;social_chunked_10.csv&quot;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;  [3] &quot;..&#x2F;..&#x2F;static&#x2F;data&#x2F;chunk_data&#x2F;social_chunked_11.csv&quot;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;  [4] &quot;..&#x2F;..&#x2F;static&#x2F;data&#x2F;chunk_data&#x2F;social_chunked_12.csv&quot;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;  [5] &quot;..&#x2F;..&#x2F;static&#x2F;data&#x2F;chunk_data&#x2F;social_chunked_13.csv&quot;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;  [6] &quot;..&#x2F;..&#x2F;static&#x2F;data&#x2F;chunk_data&#x2F;social_chunked_2.csv&quot; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;  [7] &quot;..&#x2F;..&#x2F;static&#x2F;data&#x2F;chunk_data&#x2F;social_chunked_3.csv&quot; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;  [8] &quot;..&#x2F;..&#x2F;static&#x2F;data&#x2F;chunk_data&#x2F;social_chunked_4.csv&quot; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;  [9] &quot;..&#x2F;..&#x2F;static&#x2F;data&#x2F;chunk_data&#x2F;social_chunked_5.csv&quot; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; [10] &quot;..&#x2F;..&#x2F;static&#x2F;data&#x2F;chunk_data&#x2F;social_chunked_6.csv&quot; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; [11] &quot;..&#x2F;..&#x2F;static&#x2F;data&#x2F;chunk_data&#x2F;social_chunked_7.csv&quot; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; [12] &quot;..&#x2F;..&#x2F;static&#x2F;data&#x2F;chunk_data&#x2F;social_chunked_8.csv&quot; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; [13] &quot;..&#x2F;..&#x2F;static&#x2F;data&#x2F;chunk_data&#x2F;social_chunked_9.csv&quot;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;kr&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;base&#x2F;library.html&#x27;&gt;library&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;tidyverse.tidyverse.org&#x27;&gt;tidyverse&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;# apply &lt;&#x2F;span&gt;
+&lt;span class=&#x27;nv&#x27;&gt;all_csvs&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;purrr.tidyverse.org&#x2F;reference&#x2F;map.html&#x27;&gt;map_df&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;file_names&lt;&#x2F;span&gt;, &lt;span class=&#x27;nv&#x27;&gt;read_csv&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Rows: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;25000&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Columns: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;6&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;──&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Column specification&lt;&#x2F;span&gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;────────────────────────────────────────────────────────────────&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Delimiter:&lt;&#x2F;span&gt; &quot;,&quot;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #BB0000;&#x27;&gt;chr&lt;&#x2F;span&gt; (2): sex, messages&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BB00;&#x27;&gt;dbl&lt;&#x2F;span&gt; (4): yearofbirth, primary2004, primary2006, hhsize&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Use `spec()` to retrieve the full column specification for this data.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Specify the column types or set `show_col_types = FALSE` to quiet this message.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Rows: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;25000&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Columns: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;6&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;──&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Column specification&lt;&#x2F;span&gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;────────────────────────────────────────────────────────────────&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Delimiter:&lt;&#x2F;span&gt; &quot;,&quot;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #BB0000;&#x27;&gt;chr&lt;&#x2F;span&gt; (2): sex, messages&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BB00;&#x27;&gt;dbl&lt;&#x2F;span&gt; (4): yearofbirth, primary2004, primary2006, hhsize&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Use `spec()` to retrieve the full column specification for this data.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Specify the column types or set `show_col_types = FALSE` to quiet this message.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Rows: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;25000&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Columns: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;6&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;──&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Column specification&lt;&#x2F;span&gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;────────────────────────────────────────────────────────────────&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Delimiter:&lt;&#x2F;span&gt; &quot;,&quot;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #BB0000;&#x27;&gt;chr&lt;&#x2F;span&gt; (2): sex, messages&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BB00;&#x27;&gt;dbl&lt;&#x2F;span&gt; (4): yearofbirth, primary2004, primary2006, hhsize&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Use `spec()` to retrieve the full column specification for this data.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Specify the column types or set `show_col_types = FALSE` to quiet this message.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Rows: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;25000&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Columns: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;6&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;──&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Column specification&lt;&#x2F;span&gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;────────────────────────────────────────────────────────────────&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Delimiter:&lt;&#x2F;span&gt; &quot;,&quot;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #BB0000;&#x27;&gt;chr&lt;&#x2F;span&gt; (2): sex, messages&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BB00;&#x27;&gt;dbl&lt;&#x2F;span&gt; (4): yearofbirth, primary2004, primary2006, hhsize&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Use `spec()` to retrieve the full column specification for this data.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Specify the column types or set `show_col_types = FALSE` to quiet this message.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Rows: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;5866&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Columns: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;6&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;──&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Column specification&lt;&#x2F;span&gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;────────────────────────────────────────────────────────────────&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Delimiter:&lt;&#x2F;span&gt; &quot;,&quot;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #BB0000;&#x27;&gt;chr&lt;&#x2F;span&gt; (2): sex, messages&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BB00;&#x27;&gt;dbl&lt;&#x2F;span&gt; (4): yearofbirth, primary2004, primary2006, hhsize&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Use `spec()` to retrieve the full column specification for this data.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Specify the column types or set `show_col_types = FALSE` to quiet this message.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Rows: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;25000&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Columns: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;6&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;──&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Column specification&lt;&#x2F;span&gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;────────────────────────────────────────────────────────────────&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Delimiter:&lt;&#x2F;span&gt; &quot;,&quot;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #BB0000;&#x27;&gt;chr&lt;&#x2F;span&gt; (2): sex, messages&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BB00;&#x27;&gt;dbl&lt;&#x2F;span&gt; (4): yearofbirth, primary2004, primary2006, hhsize&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Use `spec()` to retrieve the full column specification for this data.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Specify the column types or set `show_col_types = FALSE` to quiet this message.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Rows: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;25000&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Columns: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;6&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;──&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Column specification&lt;&#x2F;span&gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;────────────────────────────────────────────────────────────────&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Delimiter:&lt;&#x2F;span&gt; &quot;,&quot;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #BB0000;&#x27;&gt;chr&lt;&#x2F;span&gt; (2): sex, messages&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BB00;&#x27;&gt;dbl&lt;&#x2F;span&gt; (4): yearofbirth, primary2004, primary2006, hhsize&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Use `spec()` to retrieve the full column specification for this data.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Specify the column types or set `show_col_types = FALSE` to quiet this message.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Rows: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;25000&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Columns: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;6&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;──&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Column specification&lt;&#x2F;span&gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;────────────────────────────────────────────────────────────────&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Delimiter:&lt;&#x2F;span&gt; &quot;,&quot;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #BB0000;&#x27;&gt;chr&lt;&#x2F;span&gt; (2): sex, messages&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BB00;&#x27;&gt;dbl&lt;&#x2F;span&gt; (4): yearofbirth, primary2004, primary2006, hhsize&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Use `spec()` to retrieve the full column specification for this data.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Specify the column types or set `show_col_types = FALSE` to quiet this message.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Rows: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;25000&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Columns: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;6&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;──&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Column specification&lt;&#x2F;span&gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;────────────────────────────────────────────────────────────────&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Delimiter:&lt;&#x2F;span&gt; &quot;,&quot;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #BB0000;&#x27;&gt;chr&lt;&#x2F;span&gt; (2): sex, messages&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BB00;&#x27;&gt;dbl&lt;&#x2F;span&gt; (4): yearofbirth, primary2004, primary2006, hhsize&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Use `spec()` to retrieve the full column specification for this data.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Specify the column types or set `show_col_types = FALSE` to quiet this message.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Rows: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;25000&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Columns: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;6&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;──&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Column specification&lt;&#x2F;span&gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;────────────────────────────────────────────────────────────────&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Delimiter:&lt;&#x2F;span&gt; &quot;,&quot;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #BB0000;&#x27;&gt;chr&lt;&#x2F;span&gt; (2): sex, messages&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BB00;&#x27;&gt;dbl&lt;&#x2F;span&gt; (4): yearofbirth, primary2004, primary2006, hhsize&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Use `spec()` to retrieve the full column specification for this data.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Specify the column types or set `show_col_types = FALSE` to quiet this message.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Rows: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;25000&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Columns: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;6&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;──&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Column specification&lt;&#x2F;span&gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;────────────────────────────────────────────────────────────────&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Delimiter:&lt;&#x2F;span&gt; &quot;,&quot;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #BB0000;&#x27;&gt;chr&lt;&#x2F;span&gt; (2): sex, messages&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BB00;&#x27;&gt;dbl&lt;&#x2F;span&gt; (4): yearofbirth, primary2004, primary2006, hhsize&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Use `spec()` to retrieve the full column specification for this data.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Specify the column types or set `show_col_types = FALSE` to quiet this message.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Rows: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;25000&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Columns: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;6&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;──&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Column specification&lt;&#x2F;span&gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;────────────────────────────────────────────────────────────────&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Delimiter:&lt;&#x2F;span&gt; &quot;,&quot;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #BB0000;&#x27;&gt;chr&lt;&#x2F;span&gt; (2): sex, messages&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BB00;&#x27;&gt;dbl&lt;&#x2F;span&gt; (4): yearofbirth, primary2004, primary2006, hhsize&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Use `spec()` to retrieve the full column specification for this data.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Specify the column types or set `show_col_types = FALSE` to quiet this message.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Rows: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;25000&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Columns: &lt;&#x2F;span&gt;&lt;span style=&#x27;color: #0000BB;&#x27;&gt;6&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;──&lt;&#x2F;span&gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Column specification&lt;&#x2F;span&gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;────────────────────────────────────────────────────────────────&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;font-weight: bold;&#x27;&gt;Delimiter:&lt;&#x2F;span&gt; &quot;,&quot;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #BB0000;&#x27;&gt;chr&lt;&#x2F;span&gt; (2): sex, messages&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BB00;&#x27;&gt;dbl&lt;&#x2F;span&gt; (4): yearofbirth, primary2004, primary2006, hhsize&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Use `spec()` to retrieve the full column specification for this data.&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #00BBBB;&#x27;&gt;ℹ&lt;&#x2F;span&gt; Specify the column types or set `show_col_types = FALSE` to quiet this message.&lt;&#x2F;span&gt;
+
+&lt;span class=&#x27;c&#x27;&gt;# preview the data&lt;&#x2F;span&gt;
+&lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;utils&#x2F;head.html&#x27;&gt;head&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;all_csvs&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #555555;&#x27;&gt;# A tibble: 6 × 6&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   sex    yearofbirth primary2004 messages   primary2006 hhsize&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt;   &lt;span style=&#x27;color: #555555; font-style: italic;&#x27;&gt;&amp;lt;chr&amp;gt;&lt;&#x2F;span&gt;        &lt;span style=&#x27;color: #555555; font-style: italic;&#x27;&gt;&amp;lt;dbl&amp;gt;&lt;&#x2F;span&gt;       &lt;span style=&#x27;color: #555555; font-style: italic;&#x27;&gt;&amp;lt;dbl&amp;gt;&lt;&#x2F;span&gt; &lt;span style=&#x27;color: #555555; font-style: italic;&#x27;&gt;&amp;lt;chr&amp;gt;&lt;&#x2F;span&gt;            &lt;span style=&#x27;color: #555555; font-style: italic;&#x27;&gt;&amp;lt;dbl&amp;gt;&lt;&#x2F;span&gt;  &lt;span style=&#x27;color: #555555; font-style: italic;&#x27;&gt;&amp;lt;dbl&amp;gt;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #555555;&#x27;&gt;1&lt;&#x2F;span&gt; male          &lt;span style=&#x27;text-decoration: underline;&#x27;&gt;1&lt;&#x2F;span&gt;941           0 Civic Duty           0      2&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #555555;&#x27;&gt;2&lt;&#x2F;span&gt; female        &lt;span style=&#x27;text-decoration: underline;&#x27;&gt;1&lt;&#x2F;span&gt;947           0 Civic Duty           0      2&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #555555;&#x27;&gt;3&lt;&#x2F;span&gt; male          &lt;span style=&#x27;text-decoration: underline;&#x27;&gt;1&lt;&#x2F;span&gt;951           0 Hawthorne            1      3&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #555555;&#x27;&gt;4&lt;&#x2F;span&gt; female        &lt;span style=&#x27;text-decoration: underline;&#x27;&gt;1&lt;&#x2F;span&gt;950           0 Hawthorne            1      3&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #555555;&#x27;&gt;5&lt;&#x2F;span&gt; female        &lt;span style=&#x27;text-decoration: underline;&#x27;&gt;1&lt;&#x2F;span&gt;982           0 Hawthorne            1      3&lt;&#x2F;span&gt;
+&lt;span class=&#x27;c&#x27;&gt;#&amp;gt; &lt;span style=&#x27;color: #555555;&#x27;&gt;6&lt;&#x2F;span&gt; male          &lt;span style=&#x27;text-decoration: underline;&#x27;&gt;1&lt;&#x2F;span&gt;981           0 Control              0      3&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Chunking your csv</title>
+        <published>2018-10-27T00:00:00+00:00</published>
+        <updated>2018-10-27T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/write-chunked-csv/"/>
+        <id>https://josiah.rs/posts/write-chunked-csv/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/write-chunked-csv/">&lt;p&gt;Sometimes due to limitations of software, file uploads often have a row limit. I recently encountered this while creating texting campaigns using &lt;a href=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;write-chunked-csv&#x2F;relaytxt.io&quot;&gt;Relay&lt;&#x2F;a&gt;. Relay is a peer-to-peer texting platform. It has a limitation of 20k contacts per texting campaign. This is a limitation when running a massive Get Out the Vote (GOTV) texting initiative.&lt;&#x2F;p&gt;
+&lt;p&gt;In order to solve this problem, a large csv must be split into multiple csv&#x27;s for upload. Though this could be solved with excel and Google Sheets, who wants to labor over that?&lt;&#x2F;p&gt;
+&lt;p&gt;Here I will go through the methodology of writing a csv into multiple. I will use data from the &lt;a href=&quot;https:&#x2F;&#x2F;www.google.com&#x2F;search?q=quantitative+social+science&amp;amp;oq=quantitative+social+science&amp;amp;aqs=chrome..69i57j69i61j69i65j69i60l2j69i59.5035j0j1&amp;amp;sourceid=chrome&amp;amp;ie=UTF-8&quot;&gt;Quantitative Social Science&lt;&#x2F;a&gt; book by Kosuke Imai.&lt;&#x2F;p&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;kr&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;base&#x2F;library.html&#x27;&gt;library&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;tidyverse.tidyverse.org&#x27;&gt;tidyverse&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+
+&lt;span class=&#x27;nv&#x27;&gt;social&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;readr.tidyverse.org&#x2F;reference&#x2F;read_delim.html&#x27;&gt;read_csv&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;s&#x27;&gt;&quot;https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;kosukeimai&#x2F;qss&#x2F;master&#x2F;CAUSALITY&#x2F;social.csv&quot;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;
+
+&lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;base&#x2F;dim.html&#x27;&gt;dim&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;social&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;This dataset has 305k observations and 6 columns. For this example let&#x27;s say we wanted to split this into files of 15,000 rows or fewer. We can use the following custom funciton:&lt;&#x2F;p&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;nv&#x27;&gt;write_csv_chunk&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&#x27;kr&#x27;&gt;function&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;filepath&lt;&#x2F;span&gt;, &lt;span class=&#x27;nv&#x27;&gt;n&lt;&#x2F;span&gt;, &lt;span class=&#x27;nv&#x27;&gt;output_name&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;#123;&lt;&#x2F;span&gt;
+  &lt;span class=&#x27;nv&#x27;&gt;df&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;readr.tidyverse.org&#x2F;reference&#x2F;read_delim.html&#x27;&gt;read_csv&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;filepath&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt; &lt;span class=&#x27;c&#x27;&gt;# 1. read original file&lt;&#x2F;span&gt;
+  
+  &lt;span class=&#x27;nv&#x27;&gt;n_files&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;base&#x2F;Round.html&#x27;&gt;ceiling&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;base&#x2F;nrow.html&#x27;&gt;nrow&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;df&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;&#x2F;&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;n&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt; &lt;span class=&#x27;c&#x27;&gt;# 2. identify how many files to make&lt;&#x2F;span&gt;
+  
+  &lt;span class=&#x27;nv&#x27;&gt;chunk_starts&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;base&#x2F;seq.html&#x27;&gt;seq&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;m&#x27;&gt;1&lt;&#x2F;span&gt;, &lt;span class=&#x27;nv&#x27;&gt;n&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;*&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;n_files&lt;&#x2F;span&gt;, by &lt;span class=&#x27;o&#x27;&gt;=&lt;&#x2F;span&gt; &lt;span class=&#x27;nv&#x27;&gt;n&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt; &lt;span class=&#x27;c&#x27;&gt;#  3. identify the rown number to start on&lt;&#x2F;span&gt;
+  
+  &lt;span class=&#x27;kr&#x27;&gt;for&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;i&lt;&#x2F;span&gt; &lt;span class=&#x27;kr&#x27;&gt;in&lt;&#x2F;span&gt; &lt;span class=&#x27;m&#x27;&gt;1&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;:&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;n_files&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;#123;&lt;&#x2F;span&gt; &lt;span class=&#x27;c&#x27;&gt;# 4. iterate through the csv to write the files&lt;&#x2F;span&gt;
+    &lt;span class=&#x27;nv&#x27;&gt;chunk_end&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&#x27;nv&#x27;&gt;n&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;*&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;i&lt;&#x2F;span&gt; &lt;span class=&#x27;c&#x27;&gt;# 4a&lt;&#x2F;span&gt;
+    &lt;span class=&#x27;nv&#x27;&gt;df_to_write&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;dplyr.tidyverse.org&#x2F;reference&#x2F;slice.html&#x27;&gt;slice&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;df&lt;&#x2F;span&gt;, &lt;span class=&#x27;nv&#x27;&gt;chunk_starts&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;[&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;i&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;]&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;:&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;chunk_end&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt; &lt;span class=&#x27;c&#x27;&gt;# 4b&lt;&#x2F;span&gt;
+    &lt;span class=&#x27;nv&#x27;&gt;fpath&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;base&#x2F;paste.html&#x27;&gt;paste0&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;output_name&lt;&#x2F;span&gt;, &lt;span class=&#x27;s&#x27;&gt;&quot;_&quot;&lt;&#x2F;span&gt;, &lt;span class=&#x27;nv&#x27;&gt;i&lt;&#x2F;span&gt;, &lt;span class=&#x27;s&#x27;&gt;&quot;.csv&quot;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt; &lt;span class=&#x27;c&#x27;&gt;# 4c&lt;&#x2F;span&gt;
+    &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;readr.tidyverse.org&#x2F;reference&#x2F;write_delim.html&#x27;&gt;write_csv&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;df_to_write&lt;&#x2F;span&gt;,  &lt;span class=&#x27;nv&#x27;&gt;fpath&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt; &lt;span class=&#x27;c&#x27;&gt;# 4d&lt;&#x2F;span&gt;
+    &lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;base&#x2F;message.html&#x27;&gt;message&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nf&#x27;&gt;&lt;a href=&#x27;https:&#x2F;&#x2F;rdrr.io&#x2F;r&#x2F;base&#x2F;paste.html&#x27;&gt;paste0&lt;&#x2F;a&gt;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;&lt;span class=&#x27;nv&#x27;&gt;fpath&lt;&#x2F;span&gt;, &lt;span class=&#x27;s&#x27;&gt;&quot; was written.&quot;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt; &lt;span class=&#x27;c&#x27;&gt;# 4e&lt;&#x2F;span&gt;
+  &lt;span class=&#x27;o&#x27;&gt;&amp;#125;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;o&#x27;&gt;&amp;#125;&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;The function has a few steps. Let&#x27;s walk through them. The step numbers are commented above.&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Read in the csv.&lt;&#x2F;li&gt;
+&lt;li&gt;Identify the number of files that will have to be created.&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;ul&gt;
+&lt;li&gt;This will be the number of rows of the data frame divided by the number of rows we want each file to have. This number will be rounded up to handle a remainder.&lt;&#x2F;li&gt;
+&lt;li&gt;In this case &lt;code&gt;ceiling(nrow(social) &#x2F; 15000)&lt;&#x2F;code&gt; is equal to &lt;code&gt;ceiling(nrow(social) &#x2F; 15000)&lt;&#x2F;code&gt;.&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;ol&gt;
+&lt;li&gt;Identify the row number to begin splitting the dataframe for each file.&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;ul&gt;
+&lt;li&gt;This will be a factor of our &lt;code&gt;n&lt;&#x2F;code&gt; plus 1, but will never exceed the &lt;code&gt;nrow(df)&lt;&#x2F;code&gt;,&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;ol&gt;
+&lt;li&gt;This is the fun part, writing our files. The number of iterations is the number of files.&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;em&gt;4a&lt;&#x2F;em&gt;: The ending row number is the iteration number multiplied by the number of rows.&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;em&gt;4b&lt;&#x2F;em&gt;: use &lt;a href=&quot;https:&#x2F;&#x2F;dplyr.tidyverse.org&#x2F;reference&#x2F;slice.html&quot;&gt;&lt;code&gt;slice()&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; to cute the original data frame into the chunk beginning and chunk end&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;em&gt;4c&lt;&#x2F;em&gt;: Creating the file paththat will be written.&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;em&gt;4d&lt;&#x2F;em&gt;: Write the csv!&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;em&gt;4e&lt;&#x2F;em&gt;: Print a message about the file being printed.&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;div class=&quot;highlight&quot;&gt;
+&lt;pre class=&#x27;chroma&#x27;&gt;&lt;code class=&#x27;language-r&#x27; data-lang=&#x27;r&#x27;&gt;&lt;span class=&#x27;nv&#x27;&gt;soc_fpath&lt;&#x2F;span&gt; &lt;span class=&#x27;o&#x27;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&#x27;s&#x27;&gt;&quot;https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;kosukeimai&#x2F;qss&#x2F;master&#x2F;CAUSALITY&#x2F;social.csv&quot;&lt;&#x2F;span&gt;
+&lt;span class=&#x27;nf&#x27;&gt;write_csv_chunk&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;(&lt;&#x2F;span&gt;filepath &lt;span class=&#x27;o&#x27;&gt;=&lt;&#x2F;span&gt; &lt;span class=&#x27;nv&#x27;&gt;soc_fpath&lt;&#x2F;span&gt;, n &lt;span class=&#x27;o&#x27;&gt;=&lt;&#x2F;span&gt; &lt;span class=&#x27;m&#x27;&gt;25000&lt;&#x2F;span&gt;, &lt;span class=&#x27;s&#x27;&gt;&quot;..&#x2F;..&#x2F;static&#x2F;data&#x2F;chunk_data&#x2F;social_chunked&quot;&lt;&#x2F;span&gt;&lt;span class=&#x27;o&#x27;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;Now that we have these files split up, it will be good to know how to get them back into one piece! Check out my blog post on reading multiple csvs in as one data frame &lt;a href=&quot;https:&#x2F;&#x2F;josiah.rs&#x2F;posts&#x2F;write-chunked-csv&#x2F;josiahparry.com&#x2F;post&#x2F;read-chunked-csv&quot;&gt;here&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

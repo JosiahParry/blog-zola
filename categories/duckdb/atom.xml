@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Josiah Parry - duckdb</title>
+    <link rel="self" type="application/atom+xml" href="https://josiah.rs/categories/duckdb/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://josiah.rs"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2024-05-24T00:00:00+00:00</updated>
+    <id>https://josiah.rs/categories/duckdb/atom.xml</id>
+    <entry xml:lang="en">
+        <title>{duckdb} or {duckplyr}? </title>
+        <published>2024-05-24T00:00:00+00:00</published>
+        <updated>2024-05-24T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/duckdb-and-r/"/>
+        <id>https://josiah.rs/posts/duckdb-and-r/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/duckdb-and-r/">&lt;p&gt;I’ve been diving pretty deep into DuckDB. It has shown that it has great
+utility for the vast majority of mid to large scale data analysis
+tasks—I’m talking Gigabytes not Petabytes. In particular, &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;krlmlr&quot;&gt;Kirill
+Müller&lt;&#x2F;a&gt; of &lt;a href=&quot;https:&#x2F;&#x2F;cynkra.com&#x2F;&quot;&gt;Cynkra&lt;&#x2F;a&gt;, has
+been doing great work in bringing DuckDB to the R community.&lt;&#x2F;p&gt;
+&lt;p&gt;Today, this takes the form of two R packages:&lt;&#x2F;p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;r.duckdb.org&#x2F;&quot;&gt;&lt;code&gt;{duckdb}&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;&lt;a href=&quot;https:&#x2F;&#x2F;duckdblabs.github.io&#x2F;duckplyr&#x2F;&quot;&gt;&lt;code&gt;{duckplyr}&lt;&#x2F;code&gt;&lt;&#x2F;a&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;p&gt;I think the R community would &lt;strong&gt;benefit greatly&lt;&#x2F;strong&gt; by adopting DuckDB
+into their analytic workflows. It can used to make highly performant
+shiny applications or just speed up your workflow.&lt;&#x2F;p&gt;
+&lt;p&gt;For example, here is a demo of a Shiny application filtering, plotting,
+and visualizing 4.5 million records very quickly!&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;img src=&quot;https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;ricochet-rs&#x2F;flrsh-lessons&#x2F;main&#x2F;duckdb-deep-dive&#x2F;project&#x2F;final-app.gif&quot; alt=&quot;&quot; &#x2F;&gt;&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;y-all-keep-asking-me-duckdb-or-duckplyr&quot;&gt;Y’all keep asking me &lt;code&gt;{duckdb}&lt;&#x2F;code&gt; or &lt;code&gt;{duckplyr}&lt;&#x2F;code&gt;&lt;&#x2F;h2&gt;
+&lt;p&gt;and before I tell you what my answer is, I’ll tell you why I’m bullish
+on DuckDB. I won’t ramble on details.&lt;&#x2F;p&gt;
+&lt;div class=&quot;alert-tip&quot; collapse=&quot;true&quot;&gt;
+&lt;h2 id=&quot;jargon-giraffe-giraffe-bullish&quot;&gt;Jargon giraffe 🦒: bullish!&lt;&#x2F;h2&gt;
+&lt;p&gt;Bullish is a term that is associated with a growing stock market. Think
+of the upward motion of their horns. People who are “bullish” would
+spend more money in the stock market expecting its prices to continue to
+rise and thus make more moneyyy 💸💸💸&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;h2 id=&quot;why-duckdb&quot;&gt;Why DuckDB?&lt;&#x2F;h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Supports &lt;strong&gt;larger-than-memory&lt;&#x2F;strong&gt; workloads&lt;&#x2F;li&gt;
+&lt;li&gt;Columnar vectorized operations means &lt;strong&gt;operating only on the data you
+need&lt;&#x2F;strong&gt; to and more of it and faster!&lt;&#x2F;li&gt;
+&lt;li&gt;Tight &lt;a href=&quot;https:&#x2F;&#x2F;arrow.apache.org&#x2F;docs&#x2F;r&#x2F;&quot;&gt;Apache Arrow&lt;&#x2F;a&gt; integration!&lt;&#x2F;li&gt;
+&lt;li&gt;Supports &lt;a href=&quot;https:&#x2F;&#x2F;substrait.io&#x2F;&quot;&gt;Substrait&lt;&#x2F;a&gt; for database agnostic
+query plans&lt;&#x2F;li&gt;
+&lt;li&gt;Runs in the browser (think
+&lt;a href=&quot;https:&#x2F;&#x2F;shinylive.io&#x2F;r&#x2F;examples&#x2F;&quot;&gt;ShinyLive&lt;&#x2F;a&gt; + DuckDB means fast
+compute all running in the browser without a Shiny server)&lt;&#x2F;li&gt;
+&lt;li&gt;_ It is stupid fast_&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;h2 id=&quot;my-verdict&quot;&gt;My verdict?&lt;&#x2F;h2&gt;
+&lt;p&gt;The thing that is most important, in my opinion, for DuckDBs ability to
+be useful to the R community is its ability to work on data that is
+larger than RAM. &lt;a href=&quot;https:&#x2F;&#x2F;duckdb.org&#x2F;2024&#x2F;03&#x2F;29&#x2F;external-aggregation.html&quot;&gt;Read this awesome blog
+post&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;div class=&quot;display-1&quot;&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Use &lt;code&gt;{duckdb}&lt;&#x2F;code&gt;!!!&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;&#x2F;div&gt;
+&lt;h3 id=&quot;duckplyr&quot;&gt;&lt;code&gt;{duckplyr}&lt;&#x2F;code&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;The R package &lt;code&gt;{duckplyr}&lt;&#x2F;code&gt; is a &lt;strong&gt;drop in replacement for dplyr&lt;&#x2F;strong&gt;.
+duckplyr operates only on data.frame objects and, as of today, only
+works with in memory data. This means it is limited to the size of your
+machine’s RAM.&lt;&#x2F;p&gt;
+&lt;h3 id=&quot;duckdb&quot;&gt;&lt;code&gt;{duckdb}&lt;&#x2F;code&gt;&lt;&#x2F;h3&gt;
+&lt;p&gt;&lt;code&gt;{duckdb}&lt;&#x2F;code&gt;, on the other hand, is a
+&lt;a href=&quot;https:&#x2F;&#x2F;dbi.r-dbi.org&#x2F;reference&#x2F;index.html&quot;&gt;&lt;code&gt;{DBI}&lt;&#x2F;code&gt;&lt;&#x2F;a&gt; extension package.
+This means that you can use DBI functions to write standard SQL. But it
+also means that you can use use tables in your DuckDB database with
+dplyr (via dbplyr).&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;code&gt;{duckdb}&lt;&#x2F;code&gt; allows you to write standard dplyr code and create lazy
+tables that can be combined to make even lazier code! Moreover, you can
+utilize the &lt;strong&gt;out-of-core&lt;&#x2F;strong&gt; processing capabilities with DuckDB using
+&lt;code&gt;{duckdb}&lt;&#x2F;code&gt; and, to me, that is the whole selling point.&lt;&#x2F;p&gt;
+&lt;p&gt;If performance is your objective and you, for some reason, refuse to use
+the out-of-core capabilities of DuckDB, you should just use &lt;code&gt;data.table&lt;&#x2F;code&gt;
+via &lt;code&gt;dtplyr&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;getting-started-with-duckdb-r&quot;&gt;Getting started with DuckDB &amp;amp; R&lt;&#x2F;h2&gt;
+&lt;p&gt;Using DuckDB as a database backend for dplyr is pretty much the same as
+anything other backend you might use. Very similar code to what I’ll
+show you can be used to run code on Apache Spark or Postgres.&lt;&#x2F;p&gt;
+&lt;div class=&quot;alert-note&quot; collapse=&quot;true&quot;&gt;
+&lt;h2 id=&quot;sob-crying-just-use-postgres&quot;&gt;😭 * crying * just use postgres&lt;&#x2F;h2&gt;
+&lt;blockquote class=&quot;twitter-tweet&quot;&gt;
+&lt;p lang=&quot;en&quot; dir=&quot;ltr&quot;&gt;
+&lt;p&gt;me, sobbing: just use postgres
+&lt;a href=&quot;https:&#x2F;&#x2F;t.co&#x2F;rJ4JcZJ4Zj&quot;&gt;https:&#x2F;&#x2F;t.co&#x2F;rJ4JcZJ4Zj&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;p&gt;
+&lt;p&gt;— Jacob Matson (@matsonj)
+&lt;a href=&quot;https:&#x2F;&#x2F;twitter.com&#x2F;matsonj&#x2F;status&#x2F;1793681468134445371?ref_src=twsrc%5Etfw&quot;&gt;May
+23, 2024&lt;&#x2F;a&gt;&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;script async src=&quot;https:&#x2F;&#x2F;platform.twitter.com&#x2F;widgets.js&quot; charset=&quot;utf-8&quot;&gt;&lt;&#x2F;script&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;|￣￣￣￣￣￣￣￣￣￣￣￣￣￣|
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    Just use Postgres    
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;|＿＿＿＿＿＿＿＿＿＿＿＿＿＿|
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;       \ (•◡•) &#x2F; 
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;        \     &#x2F;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;&#x2F;div&gt;
+&lt;h3 id=&quot;create-a-duckdb-driver&quot;&gt;Create a DuckDB driver&lt;&#x2F;h3&gt;
+&lt;ol&gt;
+&lt;li&gt;Load duckdb: &lt;code&gt;library(duckdb)&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;Create a database driver &lt;code&gt;duckdb()&lt;&#x2F;code&gt;&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;library&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;duckdb&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;Loading required package: DBI
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-comment z-line z-number-sign z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-comment z-r&quot;&gt;#&lt;&#x2F;span&gt; This uses **in memory** database which is limited by RAM
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;drv &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;duckdb&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-comment z-line z-number-sign z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-comment z-r&quot;&gt;#&lt;&#x2F;span&gt; this creates a persistent database which allows DuckDB to
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-comment z-line z-number-sign z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-comment z-r&quot;&gt;#&lt;&#x2F;span&gt; perform **larger-than-memory** workloads
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;drv &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;duckdb&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;tempfile&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;fileext&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;.duckdb&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;drv
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;&amp;lt;duckdb_driver dbdir=&amp;#39;&#x2F;private&#x2F;var&#x2F;folders&#x2F;wd&#x2F;xq999jjj3bx2w8cpg7lkfxlm0000gn&#x2F;T&#x2F;RtmpUFMKNa&#x2F;file10be84c0a3ff2.duckdb&amp;#39; read_only=FALSE bigint=numeric&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;3&quot;&gt;
+&lt;li&gt;Create a database connection object&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;con &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;dbConnect&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;drv&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;con
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;&amp;lt;duckdb_connection 4ccd0 driver=&amp;lt;duckdb_driver dbdir=&amp;#39;&#x2F;private&#x2F;var&#x2F;folders&#x2F;wd&#x2F;xq999jjj3bx2w8cpg7lkfxlm0000gn&#x2F;T&#x2F;RtmpUFMKNa&#x2F;file10be84c0a3ff2.duckdb&amp;#39; read_only=FALSE bigint=numeric&amp;gt;&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;4&quot;&gt;
+&lt;li&gt;Import some data from somewhere&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;Here we will download a medium sized csv and import it.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;tmp &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;tempfile&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;fileext&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;.csv&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;download.file&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;https:&#x2F;&#x2F;raw.githubusercontent.com&#x2F;ricochet-rs&#x2F;flrsh-lessons&#x2F;main&#x2F;data&#x2F;houses1990.csv&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  tmp
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;housing &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;tbl_file&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;con&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; tmp&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;housing
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;# Source:   SQL [?? x 9]
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;# Database: DuckDB 1.4.1 [josiahparry@Darwin 24.0.0:R 4.6.0&#x2F;&#x2F;private&#x2F;var&#x2F;folders&#x2F;wd&#x2F;xq999jjj3bx2w8cpg7lkfxlm0000gn&#x2F;T&#x2F;RtmpUFMKNa&#x2F;file10be84c0a3ff2.duckdb]
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;   houseValue income houseAge rooms bedrooms population households latitude
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;        &amp;lt;dbl&amp;gt;  &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt; &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;      &amp;lt;dbl&amp;gt;      &amp;lt;dbl&amp;gt;    &amp;lt;dbl&amp;gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 1     452600   8.33       41   880      129        322        126     37.9
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 2     358500   8.30       21  7099     1106       2401       1138     37.9
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 3     352100   7.26       52  1467      190        496        177     37.8
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 4     341300   5.64       52  1274      235        558        219     37.8
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 5     342200   3.85       52  1627      280        565        259     37.8
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 6     269700   4.04       52   919      213        413        193     37.8
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 7     299200   3.66       52  2535      489       1094        514     37.8
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 8     241400   3.12       52  3104      687       1157        647     37.8
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 9     226700   2.08       42  2555      665       1206        595     37.8
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;10     261100   3.69       52  3549      707       1551        714     37.8
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;# ℹ more rows
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;# ℹ 1 more variable: longitude &amp;lt;dbl&amp;gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;5&quot;&gt;
+&lt;li&gt;Run some dplyr code on the table&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;library&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;dplyr&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;avg_price_by_age &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; housing &lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;|&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;group_by&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;houseAge&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;|&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;summarise&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;    &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;avg_val&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;mean&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;houseValue&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;show_query&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;avg_price_by_age&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;&amp;lt;SQL&amp;gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;SELECT houseAge, AVG(houseValue) AS avg_val
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;FROM (FROM &amp;#39;&#x2F;var&#x2F;folders&#x2F;wd&#x2F;xq999jjj3bx2w8cpg7lkfxlm0000gn&#x2F;T&#x2F;&#x2F;RtmpUFMKNa&#x2F;file10be81ebf71cd.csv&amp;#39;) q01
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;GROUP BY houseAge
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;ol start=&quot;6&quot;&gt;
+&lt;li&gt;Bring the results into memory&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;p&gt;Use &lt;code&gt;dplyr::collect()&lt;&#x2F;code&gt; to bring the results into memory as an actual
+tibble!&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;avg_price_df &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;collect&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;avg_price_by_age&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;avg_price_df
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;pre class=&quot;z-code&quot;&gt;&lt;code&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;# A tibble: 52 × 2
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;   houseAge avg_val
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;      &amp;lt;dbl&amp;gt;   &amp;lt;dbl&amp;gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 1       17 190494.
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 2       35 207299.
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 3       37 207361.
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 4       44 216233.
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 5       30 200253.
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 6       14 189597.
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 7        5 208418.
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 8        9 186673.
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt; 9       49 220336.
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;10        2 224476.
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;# ℹ 42 more rows
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Databases for Data Scientist</title>
+        <published>2024-05-16T00:00:00+00:00</published>
+        <updated>2024-05-16T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/databases-for-ds/"/>
+        <id>https://josiah.rs/posts/databases-for-ds/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/databases-for-ds/">&lt;p&gt;It’s been coming up a lot recently, or, maybe, I’ve just been focused on
+this a lot more. Data scientists are coming to terms with the fact that
+they have to work with databases if they want their analytics to scale.
+That is pretty normal. But one of the bigger challenges is that these
+data scientists don’t really know how to make that leap. What do they
+need to know to make that transition?&lt;&#x2F;p&gt;
+&lt;p&gt;For many of use in the “know”, we know that there actually isn’t all
+that much different between a database and a data.frame. A data frame is
+in memory but a database table is just &lt;em&gt;over there&lt;&#x2F;em&gt; sitting somewhere
+else.&lt;&#x2F;p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;If you know how to write dplyr, you already know how to work with a
+database.&lt;&#x2F;p&gt;
+&lt;&#x2F;blockquote&gt;
+&lt;h2 id=&quot;what-do-you-need-to-know&quot;&gt;What do you need to know?&lt;&#x2F;h2&gt;
+&lt;p&gt;For those of you who want to begin to use databases in your work and
+want to start scaling your analysis, there are a few topics that would
+be helpful for you to know. I’m not going to teach you them here. But
+list them out so you can google it. And truthfully, you already know
+what these are but you don’t know the terminology.&lt;&#x2F;p&gt;
+&lt;p&gt;Here is my list of things to know:&lt;&#x2F;p&gt;
+&lt;ol&gt;
+&lt;li&gt;Learn what &lt;strong&gt;RDBMS&lt;&#x2F;strong&gt; means.&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;ul&gt;
+&lt;li&gt;relational database management system or sometimes just DBMS&lt;&#x2F;li&gt;
+&lt;&#x2F;ul&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;Understand &lt;strong&gt;primary keys&lt;&#x2F;strong&gt; and &lt;strong&gt;foreign keys&lt;&#x2F;strong&gt;&lt;&#x2F;li&gt;
+&lt;li&gt;Figure out what database &lt;strong&gt;normalization&lt;&#x2F;strong&gt; is and when its useful&lt;&#x2F;li&gt;
+&lt;li&gt;Schemas vs. tables for organizational purposes&lt;&#x2F;li&gt;
+&lt;li&gt;Views vs tables (this is handy for making tables to be consumed by
+BI &#x2F; other things)&lt;&#x2F;li&gt;
+&lt;li&gt;Table indexes and what they are (that way you can know when you
+might need them)&lt;&#x2F;li&gt;
+&lt;&#x2F;ol&gt;
+&lt;h2 id=&quot;why-you-might-not-actually-need-a-full-rdbms&quot;&gt;Why you might not actually need a full RDBMS&lt;&#x2F;h2&gt;
+&lt;p&gt;With the ubiquity of parquet and tools like apache arrow and DuckDB,
+there’s a good chance that for what you want to accomplish in your
+analytical workflow, you don’t need a fully fledged database. Organized
+parquet files into a database-like structure will be sufficient. DuckDB
+and Arrow can allow you to work with these data in a larger than memory
+capacity. You don’t need to read it all into memory, actually.&lt;&#x2F;p&gt;
+&lt;p&gt;Before you say you need Postgres for analytics, instead, try parquet
+(and with hive partitioning if your data are larger) with DuckDB and
+Apache Arrow. It’s likely all you need.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+</feed>

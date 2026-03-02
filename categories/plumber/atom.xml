@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom" xml:lang="en">
+    <title>Josiah Parry - plumber</title>
+    <link rel="self" type="application/atom+xml" href="https://josiah.rs/categories/plumber/atom.xml"/>
+    <link rel="alternate" type="text/html" href="https://josiah.rs"/>
+    <generator uri="https://www.getzola.org/">Zola</generator>
+    <updated>2025-05-12T00:00:00+00:00</updated>
+    <id>https://josiah.rs/categories/plumber/atom.xml</id>
+    <entry xml:lang="en">
+        <title>https with `{plumber}` using Caddy</title>
+        <published>2025-05-12T00:00:00+00:00</published>
+        <updated>2025-05-12T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/plumber-caddy-https/"/>
+        <id>https://josiah.rs/posts/plumber-caddy-https/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/plumber-caddy-https/">&lt;p&gt;Say you have a plumber API and you need to serve it over https. You can
+do this by spinning up a Docker container in something like
+&lt;a href=&quot;https:&#x2F;&#x2F;digitalocean.com&#x2F;&quot;&gt;DigitalOcean&lt;&#x2F;a&gt;, &lt;a href=&quot;https:&#x2F;&#x2F;render.com&quot;&gt;Render&lt;&#x2F;a&gt;,
+&lt;a href=&quot;https:&#x2F;&#x2F;heroku.com&quot;&gt;Heroku&lt;&#x2F;a&gt;, or &lt;a href=&quot;https:&#x2F;&#x2F;aws.amazon.com&#x2F;ecs&quot;&gt;AWS ECS&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;If you have you own server, you may want to use that instead. The most
+common way to do this is by using a &lt;a href=&quot;https:&#x2F;&#x2F;www.cloudflare.com&#x2F;learning&#x2F;cdn&#x2F;glossary&#x2F;reverse-proxy&#x2F;&quot;&gt;&lt;strong&gt;reverse
+proxy&lt;&#x2F;strong&gt;&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;caddyserver.com&#x2F;&quot;&gt;Caddy&lt;&#x2F;a&gt; is the simplest reverse proxy I am
+aware of.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;the-plumber-api&quot;&gt;The Plumber API&lt;&#x2F;h2&gt;
+&lt;p&gt;Below we define a simple plumber API. Save this file to &lt;code&gt;plumber.R&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;library&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;plumber&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;pr&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;|&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;pr_get&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&#x2F;echo&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function z-r&quot;&gt;&lt;span class=&quot;z-storage z-type z-function z-r&quot;&gt;function&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-parameters z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-parameters z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;msg&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-parameters z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-punctuation z-section z-braces z-begin z-r&quot;&gt;{&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;    &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-storage z-type z-r&quot;&gt;list&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;msg&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;paste0&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;The message is: &amp;#39;&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; msg&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&amp;#39;&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-punctuation z-section z-braces z-end z-r&quot;&gt;}&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;|&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;pr_get&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&#x2F;sum&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function z-r&quot;&gt;&lt;span class=&quot;z-storage z-type z-function z-r&quot;&gt;function&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function z-parameters z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-parameters z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;a&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-parameters z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;b&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-parameters z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-punctuation z-section z-braces z-begin z-r&quot;&gt;{&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;    &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;as.numeric&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;a&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-arithmetic z-r&quot;&gt;+&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;as.numeric&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;b&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;  &lt;span class=&quot;z-punctuation z-section z-braces z-end z-r&quot;&gt;}&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;|&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;pr_run&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-variable z-parameter z-r&quot;&gt;port&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;=&lt;&#x2F;span&gt; &lt;span class=&quot;z-constant z-numeric z-float z-decimal z-r&quot;&gt;8888&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;serving-with-https&quot;&gt;Serving with https&lt;&#x2F;h2&gt;
+&lt;p&gt;Reverse proxies are typically the most common way of adding https to a
+site. Many organization use &lt;a href=&quot;https:&#x2F;&#x2F;nginx.org&#x2F;&quot;&gt;nginx&lt;&#x2F;a&gt;. Though for
+simplicity I recommend Caddy.&lt;&#x2F;p&gt;
+&lt;p&gt;Caddy automatically implements https by default.&lt;&#x2F;p&gt;
+&lt;p&gt;The below &lt;code&gt;Caddyfile&lt;&#x2F;code&gt; will serve the plumber API over https. It takes
+any requests to &lt;code&gt;localhost&lt;&#x2F;code&gt; and passes the request to the plumber API on
+port &lt;code&gt;8888&lt;&#x2F;code&gt;, captures the response and sends it back to the client.&lt;&#x2F;p&gt;
+&lt;div class=&quot;alert-tip&quot;&gt;
+&lt;p&gt;The https protocol requires binding to port 443.&lt;&#x2F;p&gt;
+&lt;&#x2F;div&gt;
+&lt;p&gt;Save this as &lt;code&gt;Caddyfile&lt;&#x2F;code&gt;&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;caddy&quot; class=&quot;language-caddy z-code&quot;&gt;&lt;code class=&quot;language-caddy&quot; data-lang=&quot;caddy&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;# serve the plumber API over HTTPS
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;localhost:443 {
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;    reverse_proxy localhost:8888
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;}
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;running-the-api-proxy&quot;&gt;Running the API &amp;amp; proxy&lt;&#x2F;h2&gt;
+&lt;p&gt;To serve the plumber API via Caddy you need to start both processes.&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;shell&quot; class=&quot;language-shell z-code&quot;&gt;&lt;code class=&quot;language-shell&quot; data-lang=&quot;shell&quot;&gt;&lt;span class=&quot;z-text z-plain&quot;&gt;(R -f plumber.R) &amp;amp; caddy run
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;p&gt;This will run the plumber API in the background and then the caddy
+process.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;generalizing&quot;&gt;Generalizing&lt;&#x2F;h2&gt;
+&lt;p&gt;Note that these are instructions specifically for using Caddy. However
+this point genealizes to all reverse proxies. They likely require more
+boiler plate, but will work just as well.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;resources&quot;&gt;Resources&lt;&#x2F;h2&gt;
+&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;www.andrewheiss.com&#x2F;&quot;&gt;Andrew Heiss&lt;&#x2F;a&gt; has a really great &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;andrewheiss&#x2F;docker-plumber-caddy&quot;&gt;demo
+repository&lt;&#x2F;a&gt; that is
+a much more advanced version of this that uses
+&lt;a href=&quot;https:&#x2F;&#x2F;www.docker.com&#x2F;&quot;&gt;Docker&lt;&#x2F;a&gt; and &lt;a href=&quot;https:&#x2F;&#x2F;docs.docker.com&#x2F;compose&#x2F;&quot;&gt;Docker
+Compose&lt;&#x2F;a&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;Use &lt;a href=&quot;https:&#x2F;&#x2F;github.com&#x2F;JosiahParry&#x2F;valve&quot;&gt;Valve&lt;&#x2F;a&gt; to scale your plumber
+API and apply the same principles.&lt;&#x2F;p&gt;
+</content>
+        
+    </entry>
+    <entry xml:lang="en">
+        <title>Static file server in R</title>
+        <published>2024-06-24T00:00:00+00:00</published>
+        <updated>2024-06-24T00:00:00+00:00</updated>
+        
+        <author>
+          <name>
+            
+              Unknown
+            
+          </name>
+        </author>
+        
+        <link rel="alternate" type="text/html" href="https://josiah.rs/posts/file-server/"/>
+        <id>https://josiah.rs/posts/file-server/</id>
+        
+        <content type="html" xml:base="https://josiah.rs/posts/file-server/">&lt;p&gt;&lt;a href=&quot;https:&#x2F;&#x2F;www.rplumber.io&#x2F;articles&#x2F;routing-and-input.html?q=upload#static-file-handler&quot;&gt;Plumber&lt;&#x2F;a&gt;,
+&lt;a href=&quot;https:&#x2F;&#x2F;ambiorix.dev&#x2F;&quot;&gt;ambiorix&lt;&#x2F;a&gt;, and
+&lt;a href=&quot;https:&#x2F;&#x2F;opencpu.r-universe.dev&#x2F;opencpu&quot;&gt;opencpu&lt;&#x2F;a&gt; are the keys to
+putting R into production.&lt;&#x2F;p&gt;
+&lt;p&gt;Sometimes all an API needs to do is statically serve files. Making a
+static file server with R is insanely easy.&lt;&#x2F;p&gt;
+&lt;p&gt;For this example, I have a folder called &lt;code&gt;&#x2F;public&lt;&#x2F;code&gt; which I want to serve
+files from at the API path &lt;code&gt;&#x2F;static&lt;&#x2F;code&gt;.&lt;&#x2F;p&gt;
+&lt;p&gt;To do this we create a plumber API using the &lt;code&gt;pr_static()&lt;&#x2F;code&gt; function or
+&lt;code&gt;#* @assets&lt;&#x2F;code&gt; if using the other plumber declaration format.&lt;&#x2F;p&gt;
+&lt;h2 id=&quot;making-the-file-server&quot;&gt;Making the file server&lt;&#x2F;h2&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;library&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;plumber&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;pr&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;|&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;pr_static&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&#x2F;static&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-separator z-arguments z-r&quot;&gt;,&lt;&#x2F;span&gt; &lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;.&#x2F;public&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;|&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;pr_run&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;calling-the-file-server&quot;&gt;calling the file server&lt;&#x2F;h2&gt;
+&lt;p&gt;We can call this api using a GET request:&lt;&#x2F;p&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-support z-function z-r&quot;&gt;library&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;httr2&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;iris_csv &lt;span class=&quot;z-keyword z-operator z-assignment z-r&quot;&gt;&amp;lt;-&lt;&#x2F;span&gt; &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;request&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-string z-quoted z-double z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-string z-begin z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;http:&#x2F;&#x2F;127.0.0.1:3000&#x2F;static&#x2F;iris.csv&lt;span class=&quot;z-punctuation z-definition z-string z-end z-r&quot;&gt;&amp;quot;&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;|&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;req_perform&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt; &lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;|&lt;&#x2F;span&gt;&lt;span class=&quot;z-keyword z-operator z-logical z-r&quot;&gt;&amp;gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;  &lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;resp_body_string&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;
+&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;readr&lt;span class=&quot;z-punctuation z-accessor z-colons z-r&quot;&gt;::&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-variable z-function z-r&quot;&gt;read_csv&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;iris_csv&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+&lt;h2 id=&quot;alternative-plumber-format&quot;&gt;Alternative plumber format&lt;&#x2F;h2&gt;
+&lt;pre data-lang=&quot;r&quot; class=&quot;language-r z-code&quot;&gt;&lt;code class=&quot;language-r&quot; data-lang=&quot;r&quot;&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-comment z-line z-number-sign z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-definition z-comment z-r&quot;&gt;#&lt;&#x2F;span&gt;* @assets .&#x2F;public &#x2F;static
+&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-source z-r&quot;&gt;&lt;span class=&quot;z-meta z-function-call z-name z-r&quot;&gt;&lt;span class=&quot;z-storage z-type z-r&quot;&gt;list&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;&lt;span class=&quot;z-meta z-function-call z-arguments z-r&quot;&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-begin z-r&quot;&gt;(&lt;&#x2F;span&gt;&lt;span class=&quot;z-punctuation z-section z-arguments z-end z-r&quot;&gt;)&lt;&#x2F;span&gt;&lt;&#x2F;span&gt;
+&lt;&#x2F;span&gt;&lt;&#x2F;code&gt;&lt;&#x2F;pre&gt;
+</content>
+        
+    </entry>
+</feed>
